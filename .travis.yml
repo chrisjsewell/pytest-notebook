@@ -1,34 +1,68 @@
 # Config file for automatic testing at travis-ci.org
-
-sudo: false
 language: python
+
+cache: pip
 
 matrix:
     include:
-      - python: 2.7
-        env: TOX_ENV=py27
-      - python: 3.4
-        env: TOX_ENV=py34
-      - python: 3.5
-        env: TOX_ENV=py35
       - python: 3.6
-        env: TOX_ENV=py36
+        env: TEST_TYPE="pre-commit"
+      - python: 3.6
+        env: TEST_TYPE="pytest"
       - python: 3.7
-        env: TOX_ENV=py37
-      - python: pypy
-        env: TOX_ENV=pypy
+        env: TEST_TYPE="pytest"
       - python: 3.6
-        env: TOX_ENV=flake8
+        env: TEST_TYPE="docs" READTHEDOCS="True"
 
 install:
-  - pip install tox
+  - pip install --upgrade pip wheel setuptools
+  - |
+      if [[ "$TEST_TYPE" == "pre-commit" ]]; then
+        pip install -e .[code_style]
+      fi
+  - |
+      if [[ "$TEST_TYPE" == "pytest" ]]; then
+        pip install -e .[testing]
+        pip install coveralls
+      fi
+  - |
+      if [[ "$TEST_TYPE" == "docs" ]]; then
+        pip install -e .[docs]
+        url="https://github.com/jgm/pandoc/releases/tag/2.6"
+        path=$(curl -L $url | grep -o '/jgm/pandoc/releases/download/.*-amd64\.deb')
+        downloadUrl="https://github.com$path"
+        file=${path##*/}
+        wget $downloadUrl && sudo dpkg -i $file
+      fi
 
 script:
-  - tox -e $TOX_ENV
+- |
+  if [[ "$TEST_TYPE" == "pytest" ]]; then
+      pytest -v --cov=pytest_notebook --cov-report= pytest_notebook
+  fi
+- |
+  if [[ "$TEST_TYPE" == "pre-commit" ]]; then
+    pre-commit run --all-files || ( git status --short ; git diff ; exit 1 )
+  fi
+- |
+  if [[ "$TEST_TYPE" == "docs" ]]; then
+    cd docs
+    make
+  fi
 
-before_cache:
-  - rm -rf $HOME/.cache/pip/log
+after_success:
+- |
+  if [[ "$TEST_TYPE" == "pytest" ]]; then
+      coveralls
+  fi
 
-cache:
-  directories:
-    - $HOME/.cache/pip
+deploy:
+  - provider: pypi
+    distributions: "sdist bdist_wheel"
+    user: cjsewell
+    password:
+      secure: VCQWK8xNFFKaWOswrtlvEqn/ULz8qjy80Y5xoXjh/tQHnfqtUSHiDh7i5BeDTYepG/C4qkGLApHp2oEOs5JM2bp8QMCVz0ERsMlX8IYAs7iMA85w9rcYWUXk/EkqPC07pyoCLk7wGlSmWnjnrfWfO9Wu5i2Ys7kpiJD6/pcbnGeAuyUv7lI+giAYiDFMjX9T4Iqh2QA2hPjVz0GVqmZyh4FDxlLNJBTvySGlrr4WDjidUamK06eqNBQ6pGGUGRjbu+KNgpSOkZBrLuDJYHhxoqYYPlIGFxWtXyBA1bQxYWWnR0R2iS93TC3TKExznFKsvN/Q11vdlnH6yophJxhimlUhDJXG70cVzsAsxXgLmQtA0Mb5nDsx0lxisAffHeKYAcoSfEg9Fj906L1vH+8/9AnVBQ2sgGB/ob9PpIyvrJoYArMmoj6O/lyNuvzufs6TVUP+iY2+Se8QCwW7l+Izh74GrWBah3Zb4j8JDNLqzjG90qmEoyjMLA67NVDqzfzEIQdZ5q8By5TIJWyv9LhHdJ6Jjl9KQCWD9w9lYzVkYI9W7J7gg8bof9oTLZ9Ntl0NwBpZV3YMpDFQNMl8OP6eNWlXCE5vS2mFPR8Lwk+s1mfq1MrSYXQQKa5m3Dt4p8PzNWrDsf8/94bwR35F+jMfRKdhwRhSvAa8AhXO1y+lJoU=
+    on:
+      branch: master
+      tags: true
+      condition: $PYPI_DEPLOY = true

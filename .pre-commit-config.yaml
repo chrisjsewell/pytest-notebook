@@ -1,0 +1,38 @@
+# Install pre-commit hooks via
+# pre-commit install
+
+repos:
+
+  - repo: git://github.com/pre-commit/pre-commit-hooks
+    rev: v2.2.3
+    hooks:
+    - id: check-json
+    - id: check-yaml
+    - id: end-of-file-fixer
+    - id: trailing-whitespace
+    # - id: double-quote-string-fixer
+    - id: flake8
+
+  - repo: https://github.com/psf/black
+    rev: stable
+    hooks:
+    - id: black
+      language_version: python3.6
+
+  - repo: local
+    hooks:
+
+    - id: travis-linter
+      name: Travis Lint
+      entry: travis lint
+      files: .travis.yml
+      language: ruby
+      additional_dependencies: ['travis']
+
+    - id: doc8
+      entry: doc8
+      language: system
+      types: [rst]
+      name: doc8 - Lint the documentation.
+
+    # TODO could also add check-manifest
