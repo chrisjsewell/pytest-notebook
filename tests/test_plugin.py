@@ -74,6 +74,7 @@ def test_nb_regression_fixture_exec_pass(testdir):
         """
         def test_nb(nb_regression):
             nb_regression.diff_ignore = (
+                "/metadata/language_info/version",
                 "/cells/*/execution_count",
                 "/cells/*/outputs/*/traceback",
                 "/cells/*/outputs/*/execution_count",
@@ -104,6 +105,7 @@ def test_nb_regression_ini_setting(testdir):
         nb_exec_allow_errors = True
         nb_exec_timeout = 100
         nb_diff_ignore =
+            /metadata/language_info/version
             /cells/*/execution_count
             /cells/*/outputs/*/traceback
             /cells/*/outputs/*/execution_count
