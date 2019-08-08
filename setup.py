@@ -30,7 +30,7 @@ setup(
         # "ruamel.yaml"
     ],
     extras_require={
-        "testing": ["coverage", "pytest-cov", "pytest-regressions"],
+        "testing": ["coverage", "pytest-cov", "pytest-regressions", "black==19.3b0"],
         "code_style": [
             "black",
             "pre-commit==1.17.0",
@@ -63,7 +63,8 @@ setup(
     entry_points={
         "pytest11": ["nb_regression = pytest_notebook.plugin"],
         "nbreg.post_proc": [
-            "coalesce_streams = pytest_notebook.post_processors:coalesce_streams"
+            "coalesce_streams = pytest_notebook.post_processors:coalesce_streams",
+            "blacken_code = pytest_notebook.post_processors:blacken_code",
         ],
     },
 )

@@ -1,10 +1,13 @@
 """Jupyter Notebook Regression Test Class."""
+import copy
 import os
-from typing import TextIO, Union
+from typing import List, TextIO, Union
 
 import attr
 from attr.validators import instance_of
+from nbconvert.preprocessors import CellExecutionError
 import nbformat
+from nbformat import NotebookNode
 
 from pytest_notebook.diffing import diff_notebooks, diff_to_string, filter_diff
 from pytest_notebook.execution import execute_notebook
@@ -80,6 +83,12 @@ class NBRegressionFixture:
                     f"name '{name}' not found in entry points: {list_processor_names()}"
                 )
 
+    post_proc_resources: dict = attr.ib(
+        attr.Factory(dict),
+        instance_of(dict),
+        metadata={"help": "Resources to parse to post processor functions."},
+    )
+
     diff_ignore: tuple = attr.ib(
         ("/cells/*/outputs/*/traceback",), metadata={"help": HELP_DIFF_IGNORE}
     )
@@ -106,7 +115,9 @@ class NBRegressionFixture:
 
         super(NBRegressionFixture, self).__setattr__(key, value)
 
-    def check(self, path: Union[TextIO, str]):
+    def check(
+        self, path: Union[TextIO, str], raise_errors: bool = True
+    ) -> (NotebookNode, List, Union[None, CellExecutionError]):
         """Execute the Notebook and compare its old/new contents.
 
         if self.force_regen is True, the new notebook will be written to path
@@ -124,9 +135,10 @@ class NBRegressionFixture:
             allow_errors=self.exec_allow_errors,
         )
 
+        resources = copy.deepcopy(self.post_proc_resources)
         for proc_name in self.post_processors:
             post_proc = load_processor(proc_name)
-            nb_final = post_proc(nb_final)
+            nb_final, resources = post_proc(nb_final, resources)
 
         regen_exc = None
         if self.force_regen and not exec_error:
@@ -147,8 +159,10 @@ class NBRegressionFixture:
         # TODO include filters from metadata nb/cells
         diff = filter_diff(diff, self.diff_ignore)
 
-        if diff:
-            # TODO write to file
+        if not raise_errors:
+            pass
+        elif diff:
+            # TODO optionally write diff to file
             try:
                 raise NBRegressionError(diff_to_string(nb_initial, diff))
             except NBRegressionError:
@@ -159,3 +173,5 @@ class NBRegressionFixture:
             raise regen_exc
         elif exec_error:
             raise exec_error
+
+        return nb_final, diff, exec_error

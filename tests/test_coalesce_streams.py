@@ -14,7 +14,7 @@ def test_coalesce_streams_same():
     notebook = nbformat.read(
         os.path.join(path, "raw_files", "different_outputs.ipynb"), as_version=4
     )
-    new_notebook = coalesce_streams(notebook)
+    new_notebook, _ = coalesce_streams(notebook, {})
     assert notebook == new_notebook
 
 
@@ -53,5 +53,5 @@ def test_coalesce_streams():
             }
         )
     )
-    new_notebook = coalesce_streams(notebook)
+    new_notebook, _ = coalesce_streams(notebook, {})
     assert new_notebook == expected

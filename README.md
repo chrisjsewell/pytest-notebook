@@ -7,6 +7,8 @@ pytest-notebook
 
 [![See Build Status on Travis CI](https://travis-ci.org/chrisjsewell/pytest-notebook.svg?branch=master)](https://travis-ci.org/chrisjsewell/pytest-notebook)
 
+[![Code style: black](https://img.shields.io/badge/code%20style-black-000000.svg)](https://github.com/ambv/black)
+
 A pytest plugin for testing Jupyter Notebooks
 
 ------------------------------------------------------------------------
@@ -20,7 +22,7 @@ template.
 Features
 --------
 
--   Clear API
+- Clear API
 
 Note: Could use https://github.com/computationalmodelling/nbval,
 but this treats the whole notebook file as the test file, so doesn't allow
@@ -29,7 +31,7 @@ programmatic access to the file before/after testing.
 Requirements
 ------------
 
--   TODO
+- TODO
 
 Installation
 ------------
@@ -43,7 +45,7 @@ You can install \"pytest-notebook\" via
 Usage
 -----
 
--   TODO
+- TODO
 
 Contributing
 ------------
