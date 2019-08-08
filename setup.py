@@ -23,25 +23,28 @@ setup(
         "attr",
         "jupyter_client",
         "nbconvert",
+        "nbdime",
         "nbformat",
-        "numpy",
-        "pillow",
-        "ruamel.yaml",
-        "six",
+        # "numpy",
+        # "pillow",
+        # "ruamel.yaml"
     ],
     extras_require={
-        "testing": ["coverage", "pytest-cov"],
+        "testing": ["coverage", "pytest-cov", "pytest-regressions"],
         "code_style": [
             "black",
             "pre-commit==1.17.0",
             "flake8<3.8.0,>=3.7.0",
             "doc8<0.9.0,>=0.8.0",
-            "flake8-comprehensions",
-            "flake8-docstrings",
-            "flake8_builtins",
-            "import-order",
+            # "flake8-comprehensions",
+            # "flake8-docstrings",
+            # "flake8_builtins",
+            # "import-order",
         ],
-        "docs": ["sphinx>=1.6", "ipypublish>=0.10.7"],
+        "docs": [
+            "sphinx>=1.6",
+            # "ipypublish>=0.10.7"
+        ],
     },
     classifiers=[
         "Development Status :: 4 - Beta",
@@ -54,9 +57,13 @@ setup(
         "Programming Language :: Python :: 3.6",
         "Programming Language :: Python :: 3.7",
         "Programming Language :: Python :: Implementation :: CPython",
-        "Programming Language :: Python :: Implementation :: PyPy",
         "Operating System :: OS Independent",
         "License :: OSI Approved :: BSD License",
     ],
-    entry_points={"pytest11": ["nb_regression = pytest_notebook.plugin"]},
+    entry_points={
+        "pytest11": ["nb_regression = pytest_notebook.plugin"],
+        "nbreg.post_proc": [
+            "coalesce_streams = pytest_notebook.post_processors:coalesce_streams"
+        ],
+    },
 )

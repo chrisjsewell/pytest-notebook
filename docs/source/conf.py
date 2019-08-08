@@ -45,7 +45,7 @@ version = ".".join(release.split(".")[:2])
 
 intersphinx_mapping = {
     "python": ("https://docs.python.org/3.6", None),
-    "PIL": ("http://pillow.readthedocs.org/en/latest/", None),
+    # "PIL": ("http://pillow.readthedocs.org/en/latest/", None),
     "nbconvert": ("http://nbconvert.readthedocs.io/en/latest/", None),
     "nbformat": ("http://nbformat.readthedocs.io/en/latest/", None),
     "attr": ("http://www.attrs.org/en/stable/", None),
@@ -60,9 +60,11 @@ intersphinx_aliases = {
 }
 
 nitpick_ignore = [
+    ("py:class", "NoneType"),
     ("py:class", "attr.ib"),
     ("py:class", "attr.s"),
     ("py:class", "ruamel.yaml.dumper.RoundTripDumper"),
+    ("py:exc", "nbconvert.preprocessors.CellExecutionError"),
 ]
 
 # The reST default role (used for this markup: `text`) to use for all

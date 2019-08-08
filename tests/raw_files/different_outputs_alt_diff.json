@@ -1,0 +1,294 @@
+[
+    {
+        "op": "patch",
+        "key": "cells",
+        "diff": [
+            {
+                "op": "patch",
+                "key": 2,
+                "diff": [
+                    {
+                        "op": "replace",
+                        "key": "execution_count",
+                        "value": 6
+                    }
+                ]
+            },
+            {
+                "op": "patch",
+                "key": 3,
+                "diff": [
+                    {
+                        "op": "patch",
+                        "key": "outputs",
+                        "diff": [
+                            {
+                                "op": "patch",
+                                "key": 0,
+                                "diff": [
+                                    {
+                                        "op": "patch",
+                                        "key": "text",
+                                        "diff": [
+                                            {
+                                                "op": "addrange",
+                                                "key": 1,
+                                                "valuelist": [
+                                                    "wrong"
+                                                ]
+                                            }
+                                        ]
+                                    }
+                                ]
+                            }
+                        ]
+                    }
+                ]
+            },
+            {
+                "op": "patch",
+                "key": 4,
+                "diff": [
+                    {
+                        "op": "patch",
+                        "key": "outputs",
+                        "diff": [
+                            {
+                                "op": "patch",
+                                "key": 0,
+                                "diff": [
+                                    {
+                                        "op": "patch",
+                                        "key": "text",
+                                        "diff": [
+                                            {
+                                                "op": "addrange",
+                                                "key": 2,
+                                                "valuelist": [
+                                                    "hallo3\n"
+                                                ]
+                                            }
+                                        ]
+                                    }
+                                ]
+                            }
+                        ]
+                    }
+                ]
+            },
+            {
+                "op": "patch",
+                "key": 7,
+                "diff": [
+                    {
+                        "op": "patch",
+                        "key": "outputs",
+                        "diff": [
+                            {
+                                "op": "patch",
+                                "key": 0,
+                                "diff": [
+                                    {
+                                        "op": "patch",
+                                        "key": "data",
+                                        "diff": [
+                                            {
+                                                "op": "patch",
+                                                "key": "text/latex",
+                                                "diff": [
+                                                    {
+                                                        "op": "patch",
+                                                        "key": 0,
+                                                        "diff": [
+                                                            {
+                                                                "op": "addrange",
+                                                                "key": 13,
+                                                                "valuelist": "2"
+                                                            }
+                                                        ]
+                                                    }
+                                                ]
+                                            }
+                                        ]
+                                    }
+                                ]
+                            }
+                        ]
+                    }
+                ]
+            },
+            {
+                "op": "patch",
+                "key": 8,
+                "diff": [
+                    {
+                        "op": "patch",
+                        "key": "outputs",
+                        "diff": [
+                            {
+                                "op": "patch",
+                                "key": 0,
+                                "diff": [
+                                    {
+                                        "op": "patch",
+                                        "key": "data",
+                                        "diff": [
+                                            {
+                                                "op": "patch",
+                                                "key": "text/html",
+                                                "diff": [
+                                                    {
+                                                        "op": "patch",
+                                                        "key": 2,
+                                                        "diff": [
+                                                            {
+                                                                "op": "addrange",
+                                                                "key": 18,
+                                                                "valuelist": "2"
+                                                            }
+                                                        ]
+                                                    }
+                                                ]
+                                            }
+                                        ]
+                                    }
+                                ]
+                            }
+                        ]
+                    }
+                ]
+            },
+            {
+                "op": "patch",
+                "key": 9,
+                "diff": [
+                    {
+                        "op": "patch",
+                        "key": "outputs",
+                        "diff": [
+                            {
+                                "op": "patch",
+                                "key": 0,
+                                "diff": [
+                                    {
+                                        "op": "patch",
+                                        "key": "data",
+                                        "diff": [
+                                            {
+                                                "op": "patch",
+                                                "key": "application/json",
+                                                "diff": [
+                                                    {
+                                                        "op": "patch",
+                                                        "key": "a",
+                                                        "diff": [
+                                                            {
+                                                                "op": "addrange",
+                                                                "key": 2,
+                                                                "valuelist": [
+                                                                    5
+                                                                ]
+                                                            },
+                                                            {
+                                                                "op": "removerange",
+                                                                "key": 2,
+                                                                "length": 1
+                                                            }
+                                                        ]
+                                                    }
+                                                ]
+                                            }
+                                        ]
+                                    }
+                                ]
+                            }
+                        ]
+                    }
+                ]
+            },
+            {
+                "op": "patch",
+                "key": 10,
+                "diff": [
+                    {
+                        "op": "patch",
+                        "key": "outputs",
+                        "diff": [
+                            {
+                                "op": "patch",
+                                "key": 0,
+                                "diff": [
+                                    {
+                                        "op": "patch",
+                                        "key": "data",
+                                        "diff": [
+                                            {
+                                                "op": "patch",
+                                                "key": "text/markdown",
+                                                "diff": [
+                                                    {
+                                                        "op": "addrange",
+                                                        "key": 2,
+                                                        "valuelist": [
+                                                            "- bullet2\n"
+                                                        ]
+                                                    }
+                                                ]
+                                            }
+                                        ]
+                                    }
+                                ]
+                            }
+                        ]
+                    }
+                ]
+            },
+            {
+                "op": "patch",
+                "key": 11,
+                "diff": [
+                    {
+                        "op": "patch",
+                        "key": "outputs",
+                        "diff": [
+                            {
+                                "op": "patch",
+                                "key": 0,
+                                "diff": [
+                                    {
+                                        "op": "patch",
+                                        "key": "data",
+                                        "diff": [
+                                            {
+                                                "op": "patch",
+                                                "key": "image/svg+xml",
+                                                "diff": [
+                                                    {
+                                                        "op": "patch",
+                                                        "key": 1,
+                                                        "diff": [
+                                                            {
+                                                                "op": "addrange",
+                                                                "key": 40,
+                                                                "valuelist": "7"
+                                                            },
+                                                            {
+                                                                "op": "removerange",
+                                                                "key": 40,
+                                                                "length": 1
+                                                            }
+                                                        ]
+                                                    }
+                                                ]
+                                            }
+                                        ]
+                                    }
+                                ]
+                            }
+                        ]
+                    }
+                ]
+            }
+        ]
+    }
+]

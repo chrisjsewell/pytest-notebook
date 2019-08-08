@@ -1,6 +1,6 @@
 import pytest
 
-from pytest_notebook.nb_regression import NBRegression
+from pytest_notebook.diffing import diff_notebooks
 from pytest_notebook.utils import prepare_cell_v4
 
 
@@ -210,11 +210,10 @@ def get_test_cell(type_name, variable="hallo"):
 )
 def test_compare_cells_equal(cell_type):
     """Test comparing cells that are equal."""
-    nb_regression = NBRegression()
-    errors = nb_regression.compare_cell(
-        get_test_cell(cell_type), get_test_cell(cell_type)
+    diff = diff_notebooks(
+        get_test_cell(cell_type), get_test_cell(cell_type), initial_path="/cells/0"
     )
-    assert errors == {}
+    assert diff == []
 
 
 @pytest.mark.parametrize(
@@ -230,11 +229,12 @@ def test_compare_cells_equal(cell_type):
 )
 def test_compare_cells_text_unequal(cell_type):
     """Test comparing cells that contain text and are unequal."""
-    nb_regression = NBRegression()
-    errors = nb_regression.compare_cell(
-        get_test_cell(cell_type, "variable1"), get_test_cell(cell_type, "variable2")
+    diff = diff_notebooks(
+        get_test_cell(cell_type, "variable1"),
+        get_test_cell(cell_type, "variable2"),
+        initial_path="/cells/0",
     )
-    assert errors != {}
+    assert diff != []
 
 
 @pytest.mark.parametrize(
@@ -243,10 +243,7 @@ def test_compare_cells_text_unequal(cell_type):
 )
 def test_compare_cells_image_unequal(cell_in, cell_out):
     """Test comparing cells that contain images and are unequal."""
-    nb_regression = NBRegression()
-    errors = nb_regression.compare_cell(get_test_cell(cell_in), get_test_cell(cell_out))
-    assert errors != {}
-
-
-def test_compare_notebook():
-    pass
+    diff = diff_notebooks(
+        get_test_cell(cell_in), get_test_cell(cell_out), initial_path="/cells/0"
+    )
+    assert diff != []

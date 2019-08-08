@@ -1,0 +1,33 @@
+- diff:
+  - diff:
+    - key: execution_count
+      op: replace
+      value: 6
+    key: 2
+    op: patch
+  - diff:
+    - diff:
+      - diff:
+        - diff:
+          - diff:
+            - diff:
+              - key: 40
+                op: addrange
+                valuelist: '7'
+              - key: 40
+                length: 1
+                op: removerange
+              key: 1
+              op: patch
+            key: image/svg+xml
+            op: patch
+          key: data
+          op: patch
+        key: 0
+        op: patch
+      key: outputs
+      op: patch
+    key: 11
+    op: patch
+  key: cells
+  op: patch

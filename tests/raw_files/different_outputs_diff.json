@@ -1,0 +1,397 @@
+[
+    {
+        "op": "patch",
+        "key": "cells",
+        "diff": [
+            {
+                "op": "patch",
+                "key": 2,
+                "diff": [
+                    {
+                        "op": "replace",
+                        "key": "execution_count",
+                        "value": 1
+                    }
+                ]
+            },
+            {
+                "op": "patch",
+                "key": 3,
+                "diff": [
+                    {
+                        "op": "replace",
+                        "key": "execution_count",
+                        "value": 2
+                    }
+                ]
+            },
+            {
+                "op": "patch",
+                "key": 4,
+                "diff": [
+                    {
+                        "op": "replace",
+                        "key": "execution_count",
+                        "value": 3
+                    }
+                ]
+            },
+            {
+                "op": "patch",
+                "key": 5,
+                "diff": [
+                    {
+                        "op": "replace",
+                        "key": "execution_count",
+                        "value": 4
+                    }
+                ]
+            },
+            {
+                "op": "patch",
+                "key": 6,
+                "diff": [
+                    {
+                        "op": "replace",
+                        "key": "execution_count",
+                        "value": 5
+                    }
+                ]
+            },
+            {
+                "op": "patch",
+                "key": 7,
+                "diff": [
+                    {
+                        "op": "replace",
+                        "key": "execution_count",
+                        "value": 6
+                    },
+                    {
+                        "op": "patch",
+                        "key": "outputs",
+                        "diff": [
+                            {
+                                "op": "patch",
+                                "key": 0,
+                                "diff": [
+                                    {
+                                        "op": "replace",
+                                        "key": "execution_count",
+                                        "value": 6
+                                    }
+                                ]
+                            }
+                        ]
+                    }
+                ]
+            },
+            {
+                "op": "patch",
+                "key": 8,
+                "diff": [
+                    {
+                        "op": "replace",
+                        "key": "execution_count",
+                        "value": 7
+                    },
+                    {
+                        "op": "patch",
+                        "key": "outputs",
+                        "diff": [
+                            {
+                                "op": "patch",
+                                "key": 0,
+                                "diff": [
+                                    {
+                                        "op": "replace",
+                                        "key": "execution_count",
+                                        "value": 7
+                                    }
+                                ]
+                            }
+                        ]
+                    }
+                ]
+            },
+            {
+                "op": "patch",
+                "key": 9,
+                "diff": [
+                    {
+                        "op": "replace",
+                        "key": "execution_count",
+                        "value": 8
+                    },
+                    {
+                        "op": "patch",
+                        "key": "outputs",
+                        "diff": [
+                            {
+                                "op": "patch",
+                                "key": 0,
+                                "diff": [
+                                    {
+                                        "op": "replace",
+                                        "key": "execution_count",
+                                        "value": 8
+                                    },
+                                    {
+                                        "op": "patch",
+                                        "key": "metadata",
+                                        "diff": [
+                                            {
+                                                "op": "add",
+                                                "key": "application/json",
+                                                "value": {
+                                                    "expanded": false,
+                                                    "root": "root"
+                                                }
+                                            }
+                                        ]
+                                    }
+                                ]
+                            }
+                        ]
+                    }
+                ]
+            },
+            {
+                "op": "patch",
+                "key": 10,
+                "diff": [
+                    {
+                        "op": "replace",
+                        "key": "execution_count",
+                        "value": 9
+                    },
+                    {
+                        "op": "patch",
+                        "key": "outputs",
+                        "diff": [
+                            {
+                                "op": "patch",
+                                "key": 0,
+                                "diff": [
+                                    {
+                                        "op": "replace",
+                                        "key": "execution_count",
+                                        "value": 9
+                                    }
+                                ]
+                            }
+                        ]
+                    }
+                ]
+            },
+            {
+                "op": "patch",
+                "key": 11,
+                "diff": [
+                    {
+                        "op": "replace",
+                        "key": "execution_count",
+                        "value": 10
+                    },
+                    {
+                        "op": "patch",
+                        "key": "outputs",
+                        "diff": [
+                            {
+                                "op": "patch",
+                                "key": 0,
+                                "diff": [
+                                    {
+                                        "op": "replace",
+                                        "key": "execution_count",
+                                        "value": 10
+                                    }
+                                ]
+                            }
+                        ]
+                    }
+                ]
+            },
+            {
+                "op": "patch",
+                "key": 12,
+                "diff": [
+                    {
+                        "op": "replace",
+                        "key": "execution_count",
+                        "value": 11
+                    },
+                    {
+                        "op": "patch",
+                        "key": "outputs",
+                        "diff": [
+                            {
+                                "op": "patch",
+                                "key": 0,
+                                "diff": [
+                                    {
+                                        "op": "patch",
+                                        "key": "data",
+                                        "diff": [
+                                            {
+                                                "op": "patch",
+                                                "key": "text/latex",
+                                                "diff": [
+                                                    {
+                                                        "op": "addrange",
+                                                        "key": 0,
+                                                        "valuelist": [
+                                                            "$\\displaystyle a = b + c$"
+                                                        ]
+                                                    },
+                                                    {
+                                                        "op": "removerange",
+                                                        "key": 0,
+                                                        "length": 1
+                                                    }
+                                                ]
+                                            }
+                                        ]
+                                    },
+                                    {
+                                        "op": "replace",
+                                        "key": "execution_count",
+                                        "value": 11
+                                    }
+                                ]
+                            }
+                        ]
+                    }
+                ]
+            },
+            {
+                "op": "patch",
+                "key": 13,
+                "diff": [
+                    {
+                        "op": "replace",
+                        "key": "execution_count",
+                        "value": 12
+                    },
+                    {
+                        "op": "patch",
+                        "key": "outputs",
+                        "diff": [
+                            {
+                                "op": "patch",
+                                "key": 0,
+                                "diff": [
+                                    {
+                                        "op": "replace",
+                                        "key": "execution_count",
+                                        "value": 12
+                                    }
+                                ]
+                            }
+                        ]
+                    }
+                ]
+            },
+            {
+                "op": "patch",
+                "key": 14,
+                "diff": [
+                    {
+                        "op": "replace",
+                        "key": "execution_count",
+                        "value": 13
+                    },
+                    {
+                        "op": "patch",
+                        "key": "outputs",
+                        "diff": [
+                            {
+                                "op": "patch",
+                                "key": 0,
+                                "diff": [
+                                    {
+                                        "op": "replace",
+                                        "key": "execution_count",
+                                        "value": 13
+                                    }
+                                ]
+                            }
+                        ]
+                    }
+                ]
+            },
+            {
+                "op": "patch",
+                "key": 15,
+                "diff": [
+                    {
+                        "op": "replace",
+                        "key": "execution_count",
+                        "value": 14
+                    },
+                    {
+                        "op": "patch",
+                        "key": "outputs",
+                        "diff": [
+                            {
+                                "op": "patch",
+                                "key": 3,
+                                "diff": [
+                                    {
+                                        "op": "replace",
+                                        "key": "execution_count",
+                                        "value": 14
+                                    }
+                                ]
+                            }
+                        ]
+                    }
+                ]
+            },
+            {
+                "op": "patch",
+                "key": 16,
+                "diff": [
+                    {
+                        "op": "replace",
+                        "key": "execution_count",
+                        "value": 15
+                    },
+                    {
+                        "op": "patch",
+                        "key": "outputs",
+                        "diff": [
+                            {
+                                "op": "patch",
+                                "key": 1,
+                                "diff": [
+                                    {
+                                        "op": "patch",
+                                        "key": "traceback",
+                                        "diff": [
+                                            {
+                                                "op": "addrange",
+                                                "key": 0,
+                                                "valuelist": [
+                                                    "\u001b[0;31m---------------------------------------------------------------------------\u001b[0m",
+                                                    "\u001b[0;31mValueError\u001b[0m                                Traceback (most recent call last)",
+                                                    "\u001b[0;32m<ipython-input-15-3a084a2c507f>\u001b[0m in \u001b[0;36m<module>\u001b[0;34m\u001b[0m\n\u001b[1;32m      3\u001b[0m     \u001b[0;32mraise\u001b[0m \u001b[0mValueError\u001b[0m\u001b[0;34m(\u001b[0m\u001b[0;34m'there was an error'\u001b[0m\u001b[0;34m)\u001b[0m\u001b[0;34m\u001b[0m\u001b[0;34m\u001b[0m\u001b[0m\n\u001b[1;32m      4\u001b[0m \u001b[0;32mfor\u001b[0m \u001b[0mi\u001b[0m \u001b[0;32min\u001b[0m \u001b[0mrange\u001b[0m\u001b[0;34m(\u001b[0m\u001b[0;36m10\u001b[0m\u001b[0;34m)\u001b[0m\u001b[0;34m:\u001b[0m\u001b[0;34m\u001b[0m\u001b[0;34m\u001b[0m\u001b[0m\n\u001b[0;32m----> 5\u001b[0;31m     \u001b[0mfunc\u001b[0m\u001b[0;34m(\u001b[0m\u001b[0mi\u001b[0m\u001b[0;34m)\u001b[0m\u001b[0;34m\u001b[0m\u001b[0;34m\u001b[0m\u001b[0m\n\u001b[0m",
+                                                    "\u001b[0;32m<ipython-input-15-3a084a2c507f>\u001b[0m in \u001b[0;36mfunc\u001b[0;34m(b)\u001b[0m\n\u001b[1;32m      1\u001b[0m \u001b[0mprint\u001b[0m\u001b[0;34m(\u001b[0m\u001b[0;34m'before exception'\u001b[0m\u001b[0;34m)\u001b[0m\u001b[0;34m\u001b[0m\u001b[0;34m\u001b[0m\u001b[0m\n\u001b[1;32m      2\u001b[0m \u001b[0;32mdef\u001b[0m \u001b[0mfunc\u001b[0m\u001b[0;34m(\u001b[0m\u001b[0mb\u001b[0m\u001b[0;34m)\u001b[0m\u001b[0;34m:\u001b[0m\u001b[0;34m\u001b[0m\u001b[0;34m\u001b[0m\u001b[0m\n\u001b[0;32m----> 3\u001b[0;31m     \u001b[0;32mraise\u001b[0m \u001b[0mValueError\u001b[0m\u001b[0;34m(\u001b[0m\u001b[0;34m'there was an error'\u001b[0m\u001b[0;34m)\u001b[0m\u001b[0;34m\u001b[0m\u001b[0;34m\u001b[0m\u001b[0m\n\u001b[0m\u001b[1;32m      4\u001b[0m \u001b[0;32mfor\u001b[0m \u001b[0mi\u001b[0m \u001b[0;32min\u001b[0m \u001b[0mrange\u001b[0m\u001b[0;34m(\u001b[0m\u001b[0;36m10\u001b[0m\u001b[0;34m)\u001b[0m\u001b[0;34m:\u001b[0m\u001b[0;34m\u001b[0m\u001b[0;34m\u001b[0m\u001b[0m\n\u001b[1;32m      5\u001b[0m     \u001b[0mfunc\u001b[0m\u001b[0;34m(\u001b[0m\u001b[0mi\u001b[0m\u001b[0;34m)\u001b[0m\u001b[0;34m\u001b[0m\u001b[0;34m\u001b[0m\u001b[0m\n"
+                                                ]
+                                            },
+                                            {
+                                                "op": "removerange",
+                                                "key": 0,
+                                                "length": 4
+                                            }
+                                        ]
+                                    }
+                                ]
+                            }
+                        ]
+                    }
+                ]
+            }
+        ]
+    }
+]

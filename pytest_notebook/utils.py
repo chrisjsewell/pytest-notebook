@@ -91,10 +91,14 @@ def autodoc(attrs_class):
             )
 
         if field.type is None:
-            type = "Any"
+            field_type = "Any"
             warnings.warn(f'Field "{field_fn}" has no declared type.')
         else:
-            type = field.type.__name__
+            try:
+                field_type = field.type.__name__
+            except AttributeError:
+                # this is required for types.Union
+                field_type = ", ".join([a.__name__ for a in field.type.__args__])
 
         if field.default is not attr.NOTHING:
             optional = ""  # ", optional" this isn't accepted by sphinx
@@ -102,7 +106,7 @@ def autodoc(attrs_class):
         else:
             optional = ""
 
-        title = f"{name}: {type}{optional}"
+        title = f"{name}: {field_type}{optional}"
 
         if "help" in field.metadata:
             description = textwrap.indent(
