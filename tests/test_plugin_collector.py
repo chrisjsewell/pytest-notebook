@@ -17,7 +17,7 @@ def test_collection(testdir):
     result = testdir.runpytest("--nb-test-files", "--collect-only")
     # fnmatch_lines does an assertion internally
     result.stdout.fnmatch_lines(
-        ["*<JupterNbCollector*test_nb.ipynb>*", "*<JupyterNbTest test_nbregression>*"]
+        ["*<JupyterNbCollector*test_nb.ipynb>*", "*<JupyterNbTest test_nbregression>*"]
     )
 
 
