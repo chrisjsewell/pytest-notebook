@@ -22,6 +22,7 @@ from pytest_notebook.nb_regression import (
     HELP_EXEC_CWD,
     HELP_EXEC_TIMEOUT,
     HELP_FORCE_REGEN,
+    HELP_POST_PROCS,
     load_notebook,
     NBRegressionFixture,
 )
@@ -69,6 +70,7 @@ def pytest_addoption(parser):
     parser.addini("nb_exec_cwd", help=HELP_EXEC_CWD)
     parser.addini("nb_exec_allow_errors", help=HELP_EXEC_ALLOW_ERRORS)
     parser.addini("nb_exec_timeout", help=HELP_EXEC_TIMEOUT)
+    parser.addini("nb_post_processors", type="linelist", help=HELP_POST_PROCS)
     parser.addini("nb_diff_ignore", type="linelist", help=HELP_DIFF_IGNORE)
     parser.addini("nb_diff_use_color", help=HELP_DIFF_USE_COLOR)
     parser.addini("nb_diff_color_words", help=HELP_DIFF_COLOR_WORDS)
@@ -96,6 +98,7 @@ def gather_config_options(pytestconfig):
         ("nb_exec_cwd", str),
         ("nb_exec_allow_errors", str2bool),
         ("nb_exec_timeout", int),
+        ("nb_post_processors", tuple),
         ("nb_diff_ignore", tuple),
         ("nb_diff_use_color", str2bool),
         ("nb_diff_color_words", str2bool),

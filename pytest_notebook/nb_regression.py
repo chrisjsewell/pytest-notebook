@@ -198,7 +198,7 @@ class NBRegressionFixture:
         True, instance_of(bool), metadata={"help": HELP_DIFF_USE_COLOR}
     )
     diff_color_words: bool = attr.ib(
-        True, instance_of(bool), metadata={"help": HELP_DIFF_COLOR_WORDS}
+        False, instance_of(bool), metadata={"help": HELP_DIFF_COLOR_WORDS}
     )
 
     force_regen: bool = attr.ib(
