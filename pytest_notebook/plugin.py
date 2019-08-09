@@ -95,8 +95,8 @@ def gather_config_options(pytestconfig):
     for name, value_type in [
         ("nb_exec_cwd", str),
         ("nb_exec_allow_errors", str2bool),
-        ("nb_exec_timeout", str2bool),
-        ("nb_diff_ignore", str2bool),
+        ("nb_exec_timeout", int),
+        ("nb_diff_ignore", tuple),
         ("nb_diff_use_color", str2bool),
         ("nb_diff_color_words", str2bool),
         ("nb_force_regen", str2bool),

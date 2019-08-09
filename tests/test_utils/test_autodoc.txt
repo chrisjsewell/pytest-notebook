@@ -37,7 +37,7 @@ diff_use_color: bool
 
 diff_color_words: bool
     Highlight changed words using only colors. This value is accessible, after
-    initialization, via the ``diff_color_words`` attribute. Default: False
+    initialization, via the ``diff_color_words`` attribute. Default: True
 
 force_regen: bool
     Re-generate notebook files, if no unexpected execution errors, and an output path has
@@ -81,7 +81,7 @@ diff_use_color: bool
 
 diff_color_words: bool
     Highlight changed words using only colors. This value is accessible, after
-    initialization, via the ``diff_color_words`` attribute. Default: False
+    initialization, via the ``diff_color_words`` attribute. Default: True
 
 force_regen: bool
     Re-generate notebook files, if no unexpected execution errors, and an output path has
