@@ -45,6 +45,7 @@ version = ".".join(release.split(".")[:2])
 
 intersphinx_mapping = {
     "python": ("https://docs.python.org/3.6", None),
+    "_pytest": ("http://doc.pytest.org/en/latest/", None),
     # "PIL": ("http://pillow.readthedocs.org/en/latest/", None),
     "nbconvert": ("http://nbconvert.readthedocs.io/en/latest/", None),
     "nbformat": ("http://nbformat.readthedocs.io/en/latest/", None),
@@ -57,6 +58,7 @@ intersphinx_aliases = {
     ("py:class", "Mapping"): ("py:class", "dict"),
     ("py:class", "Callable"): ("py:class", "collections.abc.Callable"),
     ("py:class", "callable"): ("py:class", "collections.abc.Callable"),
+    ("py:class", "_pytest.nodes.File"): ("py:class", "_pytest.nodes.Node"),
 }
 
 nitpick_ignore = [

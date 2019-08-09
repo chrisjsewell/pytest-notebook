@@ -21,6 +21,8 @@ from pytest_notebook.nb_regression import (
     NBRegressionFixture,
 )
 
+HELP_TEST_FILES = "Treat each .ipynb file as a test to be run."
+
 
 def pytest_addoption(parser):
     group = parser.getgroup("nb_regression")
@@ -28,7 +30,7 @@ def pytest_addoption(parser):
         "--nb-test-files",
         action="store_true",
         dest="nb_test_files",
-        help="treat each .ipynb file as a test to be run",
+        help=HELP_TEST_FILES,
     )
     group.addoption(
         "--nb-exec-cwd",
@@ -58,6 +60,7 @@ def pytest_addoption(parser):
         help=HELP_FORCE_REGEN,
     )
 
+    parser.addini("nb_test_files", help=HELP_TEST_FILES)
     parser.addini("nb_exec_cwd", help=HELP_EXEC_CWD)
     parser.addini("nb_exec_allow_errors", help=HELP_EXEC_ALLOW_ERRORS)
     parser.addini("nb_exec_timeout", help=HELP_EXEC_TIMEOUT)
@@ -88,6 +91,16 @@ def gather_config_options(pytestconfig):
             nbreg_kwargs[name[3:]] = value_type(pytestconfig.getini(name))
 
     other_args = {}
+    for name, value_type in [("nb_test_files", bool)]:
+
+        if pytestconfig.getoption(name, None) is not None:
+            other_args[name] = value_type(pytestconfig.getoption(name))
+        try:
+            ini_value = pytestconfig.getini(name)
+        except ValueError:
+            ini_value = None
+        if ini_value:
+            other_args[name] = value_type(pytestconfig.getini(name))
 
     return nbreg_kwargs, other_args
 
@@ -102,8 +115,8 @@ def nb_regression(pytestconfig):
 
 def pytest_collect_file(path, parent):
     """Collect Jupyter notebooks using the specified pytest hook."""
-    opt = parent.config.option
-    if opt.nb_test_files and path.fnmatch("*.ipynb"):
+    kwargs, other_args = gather_config_options(parent.config)
+    if other_args.get("nb_test_files", False) and path.fnmatch("*.ipynb"):
         return JupterNbCollector(path, parent)
 
 
