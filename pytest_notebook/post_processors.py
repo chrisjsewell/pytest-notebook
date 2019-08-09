@@ -137,3 +137,8 @@ def blacken_code(
         pass
 
     return cell, resources
+
+
+# TODO add beautify_html (for text/html and svg)
+# from bs4 import BeautifulSoup
+# BeautifulSoup(html_string, 'html.parser').prettify()

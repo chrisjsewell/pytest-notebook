@@ -7,6 +7,7 @@ For more information on writing pytest plugins see:
 - https://docs.pytest.org/en/latest/reference.html#request
 - https://docs.pytest.org/en/latest/example/simple.html
 - https://github.com/pytest-dev/cookiecutter-pytest-plugin
+- http://doc.pytest.org/en/latest/example/nonpython.html
 
 """
 import pytest
@@ -23,6 +24,12 @@ from pytest_notebook.nb_regression import (
 
 def pytest_addoption(parser):
     group = parser.getgroup("nb_regression")
+    group.addoption(
+        "--nb-test-files",
+        action="store_true",
+        dest="nb_test_files",
+        help="treat each .ipynb file as a test to be run",
+    )
     group.addoption(
         "--nb-exec-cwd",
         action="store",
@@ -57,19 +64,12 @@ def pytest_addoption(parser):
     parser.addini("nb_diff_ignore", type="linelist", help=HELP_DIFF_IGNORE)
 
 
-def get_config_value(config, name, default):
-    """Return the configured value, prioritising commandline over ini file."""
-    if config.getoption(name, None) is not None:
-        return config.getoption(name)
-    if config.getini(name, None) is not None:
-        return config.getini(name)
-    return default
+def gather_config_options(pytestconfig):
+    """Gather all options, from command-line and ini file.
 
-
-@pytest.fixture(scope="function")
-def nb_regression(pytestconfig):
-    """Fixture to execute a Jupyter Notebook, and test its output is as expected."""
-    kwargs = {}
+    Note; command-line set options are prioritised over ini file ones.
+    """
+    nbreg_kwargs = {}
     for name, value_type in [
         ("nb_exec_cwd", str),
         ("nb_exec_allow_errors", bool),
@@ -77,14 +77,66 @@ def nb_regression(pytestconfig):
         ("nb_diff_ignore", tuple),
         ("nb_force_regen", bool),
     ]:
-        # commandline is prioritised over ini file
+
         if pytestconfig.getoption(name, None) is not None:
-            kwargs[name[3:]] = value_type(pytestconfig.getoption(name))
+            nbreg_kwargs[name[3:]] = value_type(pytestconfig.getoption(name))
         try:
             ini_value = pytestconfig.getini(name)
         except ValueError:
             ini_value = None
         if ini_value:
-            kwargs[name[3:]] = value_type(pytestconfig.getini(name))
+            nbreg_kwargs[name[3:]] = value_type(pytestconfig.getini(name))
 
+    other_args = {}
+
+    return nbreg_kwargs, other_args
+
+
+@pytest.fixture(scope="function")
+def nb_regression(pytestconfig):
+    """Fixture to execute a Jupyter Notebook, and test its output is as expected."""
+
+    kwargs, other_args = gather_config_options(pytestconfig)
     return NBRegressionFixture(**kwargs)
+
+
+def pytest_collect_file(path, parent):
+    """Collect Jupyter notebooks using the specified pytest hook."""
+    opt = parent.config.option
+    if opt.nb_test_files and path.fnmatch("*.ipynb"):
+        return JupterNbCollector(path, parent)
+
+
+class JupterNbCollector(pytest.File):
+    """This class represents a pytest collector object for Jupyter Notebook files.
+
+    A collector is associated with a .ipynb file and collects it for testing.
+    """
+
+    def collect(self):
+        """Collect tests for the notebook."""
+        # name = os.path.splitext(os.path.basename(self.fspath))[0]
+        yield JupyterNbTest("test_nbregression", self)
+
+
+class JupyterNbTest(pytest.Item):
+    """This class represents a pytest test invocation for a Jupyter Notebook file."""
+
+    # TODO use the notebook metadata and self.add_marker
+    # to add skip markers for certain notebooks
+    # see: http://doc.pytest.org/en/latest/_modules/_pytest/nodes.html
+
+    def runtest(self):
+        """Run the test."""
+        kwargs, other_args = gather_config_options(self.config)
+        fixture = NBRegressionFixture(**kwargs)
+        fixture.check(self.fspath)
+
+    def repr_failure(self, exc_info):
+        """Handle exception raised by ``self.runtest()``.
+
+        :param exc_info: see
+            https://docs.pytest.org/en/latest/reference.html#_pytest._code.ExceptionInfo
+        """
+        # return exc_info.getrepr()
+        return exc_info.exconly()

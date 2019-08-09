@@ -1,5 +1,7 @@
 # -*- coding: utf-8 -*-
+"""Test the  ``nb_regression`` plugin fixture."""
 import os
+
 import pytest
 
 PATH = os.path.dirname(os.path.realpath(__file__))
@@ -57,7 +59,7 @@ def test_nb_regression_fixture_exec_fail_diff(testdir):
     )
 
     # run pytest with the following cmd args
-    result = testdir.runpytest("--nb-exec-cwd", os.path.join(PATH, "raw_files"), "-v")
+    result = testdir.runpytest("-v")
 
     # fnmatch_lines does an assertion internally
     result.stdout.fnmatch_lines(["*::test_nb FAILED*"])
@@ -88,7 +90,7 @@ def test_nb_regression_fixture_exec_pass(testdir):
     )
 
     # run pytest with the following cmd args
-    result = testdir.runpytest("--nb-exec-cwd", os.path.join(PATH, "raw_files"), "-v")
+    result = testdir.runpytest("-v")
 
     # fnmatch_lines does an assertion internally
     result.stdout.fnmatch_lines(["*::test_nb PASSED*"])

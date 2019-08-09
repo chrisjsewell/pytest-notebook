@@ -18,7 +18,10 @@ from pytest_notebook.post_processors import (
 )
 from pytest_notebook.utils import autodoc
 
-HELP_EXEC_CWD = "Path to the directory which the notebook will run in."
+HELP_EXEC_CWD = (
+    "Path to the directory which the notebook will run in "
+    "(defaults to directory of notebook)."
+)
 HELP_EXEC_TIMEOUT = "The maximum time to wait (in seconds) for execution of each cell."
 HELP_EXEC_ALLOW_ERRORS = (
     "Do not stop execution after the first unexpected exception "
@@ -127,7 +130,14 @@ class NBRegressionFixture:
 
         """
         __tracebackhide__ = True
+        if hasattr(path, "name"):
+            abspath = os.path.abspath(path.name)
+        else:
+            abspath = os.path.abspath(str(path))
+
         nb_initial = nbformat.read(path, as_version=4)
+        if not self.exec_cwd:
+            self.exec_cwd = os.path.dirname(abspath)
         exec_error, nb_final = execute_notebook(
             nb_initial,
             cwd=self.exec_cwd,
@@ -142,14 +152,14 @@ class NBRegressionFixture:
 
         regen_exc = None
         if self.force_regen and not exec_error:
+
             if hasattr(path, "close") and hasattr(path, "name"):
                 path.close()
                 with open(path.name, "w") as handle:
                     nbformat.write(nb_final, handle)
-                abspath = os.path.abspath(path.name)
             else:
                 nbformat.write(nb_final, str(path))
-                abspath = os.path.abspath(str(path))
+
             regen_exc = NBRegressionError(
                 "--nb-force-regen set, regenerating file at: {}".format(abspath)
             )
