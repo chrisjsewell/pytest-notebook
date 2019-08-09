@@ -117,10 +117,10 @@ def pytest_collect_file(path, parent):
     """Collect Jupyter notebooks using the specified pytest hook."""
     kwargs, other_args = gather_config_options(parent.config)
     if other_args.get("nb_test_files", False) and path.fnmatch("*.ipynb"):
-        return JupterNbCollector(path, parent)
+        return JupyterNbCollector(path, parent)
 
 
-class JupterNbCollector(pytest.File):
+class JupyterNbCollector(pytest.File):
     """This class represents a pytest collector object for Jupyter Notebook files.
 
     A collector is associated with a .ipynb file and collects it for testing.
