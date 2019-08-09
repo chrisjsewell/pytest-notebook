@@ -1,13 +1,14 @@
 """Diffing of notebooks."""
 import copy
 import operator
+import re
 from typing import List, Sequence, Union
 
 from nbdime.diff_format import DiffEntry, SequenceDiffBuilder
 from nbdime.diffing.generic import default_differs, default_predicates, diff
 from nbdime.diffing.notebooks import diff_attachments, diff_single_outputs
 from nbdime.prettyprint import pretty_print_diff, PrettyPrintConfig
-from nbdime.utils import defaultdict2, split_path, star_path
+from nbdime.utils import defaultdict2, join_path, split_path
 from nbformat import NotebookNode
 
 
@@ -90,6 +91,23 @@ def diff_notebooks(
     )
 
 
+R_IS_INT = re.compile(r"^[-+]?\d+$")
+
+
+def star_path(path):
+    """Replace integers and integer-strings in a path with * ."""
+    path = list(path)[:]
+    for i, p in enumerate(path):
+        if isinstance(p, int):
+            path[i] = "*"
+        else:
+            if not isinstance(p, str):
+                p = p.decode()
+            if R_IS_INT.match(p):
+                path[i] = "*"
+    return path
+
+
 def filter_diff(
     diff: List[DiffEntry], remove_paths: List[str], path: str = ""
 ) -> List[DiffEntry]:
@@ -108,10 +126,12 @@ def filter_diff(
     elif isinstance(diff, dict):
         path = "{}/{}".format(path, diff["key"])
 
-        if any([path.startswith(p) for p in remove_paths]):
-            return None
-        if any([star_path(split_path(path)).startswith(p) for p in remove_paths]):
-            return None
+        path_elements = split_path(path)
+        for i in reversed(range(len(path_elements))):
+            # iteratively star more elements from the right side
+            new_path = join_path(path_elements[:i] + star_path(path_elements[i:]))
+            if any([new_path.startswith(p) for p in remove_paths]):
+                return None
 
         new_diff = copy.deepcopy(diff)
 
@@ -132,18 +152,18 @@ def filter_diff(
 def diff_to_string(
     notebook: NotebookNode,
     diff_obj: dict,
-    color_words: bool = False,
     use_git: bool = True,
     use_diff: bool = True,
     use_color: bool = True,
+    color_words: bool = False,
 ) -> str:
     """Convert diff to formatted string.
 
-    :param color_words: whether to pass the --color-words flag
-                        to any internal calls to git diff
-    :param use_color: whether to prevent use of ANSI color code escapes for text output
     :param use_git: use git for formatting diff/merge text output
     :param use_diff: use diff/diff3 for formatting diff/merge text output
+    :param use_color: whether to prevent use of ANSI color code escapes for text output
+    :param color_words: whether to pass the --color-words flag
+                        to any internal calls to git diff
     """
 
     class Printer:
@@ -156,7 +176,11 @@ def diff_to_string(
     printer = Printer()
 
     config = PrettyPrintConfig(
-        out=printer, color_words=False, use_git=True, use_diff=True, use_color=True
+        out=printer,
+        color_words=color_words,
+        use_git=use_git,
+        use_diff=use_diff,
+        use_color=use_color,
     )
 
     pretty_print_diff(notebook, diff_obj, "", config)

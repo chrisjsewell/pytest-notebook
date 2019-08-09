@@ -2,7 +2,7 @@
 import copy
 import shutil
 import tempfile
-from typing import Union
+from typing import Tuple, Union
 
 from nbconvert.preprocessors import CellExecutionError, ExecutePreprocessor
 from nbformat import NotebookNode
@@ -13,7 +13,7 @@ def execute_notebook(
     cwd: Union[str, None] = None,
     timeout: int = 120,
     allow_errors: bool = False,
-) -> (bool, NotebookNode):
+) -> Tuple[bool, NotebookNode]:
     """Execute a notebook.
 
     :param cwd: Path to the directory which the notebook will run in

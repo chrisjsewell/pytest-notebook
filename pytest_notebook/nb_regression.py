@@ -1,10 +1,11 @@
 """Jupyter Notebook Regression Test Class."""
 import copy
 import os
-from typing import List, TextIO, Union
+from typing import List, TextIO, Tuple, Union
 
 import attr
 from attr.validators import instance_of
+import jsonschema
 from nbconvert.preprocessors import CellExecutionError
 import nbformat
 from nbformat import NotebookNode
@@ -30,6 +31,8 @@ HELP_EXEC_ALLOW_ERRORS = (
 HELP_DIFF_IGNORE = (
     "List of diff paths to ignore, e.g. '/cells/1/outputs' or '/cells/\\*/metadata'."
 )
+HELP_DIFF_USE_COLOR = "Use ANSI color code escapes for text output."
+HELP_DIFF_COLOR_WORDS = "Highlight changed words using only colors."
 HELP_FORCE_REGEN = (
     "Re-generate notebook files, if no unexpected execution errors, "
     "and an output path has been supplied."
@@ -39,9 +42,83 @@ HELP_POST_PROCS = (
     f"relating to entry points in the '{ENTRY_POINT_NAME}' group"
 )
 
+META_KEY = "nbreg"
+
 
 class NBRegressionError(Exception):
     """Exception to signal a regression test fail."""
+
+
+def validate_metadata(data, path):
+    """Validate notebook and cell metadata against the required config schema."""
+    __tracebackhide__ = True
+    schema = {
+        "$schema": "http://json-schema.org/draft-07/schema",
+        "type": "object",
+        "properties": {
+            "diff_ignore": {
+                "description": "notebook paths to ignore during diffing",
+                "type": "array",
+                "items": {"type": "string", "pattern": "^/[\\_a-z0-9\\/\\+\\-\\*]*$"},
+            },
+            "skip": {"description": "skip testing of this notebook", "type": "boolean"},
+            "skip_reason": {
+                "description": "reason for skipping testing of this notebook",
+                "type": "string",
+            },
+        },
+    }
+    validator_cls = jsonschema.validators.validator_for(schema)
+    validator = validator_cls(schema=schema)
+    errors = sorted(validator.iter_errors(data), key=lambda e: e.path)
+    if errors:
+        raise NBRegressionError(
+            "\n".join(
+                [path]
+                + [
+                    "- {} [key path: '{}']".format(
+                        error.message, "/".join([str(p) for p in error.path])
+                    )
+                    for error in errors
+                ]
+            )
+        )
+
+
+@attr.s(frozen=True, slots=True)
+class MetadataConfig:
+    """A class to store configuration data, obtained from the notebook metadata."""
+
+    diff_ignore: set = attr.ib(attr.Factory(set), instance_of(set))
+    skip: bool = attr.ib(False, instance_of(bool))
+    skip_reason: str = attr.ib("", instance_of(str))
+
+
+def config_from_metadata(nb: NotebookNode) -> dict:
+    """Extract configuration data from notebook/cell metadata."""
+    nb_metadata = nb.get("metadata", {}).get(META_KEY, {})
+    validate_metadata(nb_metadata, "/metadata")
+
+    diff_ignore = set()
+    diff_ignore.update(nb_metadata.get("diff_ignore", []))
+
+    for i, cell in enumerate(nb.get("cells", [])):
+        cell_metadata = cell.get("metadata", {}).get(META_KEY, {})
+        validate_metadata(cell_metadata, f"/cells/{i}/metadata")
+
+        cell_diff_ignore = cell_metadata.get("diff_ignore", [])
+        diff_ignore.update([f"/cells/{i}{d}" for d in cell_diff_ignore])
+
+    return MetadataConfig(
+        diff_ignore, nb_metadata.get("skip", False), nb_metadata.get("skip_reason", "")
+    )
+
+
+def load_notebook(path: Union[TextIO, str]) -> Tuple[NotebookNode, MetadataConfig]:
+    """Load the notebook from file, and scan its metadata for config data."""
+    notebook = nbformat.read(path, as_version=4)
+    nb_config = config_from_metadata(notebook)
+    return notebook, nb_config
 
 
 @autodoc
@@ -106,6 +183,13 @@ class NBRegressionFixture:
             if not item.startswith("/"):
                 raise ValueError(f"diff_ignore item '{item}' must start with '/'")
 
+    diff_use_color: bool = attr.ib(
+        True, instance_of(bool), metadata={"help": HELP_DIFF_USE_COLOR}
+    )
+    diff_color_words: bool = attr.ib(
+        True, instance_of(bool), metadata={"help": HELP_DIFF_COLOR_WORDS}
+    )
+
     force_regen: bool = attr.ib(
         False, instance_of(bool), metadata={"help": HELP_FORCE_REGEN}
     )
@@ -120,7 +204,7 @@ class NBRegressionFixture:
 
     def check(
         self, path: Union[TextIO, str], raise_errors: bool = True
-    ) -> (NotebookNode, List, Union[None, CellExecutionError]):
+    ) -> Tuple[NotebookNode, List, Union[None, CellExecutionError]]:
         """Execute the Notebook and compare its old/new contents.
 
         if self.force_regen is True, the new notebook will be written to path
@@ -135,7 +219,8 @@ class NBRegressionFixture:
         else:
             abspath = os.path.abspath(str(path))
 
-        nb_initial = nbformat.read(path, as_version=4)
+        nb_initial, nb_config = load_notebook(path)
+
         if not self.exec_cwd:
             self.exec_cwd = os.path.dirname(abspath)
         exec_error, nb_final = execute_notebook(
@@ -166,15 +251,23 @@ class NBRegressionFixture:
 
         diff = diff_notebooks(nb_initial, nb_final)
 
-        # TODO include filters from metadata nb/cells
-        diff = filter_diff(diff, self.diff_ignore)
+        diff_ignore = copy.deepcopy(nb_config.diff_ignore)
+        diff_ignore.update(self.diff_ignore)
+        diff = filter_diff(diff, diff_ignore)
 
         if not raise_errors:
             pass
         elif diff:
             # TODO optionally write diff to file
             try:
-                raise NBRegressionError(diff_to_string(nb_initial, diff))
+                raise NBRegressionError(
+                    diff_to_string(
+                        nb_initial,
+                        diff,
+                        use_color=self.diff_use_color,
+                        color_words=self.diff_color_words,
+                    )
+                )
             except NBRegressionError:
                 if regen_exc:
                     raise regen_exc

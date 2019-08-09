@@ -21,6 +21,15 @@ def test_collection(testdir):
     )
 
 
+def test_setup_with_skip_meta(testdir):
+    copy_nb_to_tempdir("nb_with_skip_meta.ipynb")
+    result = testdir.runpytest("--nb-test-files", "--setup-plan", "-rs")
+    # fnmatch_lines does an assertion internally
+    result.stdout.fnmatch_lines(
+        ["*test_nb.ipynb*s*", "*I have my reasons*", "*1 skipped*"]
+    )
+
+
 def test_run_fail(testdir):
     copy_nb_to_tempdir("different_outputs_altered.ipynb")
     result = testdir.runpytest(
@@ -37,3 +46,15 @@ def test_run_fail(testdir):
 
     # make sure that that we get a non '0' exit code for the testsuite
     assert result.ret != 0
+
+
+def test_run_pass_with_meta(testdir):
+    copy_nb_to_tempdir("different_outputs_with_metadata.ipynb")
+    result = testdir.runpytest(
+        "--nb-exec-cwd", os.path.join(PATH, "raw_files"), "--nb-test-files", "-v"
+    )
+    # fnmatch_lines does an assertion internally
+    result.stdout.fnmatch_lines(["*::test_nbregression PASSED*"])
+
+    # make sure that that we get a non '0' exit code for the testsuite
+    assert result.ret == 0

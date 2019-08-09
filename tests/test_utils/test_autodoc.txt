@@ -1,0 +1,89 @@
+Class to perform Jupyter Notebook Regression tests.
+
+Parameters
+----------
+exec_cwd: str, NoneType
+    Path to the directory which the notebook will run in (defaults to directory of
+    notebook). This value is accessible, after initialization, via the ``exec_cwd``
+    attribute. Default: None
+
+exec_allow_errors: bool
+    Do not stop execution after the first unexpected exception (where cell is not tagged
+    ``raises-exception``). This value is accessible, after initialization, via the
+    ``exec_allow_errors`` attribute. Default: False
+
+exec_timeout: int
+    The maximum time to wait (in seconds) for execution of each cell. This value is
+    accessible, after initialization, via the ``exec_timeout`` attribute. Default: 120
+
+post_processors: tuple
+    post-processors to apply to the new workbook, relating to entry points in the
+    'nbreg.post_proc' group This value is accessible, after initialization, via the
+    ``post_processors`` attribute. Default: ('coalesce_streams',)
+
+post_proc_resources: dict
+    Resources to parse to post processor functions. This value is accessible, after
+    initialization, via the ``post_proc_resources`` attribute. Default:
+    Factory(factory=<class 'dict'>, takes_self=False)
+
+diff_ignore: tuple
+    List of diff paths to ignore, e.g. '/cells/1/outputs' or '/cells/\*/metadata'. This
+    value is accessible, after initialization, via the ``diff_ignore`` attribute. Default:
+    ('/cells/*/outputs/*/traceback',)
+
+diff_use_color: bool
+    Use ANSI color code escapes for text output. This value is accessible, after
+    initialization, via the ``diff_use_color`` attribute. Default: True
+
+diff_color_words: bool
+    Highlight changed words using only colors. This value is accessible, after
+    initialization, via the ``diff_color_words`` attribute. Default: False
+
+force_regen: bool
+    Re-generate notebook files, if no unexpected execution errors, and an output path has
+    been supplied. This value is accessible, after initialization, via the ``force_regen``
+    attribute. Default: False
+
+Parameters
+----------
+exec_cwd: str, NoneType
+    Path to the directory which the notebook will run in (defaults to directory of
+    notebook). This value is accessible, after initialization, via the ``exec_cwd``
+    attribute. Default: None
+
+exec_allow_errors: bool
+    Do not stop execution after the first unexpected exception (where cell is not tagged
+    ``raises-exception``). This value is accessible, after initialization, via the
+    ``exec_allow_errors`` attribute. Default: False
+
+exec_timeout: int
+    The maximum time to wait (in seconds) for execution of each cell. This value is
+    accessible, after initialization, via the ``exec_timeout`` attribute. Default: 120
+
+post_processors: tuple
+    post-processors to apply to the new workbook, relating to entry points in the
+    'nbreg.post_proc' group This value is accessible, after initialization, via the
+    ``post_processors`` attribute. Default: ('coalesce_streams',)
+
+post_proc_resources: dict
+    Resources to parse to post processor functions. This value is accessible, after
+    initialization, via the ``post_proc_resources`` attribute. Default:
+    Factory(factory=<class 'dict'>, takes_self=False)
+
+diff_ignore: tuple
+    List of diff paths to ignore, e.g. '/cells/1/outputs' or '/cells/\*/metadata'. This
+    value is accessible, after initialization, via the ``diff_ignore`` attribute. Default:
+    ('/cells/*/outputs/*/traceback',)
+
+diff_use_color: bool
+    Use ANSI color code escapes for text output. This value is accessible, after
+    initialization, via the ``diff_use_color`` attribute. Default: True
+
+diff_color_words: bool
+    Highlight changed words using only colors. This value is accessible, after
+    initialization, via the ``diff_color_words`` attribute. Default: False
+
+force_regen: bool
+    Re-generate notebook files, if no unexpected execution errors, and an output path has
+    been supplied. This value is accessible, after initialization, via the ``force_regen``
+    attribute. Default: False

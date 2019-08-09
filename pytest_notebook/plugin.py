@@ -10,14 +10,19 @@ For more information on writing pytest plugins see:
 - http://doc.pytest.org/en/latest/example/nonpython.html
 
 """
+from distutils.util import strtobool as _str2bool
+
 import pytest
 
 from pytest_notebook.nb_regression import (
+    HELP_DIFF_COLOR_WORDS,
     HELP_DIFF_IGNORE,
+    HELP_DIFF_USE_COLOR,
     HELP_EXEC_ALLOW_ERRORS,
     HELP_EXEC_CWD,
     HELP_EXEC_TIMEOUT,
     HELP_FORCE_REGEN,
+    load_notebook,
     NBRegressionFixture,
 )
 
@@ -65,6 +70,20 @@ def pytest_addoption(parser):
     parser.addini("nb_exec_allow_errors", help=HELP_EXEC_ALLOW_ERRORS)
     parser.addini("nb_exec_timeout", help=HELP_EXEC_TIMEOUT)
     parser.addini("nb_diff_ignore", type="linelist", help=HELP_DIFF_IGNORE)
+    parser.addini("nb_diff_use_color", help=HELP_DIFF_USE_COLOR)
+    parser.addini("nb_diff_color_words", help=HELP_DIFF_COLOR_WORDS)
+
+
+def str2bool(string):
+    """Convert a string representation of truth to True or False.
+
+    True values are 'y', 'yes', 't', 'true', 'on', and '1'; false values
+    are 'n', 'no', 'f', 'false', 'off', and '0'.  Raises ValueError if
+    'val' is anything else.
+    """
+    if isinstance(string, bool):
+        return string
+    return True if _str2bool(string) else False
 
 
 def gather_config_options(pytestconfig):
@@ -75,10 +94,12 @@ def gather_config_options(pytestconfig):
     nbreg_kwargs = {}
     for name, value_type in [
         ("nb_exec_cwd", str),
-        ("nb_exec_allow_errors", bool),
-        ("nb_exec_timeout", int),
-        ("nb_diff_ignore", tuple),
-        ("nb_force_regen", bool),
+        ("nb_exec_allow_errors", str2bool),
+        ("nb_exec_timeout", str2bool),
+        ("nb_diff_ignore", str2bool),
+        ("nb_diff_use_color", str2bool),
+        ("nb_diff_color_words", str2bool),
+        ("nb_force_regen", str2bool),
     ]:
 
         if pytestconfig.getoption(name, None) is not None:
@@ -135,9 +156,15 @@ class JupyterNbCollector(pytest.File):
 class JupyterNbTest(pytest.Item):
     """This class represents a pytest test invocation for a Jupyter Notebook file."""
 
-    # TODO use the notebook metadata and self.add_marker
-    # to add skip markers for certain notebooks
-    # see: http://doc.pytest.org/en/latest/_modules/_pytest/nodes.html
+    def __init__(self, name, parent):
+        """Initialise the class, parsing the notebook metadata, and adding markers."""
+        super().__init__(name, parent)
+        self._fixtureinfo = self.session._fixturemanager.getfixtureinfo(
+            self.parent, NBRegressionFixture.check, NBRegressionFixture
+        )  # this is required for --setup-plan
+        notebook, nb_config = load_notebook(self.fspath)
+        if nb_config.skip:
+            self.add_marker(pytest.mark.skip(reason=nb_config.skip_reason))
 
     def runtest(self):
         """Run the test."""
@@ -153,3 +180,7 @@ class JupyterNbTest(pytest.Item):
         """
         # return exc_info.getrepr()
         return exc_info.exconly()
+
+    def reportinfo(self):
+        """Report location of item."""
+        return self.fspath, 0, f"notebook: {self.name}"

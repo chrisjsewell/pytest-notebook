@@ -106,6 +106,8 @@ def test_nb_regression_ini_setting(testdir):
         nb_exec_cwd = {path}
         nb_exec_allow_errors = True
         nb_exec_timeout = 100
+        nb_diff_use_color = True
+        nb_diff_color_words = True
         nb_diff_ignore =
             /metadata/language_info/version
             /cells/*/execution_count

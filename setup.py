@@ -25,6 +25,7 @@ setup(
         "nbconvert",
         "nbdime",
         "nbformat",
+        "jsonschema",
         # "numpy",
         # "pillow",
         # "ruamel.yaml"

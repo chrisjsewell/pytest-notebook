@@ -8,6 +8,7 @@ import functools
 import pkg_resources
 import re
 import textwrap
+from typing import Tuple
 
 from nbformat import NotebookNode
 
@@ -76,7 +77,7 @@ RGX_BACKSPACE = re.compile(r"[^\n]\b")
 @cell_preprocessor
 def coalesce_streams(
     cell: NotebookNode, resources: dict, index: int
-) -> (NotebookNode, dict):
+) -> Tuple[NotebookNode, dict]:
     """Merge all stream outputs with shared names into single streams.
 
     This ensure deterministic outputs.
@@ -131,7 +132,7 @@ def coalesce_streams(
 @cell_preprocessor
 def blacken_code(
     cell: NotebookNode, resources: dict, index: int
-) -> (NotebookNode, dict):
+) -> Tuple[NotebookNode, dict]:
     """Format python source code with black (see https://black.readthedocs.io)."""
     try:
         import black
