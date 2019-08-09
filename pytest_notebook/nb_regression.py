@@ -85,13 +85,24 @@ def validate_metadata(data, path):
         )
 
 
+@autodoc
 @attr.s(frozen=True, slots=True)
 class MetadataConfig:
     """A class to store configuration data, obtained from the notebook metadata."""
 
-    diff_ignore: set = attr.ib(attr.Factory(set), instance_of(set))
-    skip: bool = attr.ib(False, instance_of(bool))
-    skip_reason: str = attr.ib("", instance_of(str))
+    diff_ignore: set = attr.ib(
+        attr.Factory(set),
+        instance_of(set),
+        metadata={"help": "notebook paths to ignore during diffing"},
+    )
+    skip: bool = attr.ib(
+        False, instance_of(bool), metadata={"help": "skip testing of this notebook"}
+    )
+    skip_reason: str = attr.ib(
+        "",
+        instance_of(str),
+        metadata={"help": "reason for skipping testing of this notebook"},
+    )
 
 
 def config_from_metadata(nb: NotebookNode) -> dict:

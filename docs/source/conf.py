@@ -259,7 +259,15 @@ def run_apidoc(_):
         # If we are, assemble the path manually
         cmd_path = os.path.abspath(os.path.join(sys.prefix, "bin", "sphinx-apidoc"))
 
-    options = ["-o", apidoc_dir, package_dir, "--private", "--force", "--no-toc"]
+    options = [
+        "-o",
+        apidoc_dir,
+        package_dir,
+        "--private",
+        "--force",
+        "--no-toc",
+        "--separate",
+    ]
 
     # See https://stackoverflow.com/a/30144019
     env = os.environ.copy()

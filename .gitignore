@@ -123,3 +123,4 @@ dmypy.json
 .pyre/
 
 _archive/
+docs/source/apidoc/
