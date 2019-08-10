@@ -15,16 +15,25 @@ import pytest_notebook
 
 needs_sphinx = "1.6"
 
+if os.environ.get("READTHEDOCS", None) != "True":
+    try:
+        import sphinx_rtd_theme  # noqa: F401
+
+        html_theme = "sphinx_rtd_theme"
+    except ImportError:
+        pass
+
 extensions = [
     "sphinx.ext.autodoc",
     "sphinx.ext.intersphinx",
     "sphinx.ext.napoleon",
     "sphinx.ext.viewcode",
     "sphinx.ext.todo",
+    "ipypublish.sphinx.notebook",
 ]
 
 templates_path = []
-exclude_patterns = ["_build"]
+exclude_patterns = ["_build", "**/.ipynb_checkpoints", "**/example_nbs"]
 
 master_doc = "index"
 source_suffix = ".rst"
@@ -33,15 +42,15 @@ source_suffix = ".rst"
 project = u"pytest-notebook"
 copyright = u"2019, Chris Sewell"
 author = u"Chris Sewell"
-
-# The version info for the project you're documenting, acts as replacement for
-# |version| and |release|, also used in various other places throughout the
-# built documents.
-#
-# The full version, including alpha/beta/rc tags.
+# The full version, including alpha/beta/rc tags, will replace |release|
 release = pytest_notebook.__version__
-# The short X.Y version.
+# The short X.Y version, will replace |version|
 version = ".".join(release.split(".")[:2])
+
+ipysphinx_export_config = "sphinx_ipypublish_all.ext.noexec"
+ipysphinx_show_prompts = True
+ipysphinx_input_prompt = "In:"
+ipysphinx_output_prompt = "Out:"
 
 intersphinx_mapping = {
     "python": ("https://docs.python.org/3.6", None),
@@ -59,6 +68,7 @@ intersphinx_aliases = {
     ("py:class", "Callable"): ("py:class", "collections.abc.Callable"),
     ("py:class", "callable"): ("py:class", "collections.abc.Callable"),
     ("py:class", "_pytest.nodes.File"): ("py:class", "_pytest.nodes.Node"),
+    ("py:class", "NotebookNode"): ("py:class", "nbformat.NotebookNode"),
 }
 
 nitpick_ignore = [

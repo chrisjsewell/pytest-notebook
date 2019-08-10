@@ -142,7 +142,7 @@ def blacken_code(
     if cell.get("cell_type", None) != "code":
         return cell, resources
 
-    # TODO use metadata to set target versions
+    # TODO use metadata to set target versions and whether to raise on exceptions
     # i.e. black.FileMode(target_versions, {black.TargetVersion.PY36})
     try:
         cell.source = black.format_str(cell.source, mode=black.FileMode())

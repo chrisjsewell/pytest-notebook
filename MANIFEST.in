@@ -3,3 +3,5 @@ include README.rst
 
 recursive-exclude * __pycache__
 recursive-exclude * *.py[co]
+
+recursive-include pytest_notebook/example_nbs *.ipynb

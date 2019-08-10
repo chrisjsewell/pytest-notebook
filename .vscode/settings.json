@@ -14,6 +14,7 @@
     "python.linting.pylintEnabled": false,
     "python.linting.flake8Enabled": true,
     "python.linting.enabled": true,
+    "restructuredtext.linter.extraArgs": ["--max-line-length", "88"],
     "cSpell.words": [
         "Jupyter"
     ]

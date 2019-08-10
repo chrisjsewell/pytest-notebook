@@ -1,6 +1,13 @@
 pytest\_notebook package
 ========================
 
+Subpackages
+-----------
+
+.. toctree::
+
+   pytest_notebook.example_nbs
+
 Submodules
 ----------
 
@@ -8,6 +15,7 @@ Submodules
 
    pytest_notebook.diffing
    pytest_notebook.execution
+   pytest_notebook.ipy_magic
    pytest_notebook.nb_regression
    pytest_notebook.plugin
    pytest_notebook.post_processors

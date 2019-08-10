@@ -73,6 +73,7 @@ ignore_regexps = [
     r'^[tT]ravis fix.*$',
     r'^[fF]ix [tT]ravis.*$',
     r'^[pP]re-commit fix.*$',
+    r'[fF]ix api.*',
     r'^[fF]ix [tT]est[s]?.*$',
     r'^[fF]ix [cC]overall[s]?.*$',
     r'^[iI]mprove[d]? [tT]est[s]?.*$',

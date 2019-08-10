@@ -7,15 +7,32 @@
 [![Conda](https://anaconda.org/conda-forge/pytest-notebook/badges/version.svg)](https://anaconda.org/conda-forge/pytest-notebook)
 [![Code style: black](https://img.shields.io/badge/code%20style-black-000000.svg)](https://github.com/ambv/black)
 
-A [pytest](https://github.com/pytest-dev/pytest) plugin for testing Jupyter Notebooks.
+A [pytest](https://github.com/pytest-dev/pytest) plugin for regression testing and regenerating [Jupyter Notebooks](https://jupyter.org/).
+
+![Example Test](docs/source/_static/pytest-notebook-screenshot.png)
 
 ------------------------------------------------------------------------
 
 ## Features
 
-- Clear API
+- Recognise, collect, execute (optionally output) then diff input vs. output [Jupyter Notebooks](https://jupyter.org/).
+- Provides clear and colorized diffs of the notebooks (using [nbdime](https://nbdime.readthedocs.io))
+- A well defined API allows notebook regression tests to be run:
 
-Diff [nbval](https://github.com/computationalmodelling/nbval)
+    1. Using the pytest test collection architecture.
+    2. As a pytest fixtures (`nb_regression.check(filename)`).
+    3. Using the `pytest_notebook` python package.
+
+- All stages are highly configurable *via*:
+
+    1. The pytest command-line interface.
+    2. The pytest configuration file.
+    3. The notebook and cell level metadata.
+
+- Post-processor plugin entry-points, allow for customisable modifications of the notebook,
+  including source code formatting with [black](https://github.com/ambv/black)
+
+![Configuration Examples](docs/source/_static/collaged_in_out.png)
 
 ## Installation
 
@@ -25,8 +42,7 @@ Diff [nbval](https://github.com/computationalmodelling/nbval)
 >> conda install -c conda-forge pytest-notebook
 ``` -->
 
-To install *via* [pip](https://pypi.org/project/pip/) from
-[PyPI](https://pypi.org/project):
+To install *via* [pip](https://pypi.org/project/pip/) from [PyPI](https://pypi.org/project):
 
 ```shell
 >> pip install pytest-notebook
@@ -43,7 +59,7 @@ To install the development version:
 
 ## Usage
 
-TODO
+See the documentation at: http://pytest-notebook.readthedocs.io/
 
 ## Contributing
 
@@ -83,12 +99,14 @@ Editors like VS Code also have automatic code reformat utilities, which can adhe
 
 ## License
 
-Distributed under the terms of the
-[BSD-3](http://opensource.org/licenses/BSD-3-Clause) license,
+Distributed under the terms of the [BSD-3](http://opensource.org/licenses/BSD-3-Clause) license,
 `pytest-notebook` is free and open source software.
 
 ## Issues
 
-If you encounter any problems, please [file an
-issue](https://github.com/chrisjsewell/pytest-notebook/issues) along
-with a detailed description.
+If you encounter any problems, please [file an issue](https://github.com/chrisjsewell/pytest-notebook/issues) along with a detailed description.
+
+## Acknowledgements
+
+- [nbdime](https://nbdime.readthedocs.io)
+- [nbval](https://github.com/computationalmodelling/nbval)

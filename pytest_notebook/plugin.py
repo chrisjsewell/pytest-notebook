@@ -11,6 +11,7 @@ For more information on writing pytest plugins see:
 
 """
 from distutils.util import strtobool as _str2bool
+import os
 
 import pytest
 
@@ -28,6 +29,7 @@ from pytest_notebook.nb_regression import (
 )
 
 HELP_TEST_FILES = "Treat each .ipynb file as a test to be run."
+HELP_FILE_FNMATCH = "The fnmatch pattern for collecting notebooks, default: '*.ipynb'."
 
 
 def pytest_addoption(parser):
@@ -35,16 +37,14 @@ def pytest_addoption(parser):
     group.addoption(
         "--nb-test-files",
         action="store_true",
+        default=None,
         dest="nb_test_files",
         help=HELP_TEST_FILES,
     )
     group.addoption(
-        "--nb-exec-cwd",
-        action="store",
-        dest="nb_exec_cwd",
-        type=str,
-        help=HELP_EXEC_CWD,
+        "--nb-file-fnmatch", dest="nb_file_fnmatch", type=str, help=HELP_FILE_FNMATCH
     )
+    group.addoption("--nb-exec-cwd", dest="nb_exec_cwd", type=str, help=HELP_EXEC_CWD)
     group.addoption(
         "--nb-exec-errors",
         action="store_true",
@@ -53,20 +53,18 @@ def pytest_addoption(parser):
         help=HELP_EXEC_ALLOW_ERRORS,
     )
     group.addoption(
-        "--nb-exec-timeout",
-        action="store",
-        dest="nb_exec_timeout",
-        type=int,
-        help=HELP_EXEC_TIMEOUT,
+        "--nb-exec-timeout", dest="nb_exec_timeout", type=int, help=HELP_EXEC_TIMEOUT
     )
     group.addoption(
         "--nb-force-regen",
         action="store_true",
+        default=None,
         dest="nb_force_regen",
         help=HELP_FORCE_REGEN,
     )
 
     parser.addini("nb_test_files", help=HELP_TEST_FILES)
+    parser.addini("nb_file_fnmatch", help=HELP_FILE_FNMATCH)
     parser.addini("nb_exec_cwd", help=HELP_EXEC_CWD)
     parser.addini("nb_exec_allow_errors", help=HELP_EXEC_ALLOW_ERRORS)
     parser.addini("nb_exec_timeout", help=HELP_EXEC_TIMEOUT)
@@ -74,6 +72,7 @@ def pytest_addoption(parser):
     parser.addini("nb_diff_ignore", type="linelist", help=HELP_DIFF_IGNORE)
     parser.addini("nb_diff_use_color", help=HELP_DIFF_USE_COLOR)
     parser.addini("nb_diff_color_words", help=HELP_DIFF_COLOR_WORDS)
+    parser.addini("nb_force_regen", help=HELP_FORCE_REGEN)
 
 
 def str2bool(string):
@@ -105,25 +104,25 @@ def gather_config_options(pytestconfig):
         ("nb_force_regen", str2bool),
     ]:
 
-        if pytestconfig.getoption(name, None) is not None:
-            nbreg_kwargs[name[3:]] = value_type(pytestconfig.getoption(name))
         try:
             ini_value = pytestconfig.getini(name)
         except ValueError:
             ini_value = None
-        if ini_value:
+        if pytestconfig.getoption(name, None) is not None:
+            nbreg_kwargs[name[3:]] = value_type(pytestconfig.getoption(name))
+        elif ini_value:
             nbreg_kwargs[name[3:]] = value_type(pytestconfig.getini(name))
 
     other_args = {}
-    for name, value_type in [("nb_test_files", bool)]:
+    for name, value_type in [("nb_test_files", bool), ("nb_file_fnmatch", str)]:
 
-        if pytestconfig.getoption(name, None) is not None:
-            other_args[name] = value_type(pytestconfig.getoption(name))
         try:
             ini_value = pytestconfig.getini(name)
         except ValueError:
             ini_value = None
-        if ini_value:
+        if pytestconfig.getoption(name, None) is not None:
+            other_args[name] = value_type(pytestconfig.getoption(name))
+        elif ini_value:
             other_args[name] = value_type(pytestconfig.getini(name))
 
     return nbreg_kwargs, other_args
@@ -140,7 +139,9 @@ def nb_regression(pytestconfig):
 def pytest_collect_file(path, parent):
     """Collect Jupyter notebooks using the specified pytest hook."""
     kwargs, other_args = gather_config_options(parent.config)
-    if other_args.get("nb_test_files", False) and path.fnmatch("*.ipynb"):
+    if other_args.get("nb_test_files", False) and path.fnmatch(
+        other_args.get("nb_file_fnmatch", "*.ipynb")
+    ):
         return JupyterNbCollector(path, parent)
 
 
@@ -152,8 +153,8 @@ class JupyterNbCollector(pytest.File):
 
     def collect(self):
         """Collect tests for the notebook."""
-        # name = os.path.splitext(os.path.basename(self.fspath))[0]
-        yield JupyterNbTest("test_nbregression", self)
+        name = os.path.splitext(os.path.basename(self.fspath))[0]
+        yield JupyterNbTest(f"nbregression({name})", self)
 
 
 class JupyterNbTest(pytest.Item):

@@ -37,14 +37,18 @@ setup(
             "pre-commit==1.17.0",
             "flake8<3.8.0,>=3.7.0",
             "doc8<0.9.0,>=0.8.0",
-            # "flake8-comprehensions",
-            # "flake8-docstrings",
-            # "flake8_builtins",
-            # "import-order",
+        ],
+        "flake8_plugins": [
+            "flake8-comprehensions",
+            "flake8-docstrings",
+            "flake8_builtins",
+            "import-order",
         ],
         "docs": [
             "sphinx>=1.6",
-            # "ipypublish>=0.10.7"
+            "sphinx_rtd_theme",
+            "ipypublish>=0.10.7",
+            "importlib-resources",
         ],
     },
     classifiers=[
