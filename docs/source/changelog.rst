@@ -4,6 +4,8 @@ Changelog
 
 (development)
 -------------
+- Add documentation and make relevant improvements to the code. [Chris Sewell]
+
 - Add nb_post_processors to configuration options. [Chris Sewell]
 
 - Add diff configuration via notebook metadata. [Chris Sewell]
