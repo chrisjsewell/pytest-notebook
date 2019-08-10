@@ -9,7 +9,7 @@
 
 A [pytest](https://github.com/pytest-dev/pytest) plugin for regression testing and regenerating [Jupyter Notebooks](https://jupyter.org/).
 
-![Example Test](docs/source/_static/pytest-notebook-screenshot.png)
+![Example Test](pytest-notebook-screenshot.png)
 
 ------------------------------------------------------------------------
 
