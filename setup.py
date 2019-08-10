@@ -28,7 +28,7 @@ setup(
         "jsonschema",
         # "numpy",
         # "pillow",
-        # "ruamel.yaml"
+        # "ruamel.yaml",
     ],
     extras_require={
         "testing": ["coverage", "pytest-cov", "pytest-regressions", "black==19.3b0"],
@@ -49,6 +49,7 @@ setup(
             "sphinx_rtd_theme",
             "ipypublish>=0.10.7",
             "importlib_resources",
+            "ruamel.yaml.clib",
         ],
     },
     classifiers=[
