@@ -57,21 +57,12 @@
 # will be ignored and won't be reported in the changelog.
 #
 
-#    r'[mM]inor.*',
-#    r'[tT]est fix.*',
-#    r'[tT]ravis fix.*',
-#    r'[fF]ix .*',
-#    r'[tT]ry .*',
-#    r'[tT]est.',
-#    r'[dD]oc fix.*',
-#    r'Coverage.*',
-#    r'^$'
-
 ignore_regexps = [
     r'^[fF]ix [tT]ypo.*$',
     r'^[tT]est fix.*$',
     r'^[tT]ravis fix.*$',
     r'^[fF]ix [tT]ravis.*$',
+    r'^[fF]ix [rR]eadthedocs.*$',
     r'^[pP]re-commit fix.*$',
     r'[fF]ix api.*',
     r'^[fF]ix [tT]est[s]?.*$',

@@ -48,7 +48,7 @@ setup(
             "sphinx>=1.6",
             "sphinx_rtd_theme",
             "ipypublish>=0.10.7",
-            "importlib-resources",
+            "importlib_resources",
         ],
     },
     classifiers=[
