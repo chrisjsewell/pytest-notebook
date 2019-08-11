@@ -32,7 +32,9 @@ from pytest_notebook.nb_regression import (
 from pytest_notebook.notebook import load_notebook_with_config
 
 HELP_TEST_FILES = "Treat each .ipynb file as a test to be run."
-HELP_FILE_FNMATCH = "The fnmatch pattern for collecting notebooks, default: '*.ipynb'."
+HELP_FILE_FNMATCH = (
+    "The fnmatch pattern(s) for collecting notebooks, default: '*.ipynb'."
+)
 
 
 class NotSet:
@@ -48,9 +50,9 @@ def pytest_addoption(parser):
         dest="nb_test_files",
         help=HELP_TEST_FILES,
     )
-    group.addoption(
-        "--nb-file-fnmatch", dest="nb_file_fnmatch", type=str, help=HELP_FILE_FNMATCH
-    )
+    # group.addoption(
+    #     "--nb-file-fnmatch", dest="nb_file_fnmatch", type=str, help=HELP_FILE_FNMATCH
+    # )
     group.addoption("--nb-exec-cwd", dest="nb_exec_cwd", type=str, help=HELP_EXEC_CWD)
     group.addoption(
         "--nb-exec-errors",
@@ -78,7 +80,9 @@ def pytest_addoption(parser):
     )
 
     parser.addini("nb_test_files", type="bool", help=HELP_TEST_FILES, default=NotSet())
-    parser.addini("nb_file_fnmatch", help=HELP_FILE_FNMATCH, default=NotSet())
+    parser.addini(
+        "nb_file_fnmatch", type="args", help=HELP_FILE_FNMATCH, default=NotSet()
+    )
     parser.addini("nb_exec_cwd", help=HELP_EXEC_CWD, default=NotSet())
     parser.addini(
         "nb_exec_allow_errors",
@@ -119,6 +123,15 @@ def str2bool(string):
     return True if _str2bool(string) else False
 
 
+def strip_quotes(string):
+    """Strip quotes from string."""
+    if string.startswith("'"):
+        string = string.strip("'")
+    elif string.startswith('"'):
+        string = string.strip('"')
+    return string
+
+
 def validate_diff_replace(pytestconfig):
     r"""Extract the ``nb_diff_replace`` option from the ini file.
 
@@ -137,7 +150,7 @@ def validate_diff_replace(pytestconfig):
         raise ValueError("nb_diff_replace option should be a list or tuple")
     output = []
     for i, line in enumerate(nb_diff_replace):
-        args = shlex.split(line, posix=False)
+        args = tuple(strip_quotes(arg) for arg in shlex.split(line, posix=False))
         if len(args) != 3:
             raise ValueError(
                 f"nb_diff_replace[{i}] should contain "
@@ -149,12 +162,8 @@ def validate_diff_replace(pytestconfig):
             raise TypeError(
                 f"diff_replace[{i}] '{args[1]}' is not a valid regex: {err}"
             )
-        replace = args[2]
-        if replace.startswith("'"):
-            replace = replace.strip("'")
-        elif replace.startswith('"'):
-            replace = replace.strip('"')
-        output.append((args[0], args[1], replace))
+
+        output.append(args)
 
     return tuple(output)
 
@@ -182,7 +191,7 @@ def gather_config_options(pytestconfig):
             nbreg_kwargs[name[3:]] = value_type(pytestconfig.getini(name))
 
     other_args = {}
-    for name, value_type in [("nb_test_files", bool), ("nb_file_fnmatch", str)]:
+    for name, value_type in [("nb_test_files", bool), ("nb_file_fnmatch", tuple)]:
 
         if pytestconfig.getoption(name, None) is not None:
             other_args[name] = value_type(pytestconfig.getoption(name))
@@ -207,8 +216,8 @@ def nb_regression(pytestconfig):
 def pytest_collect_file(path, parent):
     """Collect Jupyter notebooks using the specified pytest hook."""
     kwargs, other_args = gather_config_options(parent.config)
-    if other_args.get("nb_test_files", False) and path.fnmatch(
-        other_args.get("nb_file_fnmatch", "*.ipynb")
+    if other_args.get("nb_test_files", False) and any(
+        path.fnmatch(pat) for pat in other_args.get("nb_file_fnmatch", ["*.ipynb"])
     ):
         return JupyterNbCollector(path, parent)
 

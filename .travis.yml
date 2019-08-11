@@ -38,8 +38,7 @@ install:
 script:
 - |
   if [[ "$TEST_TYPE" == "pytest" ]]; then
-      pytest -v --cov=pytest_notebook --cov-report=
-      pytest --nb-test-files docs/source/user_guide/
+      pytest -v --nb-test-files --log-cli-level=info --cov=pytest_notebook --cov-report=
   fi
 - |
   if [[ "$TEST_TYPE" == "pre-commit" ]]; then
