@@ -6,7 +6,7 @@ import re
 from typing import Any, Callable, Mapping, TextIO, Tuple, Union
 
 import attr
-from attr.validators import deep_iterable, instance_of
+from attr.validators import instance_of
 import importlib_resources
 import jsonschema
 import nbformat
@@ -178,7 +178,7 @@ class MetadataConfig:
     diff_replace: tuple = attr.ib(
         (),
         validator=instance_of(tuple),
-        metadata={"help": "notebook paths to regex replace before diffing"},
+        metadata={"help": "Notebook paths to regex replace before diffing."},
     )
 
     @diff_replace.validator
@@ -189,19 +189,25 @@ class MetadataConfig:
             validate_regex_replace(args, i)
 
     diff_ignore: set = attr.ib(
-        attr.Factory(set),
-        validator=deep_iterable(instance_of(str), instance_of(set)),
-        metadata={"help": "notebook paths to ignore during diffing"},
+        attr.Factory(set), metadata={"help": "Notebook paths to ignore during diffing."}
     )
+
+    @diff_ignore.validator
+    def _validate_diff_ignore(self, attribute, values):
+        if not isinstance(values, set):
+            raise TypeError(f"diff_ignore not a set: {values}")
+        if not all(isinstance(v, str) for v in values):
+            raise TypeError(f"diff_ignore items not all strings: {values}")
+
     skip: bool = attr.ib(
         False,
         validator=instance_of(bool),
-        metadata={"help": "skip testing of this notebook"},
+        metadata={"help": "Skip testing of this notebook."},
     )
     skip_reason: str = attr.ib(
         "",
         validator=instance_of(str),
-        metadata={"help": "reason for skipping testing of this notebook"},
+        metadata={"help": "Reason for skipping testing of this notebook."},
     )
 
 
