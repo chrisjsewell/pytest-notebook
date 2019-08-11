@@ -12,35 +12,18 @@ logger = logging.getLogger(__name__)
 
 
 class ExecutePreprocessorLogging(ExecutePreprocessor):
-    """A subclass of ``nbconvert.ExecutePreprocessor`` that logs per cell execution."""
+    """A subclass of ``nbconvert.ExecutePreprocessor`` with additional logging."""
+
+    def preprocess(self, nb, resources, km=None):
+        """Preprocess notebook executing each code cell."""
+        logger.info(f"About to execute notebook with {len(nb.cells)} cells")
+        return super().preprocess(nb, resources, km)
 
     def preprocess_cell(self, cell, resources, cell_index):
-        """Execute a single code cell.
-
-        See base.py for details.
-
-        To execute all cells see :meth:`preprocess`.
-        """
-        if cell.cell_type != "code" or not cell.source.strip():
-            return cell, resources
-
-        logger.info(f"Executing cell {cell_index}")
-
-        reply, outputs = self.run_cell(cell, cell_index)
-        # Backwards compatability for processes that wrap run_cell
-        cell.outputs = outputs
-
-        cell_allows_errors = (
-            self.allow_errors or "raises-exception" in cell.metadata.get("tags", [])
-        )
-
-        if self.force_raise_errors or not cell_allows_errors:
-            for out in cell.outputs:
-                if out.output_type == "error":
-                    raise CellExecutionError.from_cell_and_msg(cell, out)
-            if (reply is not None) and reply["content"]["status"] == "error":
-                raise CellExecutionError.from_cell_and_msg(cell, reply["content"])
-        return cell, resources
+        """Execute a single code cell."""
+        if cell.cell_type == "code" and cell.source.strip():
+            logger.info(f"Executing cell {cell_index}")
+        return super().preprocess_cell(cell, resources, cell_index)
 
 
 def execute_notebook(
