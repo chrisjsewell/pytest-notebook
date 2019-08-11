@@ -27,8 +27,8 @@ post_proc_resources: dict
     Factory(factory=<class 'dict'>, takes_self=False)
 
 diff_replace: tuple
-    A list of regex replacements to apply before diffing, e.g. [('/cells/*/outputs',
-    '\d{2,4}-\d{1,2}-\d{1,2}', 'DATE-STAMP')]. This value is accessible, after
+    A list of regex replacements to apply before diffing, e.g. ``[('/cells/*/outputs',
+    '\d{2,4}-\d{1,2}-\d{1,2}', 'DATE-STAMP')]``. This value is accessible, after
     initialization, via the ``diff_replace`` attribute. Default: ()
 
 diff_ignore: tuple
@@ -76,8 +76,8 @@ post_proc_resources: dict
     Factory(factory=<class 'dict'>, takes_self=False)
 
 diff_replace: tuple
-    A list of regex replacements to apply before diffing, e.g. [('/cells/*/outputs',
-    '\d{2,4}-\d{1,2}-\d{1,2}', 'DATE-STAMP')]. This value is accessible, after
+    A list of regex replacements to apply before diffing, e.g. ``[('/cells/*/outputs',
+    '\d{2,4}-\d{1,2}-\d{1,2}', 'DATE-STAMP')]``. This value is accessible, after
     initialization, via the ``diff_replace`` attribute. Default: ()
 
 diff_ignore: tuple
