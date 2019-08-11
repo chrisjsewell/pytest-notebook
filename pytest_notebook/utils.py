@@ -1,9 +1,29 @@
+"""Utility functions."""
+import os
+
 import attr
 import textwrap
 from typing import Any, Callable, Mapping, Union
 import warnings
 
 from nbformat import from_dict, NotebookNode
+
+
+def running_as_test():
+    """Check whether the notebook is being executed as a test.
+
+    This function may be useful, when running notebooks as integration tests to
+    ensure the runtime is not exceedingly long.
+
+    Usage::
+
+        if not running_as_test():
+            output = call_very_long_process()
+        else:
+            output = "result"
+
+    """
+    return os.environ.get("PYTEST_CURRENT_TEST", None) is not None
 
 
 def mapping_to_dict(

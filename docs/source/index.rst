@@ -31,6 +31,14 @@ A `pytest`_ plugin for regression testing and regenerating `Jupyter`_ Notebooks.
    :align: center
    :height: 400px
 
+Purpose
+-------
+
+The purpose of the plugin is to ensure that changes to the python
+environment (e.g. updating packages), have not affected the outputs
+of the notebook. If the notebook has changed, this plugin can also
+regenerate the notebooks, saving the new outputs.
+
 Features
 --------
 

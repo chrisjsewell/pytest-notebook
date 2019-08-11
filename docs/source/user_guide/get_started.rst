@@ -3,11 +3,11 @@ Installation
 
 |PyPI| |Conda|
 
-.. To install from Conda (recommended)::
+To install from Conda (recommended)::
 
-..     >> conda install -c conda-forge pytest-notebook aiida-core.services
+    >> conda install -c conda-forge pytest-notebook
 
-To install from pypi::
+To install from PyPi::
 
     >> pip install --pre pytest-notebook
 
@@ -15,15 +15,6 @@ To install the development version::
 
     >> git clone https://github.com/chrisjsewell/pytest-notebook .
     >> cd pytest-notebook
-
-.. and either use the pre-written Conda development environment (recommended)::
-
-..     >> conda env create -n aiida_testenv -f conda_dev_env.yml python=3.6
-..     >> conda activate aiida_testenv
-..     >> pip install --no-deps -e .
-
-or install all *via* pip::
-
     >> pip install -e .
     #>> pip install -e .[code_style,testing,docs] # install extras for more features
 
@@ -53,7 +44,7 @@ with the configuration set in ``.flake8``, and
 Installing with ``pytest-notebook[code_style]`` makes the
 `pre-commit <https://pre-commit.com/>`__ package available, which will
 ensure these tests are passed by reformatting the code and testing for
-lint errors before submitting a commit. It can be setup by:
+lint errors before submitting a commit. It can be set up by:
 
 .. code:: shell
 

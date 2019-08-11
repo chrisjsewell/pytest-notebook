@@ -16,6 +16,8 @@
     "python.linting.enabled": true,
     "restructuredtext.linter.extraArgs": ["--max-line-length", "88"],
     "cSpell.words": [
-        "Jupyter"
+        "Jupyter",
+        "conda",
+        "pytest"
     ]
 }

@@ -13,6 +13,13 @@ A [pytest](https://github.com/pytest-dev/pytest) plugin for regression testing a
 
 ------------------------------------------------------------------------
 
+## Purpose
+
+The purpose of the plugin is to ensure that changes to the python
+environment (e.g. updating packages), have not affected the outputs
+of the notebook. If the notebook has changed, this plugin can also
+regenerate the notebooks, saving the new outputs.
+
 ## Features
 
 - Recognise, collect, execute (optionally output) then diff input vs. output [Jupyter Notebooks](https://jupyter.org/).
@@ -36,11 +43,11 @@ A [pytest](https://github.com/pytest-dev/pytest) plugin for regression testing a
 
 ## Installation
 
-<!-- To install from [Conda](https://docs.conda.io) (recommended):
+To install from [Conda](https://docs.conda.io) (recommended):
 
 ```shell
 >> conda install -c conda-forge pytest-notebook
-``` -->
+```
 
 To install *via* [pip](https://pypi.org/project/pip/) from [PyPI](https://pypi.org/project):
 
