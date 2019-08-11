@@ -257,11 +257,11 @@ def load_notebook_with_config(
     return notebook, nb_config
 
 
-def prepare_nb(nb: dict, as_version=DEFAULT_NB_VERSION) -> NotebookNode:
+def prepare_nb(dct: dict, as_version=DEFAULT_NB_VERSION) -> NotebookNode:
     """Convert raw (disc-format) notebook to a ``NotebookNode``."""
     if as_version != 4:
         raise NotImplementedError(f"notebook version: {as_version}")
-    return nbformat.v4.to_notebook(nb)
+    return nbformat.v4.to_notebook(dct)
 
 
 def prepare_cell(cell: dict, as_version=DEFAULT_NB_VERSION) -> NotebookNode:
@@ -275,11 +275,18 @@ def prepare_cell(cell: dict, as_version=DEFAULT_NB_VERSION) -> NotebookNode:
 def create_notebook(as_version=DEFAULT_NB_VERSION):
     """Create a new notebook."""
     if as_version == 1:
-        return nbformat.v1.new_notebook()
-    if as_version == 2:
-        return nbformat.v2.new_notebook()
-    if as_version == 3:
-        return nbformat.v3.new_notebook()
-    if as_version == 4:
-        return nbformat.v4.new_notebook()
-    raise NotImplementedError(f"notebook version: {as_version}")
+        notebook = nbformat.v1.new_notebook()
+    elif as_version == 2:
+        notebook = nbformat.v2.new_notebook()
+    elif as_version == 3:
+        notebook = nbformat.v3.new_notebook()
+    elif as_version == 4:
+        notebook = nbformat.v4.new_notebook()
+    else:
+        raise NotImplementedError(f"notebook version: {as_version}")
+    return notebook
+
+
+def dump_notebook(nb: NotebookNode, as_version=nbformat.NO_CONVERT) -> NotebookNode:
+    """Dump the notebook to a sting."""
+    return nbformat.writes(nb, version=as_version)

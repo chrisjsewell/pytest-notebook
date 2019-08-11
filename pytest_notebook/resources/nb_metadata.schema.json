@@ -24,7 +24,11 @@
                     },
                     {
                         "type": "string",
-                        "description": "regex pattern"
+                        "description": "regex pattern",
+                        "examples": [
+                            "\\d{2,4}-\\d{1,2}-\\d{1,2}",
+                            "\\/([A-z0-9-_+]+\\/)*[A-z0-9-_+]+\\.ipynb"
+                        ]
                     },
                     {
                         "type": "string",

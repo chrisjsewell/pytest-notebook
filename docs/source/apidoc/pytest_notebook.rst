@@ -7,6 +7,7 @@ Subpackages
 .. toctree::
 
    pytest_notebook.example_nbs
+   pytest_notebook.resources
 
 Submodules
 ----------
