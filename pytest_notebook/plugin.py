@@ -12,24 +12,31 @@ For more information on writing pytest plugins see:
 """
 from distutils.util import strtobool as _str2bool
 import os
+import re
+import shlex
 
 import pytest
 
 from pytest_notebook.nb_regression import (
     HELP_DIFF_COLOR_WORDS,
     HELP_DIFF_IGNORE,
+    HELP_DIFF_REPLACE,
     HELP_DIFF_USE_COLOR,
     HELP_EXEC_ALLOW_ERRORS,
     HELP_EXEC_CWD,
     HELP_EXEC_TIMEOUT,
     HELP_FORCE_REGEN,
     HELP_POST_PROCS,
-    load_notebook,
     NBRegressionFixture,
 )
+from pytest_notebook.notebook import load_notebook_with_config
 
 HELP_TEST_FILES = "Treat each .ipynb file as a test to be run."
 HELP_FILE_FNMATCH = "The fnmatch pattern for collecting notebooks, default: '*.ipynb'."
+
+
+class NotSet:
+    """Class to indicate a configuration value was not set."""
 
 
 def pytest_addoption(parser):
@@ -56,6 +63,13 @@ def pytest_addoption(parser):
         "--nb-exec-timeout", dest="nb_exec_timeout", type=int, help=HELP_EXEC_TIMEOUT
     )
     group.addoption(
+        "--nb-diff-color-words",
+        action="store_true",
+        default=None,
+        dest="nb_diff_color_words",
+        help=HELP_DIFF_COLOR_WORDS,
+    )
+    group.addoption(
         "--nb-force-regen",
         action="store_true",
         default=None,
@@ -63,16 +77,34 @@ def pytest_addoption(parser):
         help=HELP_FORCE_REGEN,
     )
 
-    parser.addini("nb_test_files", help=HELP_TEST_FILES)
-    parser.addini("nb_file_fnmatch", help=HELP_FILE_FNMATCH)
-    parser.addini("nb_exec_cwd", help=HELP_EXEC_CWD)
-    parser.addini("nb_exec_allow_errors", help=HELP_EXEC_ALLOW_ERRORS)
-    parser.addini("nb_exec_timeout", help=HELP_EXEC_TIMEOUT)
-    parser.addini("nb_post_processors", type="linelist", help=HELP_POST_PROCS)
-    parser.addini("nb_diff_ignore", type="linelist", help=HELP_DIFF_IGNORE)
-    parser.addini("nb_diff_use_color", help=HELP_DIFF_USE_COLOR)
-    parser.addini("nb_diff_color_words", help=HELP_DIFF_COLOR_WORDS)
-    parser.addini("nb_force_regen", help=HELP_FORCE_REGEN)
+    parser.addini("nb_test_files", type="bool", help=HELP_TEST_FILES, default=NotSet())
+    parser.addini("nb_file_fnmatch", help=HELP_FILE_FNMATCH, default=NotSet())
+    parser.addini("nb_exec_cwd", help=HELP_EXEC_CWD, default=NotSet())
+    parser.addini(
+        "nb_exec_allow_errors",
+        type="bool",
+        help=HELP_EXEC_ALLOW_ERRORS,
+        default=NotSet(),
+    )
+    parser.addini("nb_exec_timeout", help=HELP_EXEC_TIMEOUT, default=NotSet())
+    parser.addini(
+        "nb_post_processors", type="linelist", help=HELP_POST_PROCS, default=NotSet()
+    )
+    parser.addini(
+        "nb_diff_ignore", type="linelist", help=HELP_DIFF_IGNORE, default=NotSet()
+    )
+    parser.addini(
+        "nb_diff_replace", type="linelist", help=HELP_DIFF_REPLACE, default=NotSet()
+    )
+    parser.addini(
+        "nb_diff_use_color", type="bool", help=HELP_DIFF_USE_COLOR, default=NotSet()
+    )
+    parser.addini(
+        "nb_diff_color_words", type="bool", help=HELP_DIFF_COLOR_WORDS, default=NotSet()
+    )
+    parser.addini(
+        "nb_force_regen", type="bool", help=HELP_FORCE_REGEN, default=NotSet()
+    )
 
 
 def str2bool(string):
@@ -87,10 +119,50 @@ def str2bool(string):
     return True if _str2bool(string) else False
 
 
+def validate_diff_replace(pytestconfig):
+    r"""Extract the ``nb_diff_replace`` option from the ini file.
+
+    This should be of the format::
+
+        nb_diff_replace =
+            /cells/*/outputs \d{1,2}/\d{1,2}/\d{2,4} REPLACE_DATE
+            /cells/*/outputs "\d{2}:\d{2}:\d{2}" "REPLACE_TIME"
+
+    """
+    nb_diff_replace = pytestconfig.getini("nb_diff_replace")
+    if isinstance(nb_diff_replace, NotSet):
+        return None
+
+    if not isinstance(nb_diff_replace, (list, tuple)):
+        raise ValueError("nb_diff_replace option should be a list or tuple")
+    output = []
+    for i, line in enumerate(nb_diff_replace):
+        args = shlex.split(line, posix=False)
+        if len(args) != 3:
+            raise ValueError(
+                f"nb_diff_replace[{i}] should contain "
+                f"'<nb_address> <regex> <replacement>': {line}"
+            )
+        try:
+            re.compile(args[1])
+        except Exception as err:
+            raise TypeError(
+                f"diff_replace[{i}] '{args[1]}' is not a valid regex: {err}"
+            )
+        replace = args[2]
+        if replace.startswith("'"):
+            replace = replace.strip("'")
+        elif replace.startswith('"'):
+            replace = replace.strip('"')
+        output.append((args[0], args[1], replace))
+
+    return tuple(output)
+
+
 def gather_config_options(pytestconfig):
     """Gather all options, from command-line and ini file.
 
-    Note; command-line set options are prioritised over ini file ones.
+    Note: command-line set options are prioritised over ini file ones.
     """
     nbreg_kwargs = {}
     for name, value_type in [
@@ -104,26 +176,22 @@ def gather_config_options(pytestconfig):
         ("nb_force_regen", str2bool),
     ]:
 
-        try:
-            ini_value = pytestconfig.getini(name)
-        except ValueError:
-            ini_value = None
         if pytestconfig.getoption(name, None) is not None:
             nbreg_kwargs[name[3:]] = value_type(pytestconfig.getoption(name))
-        elif ini_value:
+        elif not isinstance(pytestconfig.getini(name), NotSet):
             nbreg_kwargs[name[3:]] = value_type(pytestconfig.getini(name))
 
     other_args = {}
     for name, value_type in [("nb_test_files", bool), ("nb_file_fnmatch", str)]:
 
-        try:
-            ini_value = pytestconfig.getini(name)
-        except ValueError:
-            ini_value = None
         if pytestconfig.getoption(name, None) is not None:
             other_args[name] = value_type(pytestconfig.getoption(name))
-        elif ini_value:
+        elif not isinstance(pytestconfig.getini(name), NotSet):
             other_args[name] = value_type(pytestconfig.getini(name))
+
+    nb_diff_replace = validate_diff_replace(pytestconfig)
+    if nb_diff_replace is not None:
+        nbreg_kwargs["diff_replace"] = nb_diff_replace
 
     return nbreg_kwargs, other_args
 
@@ -166,7 +234,7 @@ class JupyterNbTest(pytest.Item):
         self._fixtureinfo = self.session._fixturemanager.getfixtureinfo(
             self.parent, NBRegressionFixture.check, NBRegressionFixture
         )  # this is required for --setup-plan
-        notebook, nb_config = load_notebook(self.fspath)
+        notebook, nb_config = load_notebook_with_config(self.fspath)
         if nb_config.skip:
             self.add_marker(pytest.mark.skip(reason=nb_config.skip_reason))
 

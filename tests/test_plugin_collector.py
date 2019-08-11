@@ -42,7 +42,7 @@ def test_run_fail(testdir):
     result.stdout.fnmatch_lines(
         [
             "*::nbregression(test_nb) FAILED*",
-            "*pytest_notebook.nb_regression.NBRegressionError:*",
+            "*CellExecutionError:*",
             "*## modified /cells/11/outputs/0/data/image/svg+xml*",
         ]
     )

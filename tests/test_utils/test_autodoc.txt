@@ -26,6 +26,11 @@ post_proc_resources: dict
     initialization, via the ``post_proc_resources`` attribute. Default:
     Factory(factory=<class 'dict'>, takes_self=False)
 
+diff_replace: tuple
+    A list of regex replacements to apply before diffing, e.g. [('/cells/*/outputs',
+    '\d{2,4}-\d{1,2}-\d{1,2}', 'DATE-STAMP')]. This value is accessible, after
+    initialization, via the ``diff_replace`` attribute. Default: ()
+
 diff_ignore: tuple
     List of diff paths to ignore, e.g. '/cells/1/outputs' or '/cells/\*/metadata'. This
     value is accessible, after initialization, via the ``diff_ignore`` attribute. Default:
@@ -69,6 +74,11 @@ post_proc_resources: dict
     Resources to parse to post processor functions. This value is accessible, after
     initialization, via the ``post_proc_resources`` attribute. Default:
     Factory(factory=<class 'dict'>, takes_self=False)
+
+diff_replace: tuple
+    A list of regex replacements to apply before diffing, e.g. [('/cells/*/outputs',
+    '\d{2,4}-\d{1,2}-\d{1,2}', 'DATE-STAMP')]. This value is accessible, after
+    initialization, via the ``diff_replace`` attribute. Default: ()
 
 diff_ignore: tuple
     List of diff paths to ignore, e.g. '/cells/1/outputs' or '/cells/\*/metadata'. This

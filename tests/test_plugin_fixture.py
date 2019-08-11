@@ -2,12 +2,16 @@
 """Test the  ``nb_regression`` plugin fixture."""
 import os
 
+import attr
 import pytest
+
+from pytest_notebook.nb_regression import NBRegressionFixture
 
 PATH = os.path.dirname(os.path.realpath(__file__))
 
 
 def test_help_message(testdir):
+    """Test that the nb_regression commands have been added to the pytest help msg."""
     result = testdir.runpytest("--help")
     # fnmatch_lines does an assertion internally
     result.stdout.fnmatch_lines(
@@ -25,7 +29,7 @@ def test_help_message(testdir):
     "command", ("", "--nb-exec-errors", "--nb-exec-timeout=100", "--nb-force-regen")
 )
 def test_nb_regression_fixture_init(testdir, command):
-    """Make sure that pytest accepts our fixture."""
+    """Test that pytest accepts the nb_regression fixture."""
 
     # create a temporary pytest test module
     testdir.makepyfile(
@@ -45,8 +49,112 @@ def test_nb_regression_fixture_init(testdir, command):
     assert result.ret == 0
 
 
-def test_nb_regression_fixture_exec_fail_diff(testdir):
-    """Make sure that pytest accepts our fixture."""
+def test_nb_regression_cmndline_setting_init(testdir):
+    """Test the nb_regression fixture is initialised with the commandline settings."""
+
+    testdir.makepyfile(
+        """
+        import attr
+
+        def test_nb(nb_regression):
+            assert attr.asdict(nb_regression) == {config}
+    """.format(
+            config=attr.asdict(
+                NBRegressionFixture(
+                    **{
+                        "exec_allow_errors": True,
+                        "exec_timeout": 90,
+                        "force_regen": True,
+                    }
+                )
+            )
+        )
+    )
+
+    result = testdir.runpytest(
+        "-vv", "--nb-exec-timeout", "90", "--nb-exec-errors", "--nb-force-regen"
+    )
+
+    # fnmatch_lines does an assertion internally
+    result.stdout.fnmatch_lines(["*::test_nb PASSED*"])
+
+    # make sure that that we get a '0' exit code for the testsuite
+    assert result.ret == 0
+
+
+def test_nb_regression_ini_setting_init(testdir):
+    """Test the nb_regression fixture is initialised with the config file settings."""
+    testdir.makeini(
+        r"""
+        [pytest]
+        nb_exec_cwd = {path}
+        nb_exec_allow_errors = True
+        nb_exec_timeout = 100
+        nb_diff_use_color = True
+        nb_diff_color_words = True
+        nb_diff_ignore =
+            /metadata/language_info/version
+            /cells/*/execution_count
+            /cells/*/outputs/*/traceback
+            /cells/*/outputs/*/execution_count
+            /cells/12/outputs/0/data/text/latex
+            /cells/9/outputs/0/metadata/application/json
+        nb_post_processors =
+        nb_diff_replace =
+            /cells/*/outputs/*/traceback \<ipython\-input\-[\-0-9a-zA-Z]*\> "< >"
+        """.format(
+            path=os.path.join(PATH, "raw_files")
+        )
+    )
+
+    testdir.makepyfile(
+        """
+        import attr
+
+        def test_nb(nb_regression):
+            assert attr.asdict(nb_regression) == {config}
+    """.format(
+            config=attr.asdict(
+                NBRegressionFixture(
+                    **{
+                        "exec_cwd": os.path.join(PATH, "raw_files"),
+                        "exec_allow_errors": True,
+                        "exec_timeout": 100,
+                        "post_processors": (),
+                        "diff_ignore": (
+                            "/metadata/language_info/version",
+                            "/cells/*/execution_count",
+                            "/cells/*/outputs/*/traceback",
+                            "/cells/*/outputs/*/execution_count",
+                            "/cells/12/outputs/0/data/text/latex",
+                            "/cells/9/outputs/0/metadata/application/json",
+                        ),
+                        "diff_replace": (
+                            (
+                                "/cells/*/outputs/*/traceback",
+                                "\\<ipython\\-input\\-[\\-0-9a-zA-Z]*\\>",
+                                "< >",
+                            ),
+                        ),
+                        "diff_use_color": True,
+                        "diff_color_words": True,
+                    }
+                )
+            )
+        )
+    )
+
+    result = testdir.runpytest("-vv")
+
+    # fnmatch_lines does an assertion internally
+    result.stdout.fnmatch_lines(["*::test_nb PASSED*"])
+
+    # make sure that that we get a '0' exit code for the testsuite
+    assert result.ret == 0
+
+
+def test_nb_regression_fixture_check_fail(testdir):
+    """Test running an nb_regression.check that fails."""
 
     # create a temporary pytest test module
     testdir.makepyfile(
@@ -68,8 +176,8 @@ def test_nb_regression_fixture_exec_fail_diff(testdir):
     assert result.ret != 0
 
 
-def test_nb_regression_fixture_exec_pass(testdir):
-    """Make sure that pytest accepts our fixture."""
+def test_nb_regression_fixture_check_pass(testdir):
+    """Test running an nb_regression.check that passes."""
 
     # create a temporary pytest test module
     testdir.makepyfile(
@@ -99,47 +207,11 @@ def test_nb_regression_fixture_exec_pass(testdir):
     assert result.ret == 0
 
 
-def test_nb_regression_ini_setting(testdir):
-    testdir.makeini(
-        """
-        [pytest]
-        nb_exec_cwd = {path}
-        nb_exec_allow_errors = True
-        nb_exec_timeout = 100
-        nb_diff_use_color = True
-        nb_diff_color_words = True
-        nb_diff_ignore =
-            /metadata/language_info/version
-            /cells/*/execution_count
-            /cells/*/outputs/*/traceback
-            /cells/*/outputs/*/execution_count
-            /cells/12/outputs/0/data/text/latex
-            /cells/9/outputs/0/metadata/application/json
-    """.format(
-            path=os.path.join(PATH, "raw_files")
-        )
-    )
-
-    testdir.makepyfile(
-        """
-        def test_nb(nb_regression):
-            nb_regression.check("{path}")
-    """.format(
-            path=os.path.join(PATH, "raw_files", "different_outputs.ipynb")
-        )
-    )
-
-    result = testdir.runpytest("-v")
-
-    # fnmatch_lines does an assertion internally
-    result.stdout.fnmatch_lines(["*::test_nb PASSED*"])
-
-    # make sure that that we get a '0' exit code for the testsuite
-    assert result.ret == 0
-
-
 def test_nb_regression_fixture_regen(testdir):
-    """Make sure that pytest accepts our fixture."""
+    """Test running an nb_regression.check with nb_force_regen.
+
+    The first test should fail (regenerating the file), then the 2nd test should pass.
+    """
 
     with open(
         os.path.join(PATH, "raw_files", "different_outputs.ipynb"), "rb"

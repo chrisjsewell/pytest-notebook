@@ -1,17 +1,19 @@
 """Jupyter Notebook Regression Test Class."""
 import copy
 import os
-from typing import List, TextIO, Tuple, Union
+import re
+import sys
+from typing import List, TextIO, Union
 
 import attr
 from attr.validators import instance_of
-import jsonschema
 from nbdime.diff_format import DiffEntry
 import nbformat
 from nbformat import NotebookNode
 
 from pytest_notebook.diffing import diff_notebooks, diff_to_string, filter_diff
 from pytest_notebook.execution import execute_notebook
+from pytest_notebook.notebook import load_notebook_with_config, regex_replace_nb
 from pytest_notebook.post_processors import (
     ENTRY_POINT_NAME,
     list_processor_names,
@@ -28,6 +30,10 @@ HELP_EXEC_ALLOW_ERRORS = (
     "Do not stop execution after the first unexpected exception "
     "(where cell is not tagged ``raises-exception``)."
 )
+HELP_DIFF_REPLACE = (
+    "A list of regex replacements to apply before diffing, "
+    r"e.g. ``[('/cells/*/outputs', '\d{2,4}-\d{1,2}-\d{1,2}', 'DATE-STAMP')]``."
+)
 HELP_DIFF_IGNORE = (
     "List of diff paths to ignore, e.g. '/cells/1/outputs' or '/cells/\\*/metadata'."
 )
@@ -42,92 +48,9 @@ HELP_POST_PROCS = (
     f"relating to entry points in the '{ENTRY_POINT_NAME}' group"
 )
 
-META_KEY = "nbreg"
-
 
 class NBRegressionError(Exception):
     """Exception to signal a regression test fail."""
-
-
-def validate_metadata(data, path):
-    """Validate notebook and cell metadata against the required config schema.
-
-    :raises NBRegressionError: if validation fails
-    """
-    __tracebackhide__ = True
-    schema = {
-        "$schema": "http://json-schema.org/draft-07/schema",
-        "type": "object",
-        "properties": {
-            "diff_ignore": {
-                "description": "notebook paths to ignore during diffing",
-                "type": "array",
-                "items": {"type": "string", "pattern": "^/[\\_a-z0-9\\/\\+\\-\\*]*$"},
-            },
-            "skip": {"description": "skip testing of this notebook", "type": "boolean"},
-            "skip_reason": {
-                "description": "reason for skipping testing of this notebook",
-                "type": "string",
-            },
-        },
-    }
-    validator_cls = jsonschema.validators.validator_for(schema)
-    validator = validator_cls(schema=schema)
-    errors = sorted(validator.iter_errors(data), key=lambda e: e.path)
-    if errors:
-        raise NBRegressionError(
-            "\n".join(
-                [path]
-                + [
-                    "- {} [key path: '{}']".format(
-                        error.message, "/".join([str(p) for p in error.path])
-                    )
-                    for error in errors
-                ]
-            )
-        )
-
-
-@autodoc
-@attr.s(frozen=True, slots=True)
-class MetadataConfig:
-    """A class to store configuration data, obtained from the notebook metadata."""
-
-    diff_ignore: set = attr.ib(
-        attr.Factory(set),
-        validator=instance_of(set),
-        metadata={"help": "notebook paths to ignore during diffing"},
-    )
-    skip: bool = attr.ib(
-        False,
-        validator=instance_of(bool),
-        metadata={"help": "skip testing of this notebook"},
-    )
-    skip_reason: str = attr.ib(
-        "",
-        validator=instance_of(str),
-        metadata={"help": "reason for skipping testing of this notebook"},
-    )
-
-
-def config_from_metadata(nb: NotebookNode) -> dict:
-    """Extract configuration data from notebook/cell metadata."""
-    nb_metadata = nb.get("metadata", {}).get(META_KEY, {})
-    validate_metadata(nb_metadata, "/metadata")
-
-    diff_ignore = set()
-    diff_ignore.update(nb_metadata.get("diff_ignore", []))
-
-    for i, cell in enumerate(nb.get("cells", [])):
-        cell_metadata = cell.get("metadata", {}).get(META_KEY, {})
-        validate_metadata(cell_metadata, f"/cells/{i}/metadata")
-
-        cell_diff_ignore = cell_metadata.get("diff_ignore", [])
-        diff_ignore.update([f"/cells/{i}{d}" for d in cell_diff_ignore])
-
-    return MetadataConfig(
-        diff_ignore, nb_metadata.get("skip", False), nb_metadata.get("skip_reason", "")
-    )
 
 
 @autodoc
@@ -165,13 +88,6 @@ class NBRegressionResult:
             f"NBRegressionResult(diff_full_length={len(self.diff_full)},"
             f"diff_filtered_length={len(self.diff_filtered)})"
         )
-
-
-def load_notebook(path: Union[TextIO, str]) -> Tuple[NotebookNode, MetadataConfig]:
-    """Load the notebook from file, and scan its metadata for config data."""
-    notebook = nbformat.read(path, as_version=4)
-    nb_config = config_from_metadata(notebook)
-    return notebook, nb_config
 
 
 @autodoc
@@ -222,8 +138,39 @@ class NBRegressionFixture:
         metadata={"help": "Resources to parse to post processor functions."},
     )
 
+    diff_replace: tuple = attr.ib((), metadata={"help": HELP_DIFF_REPLACE})
+
+    @diff_replace.validator
+    def _validate_diff_replace(self, attribute, values):
+        if not isinstance(values, tuple):
+            raise TypeError(f"diff_replace must be a tuple: {values}")
+        for i, args in enumerate(values):
+            if not isinstance(args, tuple):
+                raise TypeError(f"diff_replace[{i}] must be a tuple: {args}")
+
+            if not isinstance(args[0], str):
+                raise TypeError(f"diff_replace[{i}] address '{args[0]}' must a string")
+            if not args[0].startswith("/"):
+                raise ValueError(
+                    f"diff_ignore[{i}] address '{args[0]}' must start with '/'"
+                )
+            if not isinstance(args[1], str):
+                raise TypeError(f"diff_replace[{i}] regex '{args[1]}' must a string")
+            try:
+                re.compile(args[1])
+            except Exception as err:
+                raise TypeError(
+                    f"diff_replace[{i}] '{args[1]}' is not a valid regex: {err}"
+                )
+            if not isinstance(args[2], str):
+                raise TypeError(
+                    f"diff_replace[{i}] replacement '{args[2]}' must a string"
+                )
+
     diff_ignore: tuple = attr.ib(
-        ("/cells/*/outputs/*/traceback",), metadata={"help": HELP_DIFF_IGNORE}
+        # TODO replace this default with a diff_replace one?
+        ("/cells/*/outputs/*/traceback",),
+        metadata={"help": HELP_DIFF_IGNORE},
     )
 
     @diff_ignore.validator
@@ -265,6 +212,7 @@ class NBRegressionFixture:
         if ``raise_errors`` is True:
 
         :raise nbconvert.preprocessors.CellExecutionError: if error in execution
+        :raise NBConfigValidationError: if the notebook metadata is invalid
         :raise NBRegressionError: if diffs present
 
         :rtype: NBRegressionResult
@@ -276,7 +224,7 @@ class NBRegressionFixture:
         else:
             abspath = os.path.abspath(str(path))
 
-        nb_initial, nb_config = load_notebook(path)
+        nb_initial, nb_config = load_notebook_with_config(path)
 
         if not self.exec_cwd:
             self.exec_cwd = os.path.dirname(abspath)
@@ -292,18 +240,26 @@ class NBRegressionFixture:
             post_proc = load_processor(proc_name)
             nb_final, resources = post_proc(nb_final, resources)
 
-        full_diff = diff_notebooks(nb_initial, nb_final)
+        if self.diff_replace:
+            nb_initial_replace = regex_replace_nb(nb_initial, self.diff_replace)
+            nb_final_replace = regex_replace_nb(nb_final, self.diff_replace)
+        else:
+            nb_initial_replace = nb_initial
+            nb_final_replace = nb_final
+
+        full_diff = diff_notebooks(nb_initial_replace, nb_final_replace)
 
         diff_ignore = copy.deepcopy(nb_config.diff_ignore)
         diff_ignore.update(self.diff_ignore)
         filtered_diff = filter_diff(full_diff, diff_ignore)
 
         diff_string = diff_to_string(
-            nb_initial,
+            nb_initial_replace,
             filtered_diff,
             use_color=self.diff_use_color,
             color_words=self.diff_color_words,
         )
+        # TODO optionally write diff to file
 
         regen_exc = None
         if filtered_diff and self.force_regen and not exec_error:
@@ -316,23 +272,20 @@ class NBRegressionFixture:
                 nbformat.write(nb_final, str(path))
 
             regen_exc = NBRegressionError(
-                f"{diff_string}\n--nb-force-regen set, regenerating file at: {abspath}"
+                f"Files differ and --nb-force-regen set, "
+                f"regenerating file at:\n- {abspath}"
             )
 
         if not raise_errors:
             pass
-        elif filtered_diff:
-            # TODO optionally write diff to file
-            try:
-                raise NBRegressionError(diff_string)
-            except NBRegressionError:
-                if regen_exc:
-                    raise regen_exc from None
-                raise
-        elif regen_exc:
-            raise regen_exc
         elif exec_error:
+            print("Diff up to exception:\n" + diff_string, file=sys.stderr)
             raise exec_error
+        elif regen_exc:
+            print("Diff before regeneration:\n" + diff_string, file=sys.stderr)
+            raise regen_exc
+        elif filtered_diff:
+            raise NBRegressionError(diff_string)
 
         return NBRegressionResult(
             nb_initial, nb_final, full_diff, filtered_diff, diff_string

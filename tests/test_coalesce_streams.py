@@ -3,7 +3,7 @@ import os
 import nbformat
 
 from pytest_notebook.post_processors import coalesce_streams
-from pytest_notebook.utils import prepare_cell_v4
+from pytest_notebook.notebook import create_notebook, prepare_cell
 
 
 path = os.path.dirname(os.path.realpath(__file__))
@@ -20,9 +20,9 @@ def test_coalesce_streams_same():
 
 def test_coalesce_streams():
     """Test coalesce_streams if streams require merging."""
-    notebook = nbformat.v4.new_notebook()
+    notebook = create_notebook()
     notebook.cells.append(
-        prepare_cell_v4(
+        prepare_cell(
             {
                 "cell_type": "code",
                 "execution_count": 3,
@@ -35,9 +35,9 @@ def test_coalesce_streams():
             }
         )
     )
-    expected = nbformat.v4.new_notebook()
+    expected = create_notebook()
     expected.cells.append(
-        prepare_cell_v4(
+        prepare_cell(
             {
                 "cell_type": "code",
                 "execution_count": 3,

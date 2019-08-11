@@ -1,7 +1,7 @@
 import pytest
 
 from pytest_notebook.diffing import diff_notebooks
-from pytest_notebook.utils import prepare_cell_v4
+from pytest_notebook.notebook import prepare_cell
 
 
 def get_test_cell(type_name, variable="hallo"):
@@ -192,7 +192,7 @@ def get_test_cell(type_name, variable="hallo"):
         },
     }
 
-    return prepare_cell_v4(cells[type_name])
+    return prepare_cell(cells[type_name])
 
 
 @pytest.mark.parametrize(
