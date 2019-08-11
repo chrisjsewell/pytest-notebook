@@ -39,6 +39,7 @@ script:
 - |
   if [[ "$TEST_TYPE" == "pytest" ]]; then
       pytest -v --cov=pytest_notebook --cov-report=
+      pytest --nb-test-files docs/source/user_guide/
   fi
 - |
   if [[ "$TEST_TYPE" == "pre-commit" ]]; then

@@ -77,6 +77,7 @@ nitpick_ignore = [
     ("py:class", "attr.s"),
     ("py:class", "ruamel.yaml.dumper.RoundTripDumper"),
     ("py:exc", "nbconvert.preprocessors.CellExecutionError"),
+    ("py:class", "nbconvert.preprocessors.execute.ExecutePreprocessor"),
 ]
 
 # The reST default role (used for this markup: `text`) to use for all
