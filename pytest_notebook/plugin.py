@@ -12,7 +12,6 @@ For more information on writing pytest plugins see:
 """
 from distutils.util import strtobool as _str2bool
 import os
-import re
 import shlex
 
 import pytest
@@ -29,7 +28,7 @@ from pytest_notebook.nb_regression import (
     HELP_POST_PROCS,
     NBRegressionFixture,
 )
-from pytest_notebook.notebook import load_notebook_with_config
+from pytest_notebook.notebook import load_notebook_with_config, validate_regex_replace
 
 HELP_TEST_FILES = "Treat each .ipynb file as a test to be run."
 HELP_FILE_FNMATCH = (
@@ -151,18 +150,7 @@ def validate_diff_replace(pytestconfig):
     output = []
     for i, line in enumerate(nb_diff_replace):
         args = tuple(strip_quotes(arg) for arg in shlex.split(line, posix=False))
-        if len(args) != 3:
-            raise ValueError(
-                f"nb_diff_replace[{i}] should contain "
-                f"'<nb_address> <regex> <replacement>': {line}"
-            )
-        try:
-            re.compile(args[1])
-        except Exception as err:
-            raise TypeError(
-                f"diff_replace[{i}] '{args[1]}' is not a valid regex: {err}"
-            )
-
+        validate_regex_replace(args, i)
         output.append(args)
 
     return tuple(output)

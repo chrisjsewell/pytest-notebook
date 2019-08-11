@@ -1,16 +1,19 @@
 """Module for working with notebook."""
 import copy
+from functools import lru_cache
+import json
 import re
 from typing import Any, Callable, Mapping, TextIO, Tuple, Union
 
 import attr
-from attr.validators import instance_of
+from attr.validators import deep_iterable, instance_of
+import importlib_resources
 import jsonschema
 import nbformat
 from nbformat import NotebookNode
 
-
 from pytest_notebook.diffing import join_path, star_path
+from pytest_notebook import resources
 from pytest_notebook.utils import autodoc
 
 DEFAULT_NB_VERSION = 4
@@ -106,30 +109,52 @@ class NBConfigValidationError(Exception):
     """Exception to signal a validation error in the notebook metadata."""
 
 
+def validate_regex_replace(args, index):
+    """Validate a single regex replace item.
+
+    Should be of the form (<nb_path>, <regex_pattern>, <replacement>)
+    """
+    if not isinstance(args, tuple):
+        raise TypeError(f"diff_replace[{index}] must be a tuple: {args}")
+    if len(args) != 3:
+        raise ValueError(
+            f"diff_replace[{index}] should contain "
+            f"'<nb_address> <regex> <replacement>': {args}"
+        )
+    if not isinstance(args[0], str):
+        raise TypeError(f"diff_replace[{index}] address '{args[0]}' must a string")
+    if not args[0].startswith("/"):
+        raise ValueError(
+            f"diff_ignore[{index}] address '{args[0]}' must start with '/'"
+        )
+    if not isinstance(args[1], str):
+        raise TypeError(f"diff_replace[{index}] regex '{args[1]}' must a string")
+    try:
+        re.compile(args[1])
+    except Exception as err:
+        raise TypeError(
+            f"diff_replace[{index}] '{args[1]}' is not a valid regex: {err}"
+        )
+    if not isinstance(args[2], str):
+        raise TypeError(f"diff_replace[{index}] replacement '{args[2]}' must a string")
+
+
+@lru_cache()
+def _load_validator():
+    schema = json.loads(
+        importlib_resources.read_text(resources, "nb_metadata.schema.json")
+    )
+    validator_cls = jsonschema.validators.validator_for(schema)
+    return validator_cls(schema=schema)
+
+
 def validate_metadata(data, path):
     """Validate notebook and cell metadata against the required config schema.
 
     :raises NBRegressionError: if validation fails
     """
     __tracebackhide__ = True
-    schema = {
-        "$schema": "http://json-schema.org/draft-07/schema",
-        "type": "object",
-        "properties": {
-            "diff_ignore": {
-                "description": "notebook paths to ignore during diffing",
-                "type": "array",
-                "items": {"type": "string", "pattern": "^/[\\_a-z0-9\\/\\+\\-\\*]*$"},
-            },
-            "skip": {"description": "skip testing of this notebook", "type": "boolean"},
-            "skip_reason": {
-                "description": "reason for skipping testing of this notebook",
-                "type": "string",
-            },
-        },
-    }
-    validator_cls = jsonschema.validators.validator_for(schema)
-    validator = validator_cls(schema=schema)
+    validator = _load_validator()
     errors = sorted(validator.iter_errors(data), key=lambda e: e.path)
     if errors:
         raise NBConfigValidationError(
@@ -150,9 +175,22 @@ def validate_metadata(data, path):
 class MetadataConfig:
     """A class to store configuration data, obtained from the notebook metadata."""
 
+    diff_replace: tuple = attr.ib(
+        (),
+        validator=instance_of(tuple),
+        metadata={"help": "notebook paths to regex replace before diffing"},
+    )
+
+    @diff_replace.validator
+    def _validate_diff_replace(self, attribute, values):
+        if not isinstance(values, tuple):
+            raise TypeError(f"diff_replace must be a tuple: {values}")
+        for i, args in enumerate(values):
+            validate_regex_replace(args, i)
+
     diff_ignore: set = attr.ib(
         attr.Factory(set),
-        validator=instance_of(set),
+        validator=deep_iterable(instance_of(str), instance_of(set)),
         metadata={"help": "notebook paths to ignore during diffing"},
     )
     skip: bool = attr.ib(
@@ -172,18 +210,28 @@ def config_from_metadata(nb: NotebookNode) -> dict:
     nb_metadata = nb.get("metadata", {}).get(META_KEY, {})
     validate_metadata(nb_metadata, "/metadata")
 
-    diff_ignore = set()
-    diff_ignore.update(nb_metadata.get("diff_ignore", []))
+    diff_replace = [tuple(d) for d in nb_metadata.get("diff_replace", [])]
+    diff_ignore = set(nb_metadata.get("diff_ignore", []))
 
     for i, cell in enumerate(nb.get("cells", [])):
         cell_metadata = cell.get("metadata", {}).get(META_KEY, {})
         validate_metadata(cell_metadata, f"/cells/{i}/metadata")
 
-        cell_diff_ignore = cell_metadata.get("diff_ignore", [])
-        diff_ignore.update([f"/cells/{i}{d}" for d in cell_diff_ignore])
+        diff_replace.extend(
+            [
+                (f"/cells/{i}{p}", x, r)
+                for p, x, r in cell_metadata.get("diff_replace", [])
+            ]
+        )
+        diff_ignore.update(
+            [f"/cells/{i}{p}" for p in cell_metadata.get("diff_ignore", [])]
+        )
 
     return MetadataConfig(
-        diff_ignore, nb_metadata.get("skip", False), nb_metadata.get("skip_reason", "")
+        tuple(diff_replace),
+        diff_ignore,
+        nb_metadata.get("skip", False),
+        nb_metadata.get("skip_reason", ""),
     )
 
 

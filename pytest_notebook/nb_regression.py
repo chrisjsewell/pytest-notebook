@@ -1,7 +1,7 @@
 """Jupyter Notebook Regression Test Class."""
 import copy
+import logging
 import os
-import re
 import sys
 from typing import List, TextIO, Union
 
@@ -13,13 +13,19 @@ from nbformat import NotebookNode
 
 from pytest_notebook.diffing import diff_notebooks, diff_to_string, filter_diff
 from pytest_notebook.execution import execute_notebook
-from pytest_notebook.notebook import load_notebook_with_config, regex_replace_nb
+from pytest_notebook.notebook import (
+    load_notebook_with_config,
+    regex_replace_nb,
+    validate_regex_replace,
+)
 from pytest_notebook.post_processors import (
     ENTRY_POINT_NAME,
     list_processor_names,
     load_processor,
 )
 from pytest_notebook.utils import autodoc
+
+logger = logging.getLogger(__name__)
 
 HELP_EXEC_CWD = (
     "Path to the directory which the notebook will run in "
@@ -145,27 +151,7 @@ class NBRegressionFixture:
         if not isinstance(values, tuple):
             raise TypeError(f"diff_replace must be a tuple: {values}")
         for i, args in enumerate(values):
-            if not isinstance(args, tuple):
-                raise TypeError(f"diff_replace[{i}] must be a tuple: {args}")
-
-            if not isinstance(args[0], str):
-                raise TypeError(f"diff_replace[{i}] address '{args[0]}' must a string")
-            if not args[0].startswith("/"):
-                raise ValueError(
-                    f"diff_ignore[{i}] address '{args[0]}' must start with '/'"
-                )
-            if not isinstance(args[1], str):
-                raise TypeError(f"diff_replace[{i}] regex '{args[1]}' must a string")
-            try:
-                re.compile(args[1])
-            except Exception as err:
-                raise TypeError(
-                    f"diff_replace[{i}] '{args[1]}' is not a valid regex: {err}"
-                )
-            if not isinstance(args[2], str):
-                raise TypeError(
-                    f"diff_replace[{i}] replacement '{args[2]}' must a string"
-                )
+            validate_regex_replace(args, i)
 
     diff_ignore: tuple = attr.ib(
         # TODO replace this default with a diff_replace one?
@@ -223,6 +209,7 @@ class NBRegressionFixture:
             abspath = os.path.abspath(path.name)
         else:
             abspath = os.path.abspath(str(path))
+        logger.debug(f"checking file: {abspath}")
 
         nb_initial, nb_config = load_notebook_with_config(path)
 
@@ -240,9 +227,12 @@ class NBRegressionFixture:
             post_proc = load_processor(proc_name)
             nb_final, resources = post_proc(nb_final, resources)
 
-        if self.diff_replace:
-            nb_initial_replace = regex_replace_nb(nb_initial, self.diff_replace)
-            nb_final_replace = regex_replace_nb(nb_final, self.diff_replace)
+        regex_replace = list(self.diff_replace) + list(nb_config.diff_replace)
+
+        if regex_replace:
+            logger.debug(f"applying replacements: {regex_replace}")
+            nb_initial_replace = regex_replace_nb(nb_initial, regex_replace)
+            nb_final_replace = regex_replace_nb(nb_final, regex_replace)
         else:
             nb_initial_replace = nb_initial
             nb_final_replace = nb_final
@@ -251,6 +241,7 @@ class NBRegressionFixture:
 
         diff_ignore = copy.deepcopy(nb_config.diff_ignore)
         diff_ignore.update(self.diff_ignore)
+        logger.debug(f"filtering diff by ignoring: {diff_ignore}")
         filtered_diff = filter_diff(full_diff, diff_ignore)
 
         diff_string = diff_to_string(

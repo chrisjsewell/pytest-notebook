@@ -6,3 +6,4 @@ recursive-exclude * __pycache__
 recursive-exclude * *.py[co]
 
 recursive-include pytest_notebook/example_nbs *.ipynb
+recursive-include pytest_notebook/resources *.json

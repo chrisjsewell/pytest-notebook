@@ -190,17 +190,28 @@ def test_config_from_metadata_none():
 def test_config_from_metadata():
     """Test extraction of configuration data from notebook metadata."""
     notebook = create_notebook()
-    notebook.metadata[META_KEY] = {"diff_ignore": ["/", "/cells/*/outputs"]}
+    notebook.metadata[META_KEY] = {
+        "diff_ignore": ["/", "/cells/*/outputs"],
+        "diff_replace": [
+            ["/cells/0/outputs/0", r"\d{2,4}-\d{1,2}-\d{1,2}", "DATE-STAMP"]
+        ],
+    }
     notebook.cells.extend(
         [
             prepare_cell({"metadata": {}}),
             prepare_cell({"metadata": {META_KEY: {"diff_ignore": ["/", "/outputs"]}}}),
-            prepare_cell({"metadata": {}}),
+            prepare_cell(
+                {"metadata": {META_KEY: {"diff_replace": [["/source", "s", "p"]]}}}
+            ),
         ]
     )
 
     config = config_from_metadata(notebook)
 
     assert config == MetadataConfig(
-        {"/", "/cells/*/outputs", "/cells/1/", "/cells/1/outputs"}
+        diff_replace=(
+            ("/cells/0/outputs/0", r"\d{2,4}-\d{1,2}-\d{1,2}", "DATE-STAMP"),
+            ("/cells/2/source", "s", "p"),
+        ),
+        diff_ignore={"/", "/cells/*/outputs", "/cells/1/", "/cells/1/outputs"},
     )
