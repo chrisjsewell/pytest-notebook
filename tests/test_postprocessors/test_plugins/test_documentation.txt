@@ -3,7 +3,6 @@ beautifulsoup:
 
       See: https://beautiful-soup-4.readthedocs.io.
 
-
 blacken_code:
   Format python source code with black (see https://black.readthedocs.io).
 
