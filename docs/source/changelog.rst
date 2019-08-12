@@ -2,8 +2,8 @@ Changelog
 =========
 
 
-(development)
--------------
+v0.5.2 (2019-08-12)
+-------------------
 - Add documentation for beautifulsoup post-processor. [Chris Sewell]
 
 - Add beautifulsoup post-processor. [Chris Sewell]
