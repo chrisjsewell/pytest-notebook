@@ -157,6 +157,43 @@ def blacken_code(
     return cell, resources
 
 
-# TODO add beautify_html (for text/html and svg)
-# from bs4 import BeautifulSoup
-# BeautifulSoup(html_string, 'html.parser').prettify()
+@cell_preprocessor
+def beautifulsoup(
+    cell: NotebookNode, resources: dict, index: int
+) -> Tuple[NotebookNode, dict]:
+    """Format text/html and image/svg+xml outputs with beautiful-soup.
+
+    See: https://beautiful-soup-4.readthedocs.io.
+
+    """
+    try:
+        from bs4 import BeautifulSoup
+    except ImportError:
+        raise ImportError(
+            "bs4 not installed: see https://beautiful-soup-4.readthedocs.io"
+        )
+
+    if cell.get("cell_type", None) != "code":
+        return cell, resources
+
+    if "outputs" not in cell:
+        return cell, resources
+
+    for i, output in enumerate(cell.outputs):
+        if output.output_type not in ["execute_result", "display_data"]:
+            continue
+        for mimetype, value in output.get("data", {}).items():
+            if mimetype not in ["text/html", "image/svg+xml"]:
+                continue
+            path = f"/cells/{index}/outputs/{i}/{mimetype}"
+            # TODO use metadata to set builder and whether to raise on exceptions
+            try:
+                output["data"][mimetype] = BeautifulSoup(
+                    output["data"][mimetype], "html.parser"
+                ).prettify()
+                # record which paths have been formatted (mainly for testing)
+                resources.setdefault("beautifulsoup", []).append(path)
+            except Exception:  # TODO what exceptions might be raised?
+                logger.debug(f"{path} could not be formatted by beautiful-soup.")
+
+    return cell, resources

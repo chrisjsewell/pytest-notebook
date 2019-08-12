@@ -8,6 +8,7 @@ For more information on writing pytest plugins see:
 - https://docs.pytest.org/en/latest/example/simple.html
 - https://github.com/pytest-dev/cookiecutter-pytest-plugin
 - http://doc.pytest.org/en/latest/example/nonpython.html
+- https://docs.pytest.org/en/latest/_modules/_pytest/hookspec.html
 
 """
 from distutils.util import strtobool as _str2bool

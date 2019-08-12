@@ -33,7 +33,13 @@ setup(
         # "ruamel.yaml",
     ],
     extras_require={
-        "testing": ["coverage", "pytest-cov", "pytest-regressions", "black==19.3b0"],
+        "testing": [
+            "coverage",
+            "pytest-cov",
+            "pytest-regressions",
+            "black==19.3b0",
+            "beautifulsoup4==4.8.0",
+        ],
         "code_style": [
             "black",
             "pre-commit==1.17.0",
@@ -72,6 +78,7 @@ setup(
         "nbreg.post_proc": [
             "coalesce_streams = pytest_notebook.post_processors:coalesce_streams",
             "blacken_code = pytest_notebook.post_processors:blacken_code",
+            "beautifulsoup = pytest_notebook.post_processors:beautifulsoup",
         ],
     },
 )
