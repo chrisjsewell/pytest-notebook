@@ -42,6 +42,7 @@ class NotSet:
 
 
 def pytest_addoption(parser):
+    """Add pytest commandline and configuration file options."""
     group = parser.getgroup("nb_regression")
     group.addoption(
         "--nb-test-files",
@@ -197,6 +198,20 @@ def gather_config_options(pytestconfig):
         nbreg_kwargs["diff_replace"] = nb_diff_replace
 
     return nbreg_kwargs, other_args
+
+
+def pytest_report_header(config):
+    """Add header information for pytest execution."""
+
+    kwargs, other_args = gather_config_options(config)
+    header = []
+    if kwargs.get("exec_notebook", True) and kwargs.get("exec_cwd", None):
+        header.append(f"NB exec dir: {kwargs['exec_cwd']}")
+    if kwargs.get("post_processors", None):
+        header.append(f"NB post processors: {' '.join(kwargs['post_processors'])}")
+    if kwargs.get("force_regen", None):
+        header.append(f"NB force regen: {kwargs['force_regen']}")
+    return header
 
 
 @pytest.fixture(scope="function")

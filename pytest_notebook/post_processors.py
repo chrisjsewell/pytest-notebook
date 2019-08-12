@@ -151,6 +151,9 @@ def blacken_code(
     except (SyntaxError, black.InvalidInput):
         logger.debug(f"cell {index} could not be formatted by black.")
 
+    # code cells don't require a trailing new line
+    cell.source = cell.source.rstrip()
+
     return cell, resources
 
 

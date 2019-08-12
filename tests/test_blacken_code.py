@@ -43,8 +43,7 @@ def test_blacken_code():
                     """\
                     for i in range(5):
                         x = i
-                        a = "123"  # comment
-                    """
+                        a = "123"  # comment"""
                 ),
             }
         )
