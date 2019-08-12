@@ -2,6 +2,27 @@ Changelog
 =========
 
 
+(development)
+-------------
+- Add documentation for beautifulsoup post-processor. [Chris Sewell]
+
+- Add beautifulsoup post-processor. [Chris Sewell]
+
+- Add header info for pytest execution. [Chris Sewell]
+
+- Add minor docstring update. [Chris Sewell]
+
+
+v0.5.1 (2019-08-12)
+-------------------
+- Include package data. [Chris Sewell]
+
+
+v0.5.0 (2019-08-12)
+-------------------
+- Fix dependency. [Chris Sewell]
+
+
 v0.4.0 (2019-08-12)
 -------------------
 - Added regex-replacement functionality (#1) [Chris Sewell]

@@ -1,0 +1,15 @@
+beautifulsoup:
+  Format text/html and image/svg+xml outputs with beautiful-soup.
+
+      See: https://beautiful-soup-4.readthedocs.io.
+
+blacken_code:
+  Format python source code with black (see https://black.readthedocs.io).
+
+coalesce_streams:
+  Merge all stream outputs with shared names into single streams.
+
+      This ensure deterministic outputs.
+
+      Adapted from:
+      https://github.com/computationalmodelling/nbval/blob/master/nbval/plugin.py.

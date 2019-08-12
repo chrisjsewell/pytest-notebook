@@ -43,8 +43,8 @@ def document_processors():
     """Create formatted string of all preprocessor docstrings."""
     return "\n\n".join(
         [
-            "{}:\n{}".format(n, textwrap.indent(load_processor(n).__doc__, "  "))
-            for n in list_processor_names()
+            f"{n}:\n{textwrap.indent(load_processor(n).__doc__, '  ').rstrip()}"
+            for n in sorted(list_processor_names())
         ]
     )
 
@@ -85,8 +85,7 @@ def coalesce_streams(
     This ensure deterministic outputs.
 
     Adapted from:
-    https://github.com/computationalmodelling/nbval/blob/master/nbval/plugin.py
-
+    https://github.com/computationalmodelling/nbval/blob/master/nbval/plugin.py.
     """
 
     if "outputs" not in cell:
@@ -115,7 +114,7 @@ def coalesce_streams(
         output.text = RGX_CARRIAGERETURN.sub("", output.text)
 
     # We also want to ensure stdout and stderr are always in the same consecutive order,
-    # because, they are asynchronous, so order isn't guaranteed.
+    # because they are asynchronous, so order isn't guaranteed.
     for i, output in enumerate(new_outputs):
         if output.output_type == "stream" and output.name == "stderr":
             if (
@@ -151,9 +150,48 @@ def blacken_code(
     except (SyntaxError, black.InvalidInput):
         logger.debug(f"cell {index} could not be formatted by black.")
 
+    # code cells don't require a trailing new line
+    cell.source = cell.source.rstrip()
+
     return cell, resources
 
 
-# TODO add beautify_html (for text/html and svg)
-# from bs4 import BeautifulSoup
-# BeautifulSoup(html_string, 'html.parser').prettify()
+@cell_preprocessor
+def beautifulsoup(
+    cell: NotebookNode, resources: dict, index: int
+) -> Tuple[NotebookNode, dict]:
+    """Format text/html and image/svg+xml outputs with beautiful-soup.
+
+    See: https://beautiful-soup-4.readthedocs.io.
+    """
+    try:
+        from bs4 import BeautifulSoup
+    except ImportError:
+        raise ImportError(
+            "bs4 not installed: see https://beautiful-soup-4.readthedocs.io"
+        )
+
+    if cell.get("cell_type", None) != "code":
+        return cell, resources
+
+    if "outputs" not in cell:
+        return cell, resources
+
+    for i, output in enumerate(cell.outputs):
+        if output.output_type not in ["execute_result", "display_data"]:
+            continue
+        for mimetype, value in output.get("data", {}).items():
+            if mimetype not in ["text/html", "image/svg+xml"]:
+                continue
+            path = f"/cells/{index}/outputs/{i}/{mimetype}"
+            # TODO use metadata to set builder and whether to raise on exceptions
+            try:
+                output["data"][mimetype] = BeautifulSoup(
+                    output["data"][mimetype], "html.parser"
+                ).prettify()
+                # record which paths have been formatted (mainly for testing)
+                resources.setdefault("beautifulsoup", []).append(path)
+            except Exception:  # TODO what exceptions might be raised?
+                logger.debug(f"{path} could not be formatted by beautiful-soup.")
+
+    return cell, resources
