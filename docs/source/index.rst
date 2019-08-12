@@ -72,7 +72,7 @@ Features
 
 -  Post-processor plugin entry-points, allow for customisable
    modifications of the notebook, including source code formatting with
-   `black`_
+   `black`_ (see :ref:`post_processors`).
 
 .. image:: _static/collaged_in_out.png
    :alt: Configuration Examples

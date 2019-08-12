@@ -27,6 +27,9 @@ from pytest_notebook.utils import autodoc
 
 logger = logging.getLogger(__name__)
 
+HELP_EXEC_NOTEBOOK = (
+    "Create a new notebook, by executing all cells in the original notebook"
+)
 HELP_EXEC_CWD = (
     "Path to the directory which the notebook will run in "
     "(defaults to directory of notebook)."
@@ -101,6 +104,9 @@ class NBRegressionResult:
 class NBRegressionFixture:
     """Class to perform Jupyter Notebook Regression tests."""
 
+    exec_notebook: bool = attr.ib(
+        True, instance_of(bool), metadata={"help": HELP_EXEC_NOTEBOOK}
+    )
     exec_cwd: Union[str, None] = attr.ib(None, metadata={"help": HELP_EXEC_CWD})
 
     @exec_cwd.validator
@@ -215,12 +221,17 @@ class NBRegressionFixture:
 
         if not self.exec_cwd:
             self.exec_cwd = os.path.dirname(abspath)
-        exec_error, nb_final = execute_notebook(
-            nb_initial,
-            cwd=self.exec_cwd,
-            timeout=self.exec_timeout,
-            allow_errors=self.exec_allow_errors,
-        )
+
+        if self.exec_notebook:
+            exec_error, nb_final = execute_notebook(
+                nb_initial,
+                cwd=self.exec_cwd,
+                timeout=self.exec_timeout,
+                allow_errors=self.exec_allow_errors,
+            )
+        else:
+            exec_error = None
+            nb_final = nb_initial
 
         resources = copy.deepcopy(self.post_proc_resources)
         for proc_name in self.post_processors:

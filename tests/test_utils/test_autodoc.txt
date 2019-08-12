@@ -2,6 +2,10 @@ Class to perform Jupyter Notebook Regression tests.
 
 Parameters
 ----------
+exec_notebook: bool
+    Create a new notebook, by executing all cells in the original notebook This value is
+    accessible, after initialization, via the ``exec_notebook`` attribute. Default: True
+
 exec_cwd: str, NoneType
     Path to the directory which the notebook will run in (defaults to directory of
     notebook). This value is accessible, after initialization, via the ``exec_cwd``
@@ -51,6 +55,10 @@ force_regen: bool
 
 Parameters
 ----------
+exec_notebook: bool
+    Create a new notebook, by executing all cells in the original notebook This value is
+    accessible, after initialization, via the ``exec_notebook`` attribute. Default: True
+
 exec_cwd: str, NoneType
     Path to the directory which the notebook will run in (defaults to directory of
     notebook). This value is accessible, after initialization, via the ``exec_cwd``

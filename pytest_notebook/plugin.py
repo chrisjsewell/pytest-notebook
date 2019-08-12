@@ -23,6 +23,7 @@ from pytest_notebook.nb_regression import (
     HELP_DIFF_USE_COLOR,
     HELP_EXEC_ALLOW_ERRORS,
     HELP_EXEC_CWD,
+    HELP_EXEC_NOTEBOOK,
     HELP_EXEC_TIMEOUT,
     HELP_FORCE_REGEN,
     HELP_POST_PROCS,
@@ -52,6 +53,7 @@ def pytest_addoption(parser):
     # group.addoption(
     #     "--nb-file-fnmatch", dest="nb_file_fnmatch", type=str, help=HELP_FILE_FNMATCH
     # )
+    # TODO option for --nb-no-exec-notebook
     group.addoption("--nb-exec-cwd", dest="nb_exec_cwd", type=str, help=HELP_EXEC_CWD)
     group.addoption(
         "--nb-exec-errors",
@@ -81,6 +83,9 @@ def pytest_addoption(parser):
     parser.addini("nb_test_files", type="bool", help=HELP_TEST_FILES, default=NotSet())
     parser.addini(
         "nb_file_fnmatch", type="args", help=HELP_FILE_FNMATCH, default=NotSet()
+    )
+    parser.addini(
+        "nb_exec_notebook", type="bool", help=HELP_EXEC_NOTEBOOK, default=NotSet()
     )
     parser.addini("nb_exec_cwd", help=HELP_EXEC_CWD, default=NotSet())
     parser.addini(
@@ -163,6 +168,7 @@ def gather_config_options(pytestconfig):
     """
     nbreg_kwargs = {}
     for name, value_type in [
+        ("nb_exec_notebook", str2bool),
         ("nb_exec_cwd", str),
         ("nb_exec_allow_errors", str2bool),
         ("nb_exec_timeout", int),
