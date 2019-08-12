@@ -19,6 +19,9 @@ def running_as_test():
         else:
             output = "result"
 
+    See:
+    https://docs.pytest.org/en/latest/example/simple.html#pytest-current-test-environment-variable
+
     """
     return os.environ.get("PYTEST_CURRENT_TEST", None) is not None
 
