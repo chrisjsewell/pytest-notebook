@@ -18,6 +18,7 @@ setup(
     long_description_content_type="text/markdown",
     packages=find_packages(),
     python_requires=">=3.5",
+    include_package_data=True,
     install_requires=[
         "pytest>=3.5.0",
         "attrs",
