@@ -1,40 +1,62 @@
-import nbformat
+"""Tests for ``NBRegressionFixture``."""
+import os
 
-from pytest_notebook.nb_regression import (
-    config_from_metadata,
-    META_KEY,
-    MetadataConfig,
-    NBRegressionFixture,
-)
-from pytest_notebook.utils import prepare_cell_v4
+import pytest
+
+from pytest_notebook.nb_regression import NBRegressionFixture, NBRegressionError
+
+PATH = os.path.dirname(os.path.realpath(__file__))
 
 
 def test_init_fixture():
+    """Test initialisation of NBRegressionFixture."""
     fixture = NBRegressionFixture(exec_timeout=10)
     assert fixture.exec_timeout == 10
 
 
-def test_config_from_metadata_none():
-    notebook = nbformat.v4.new_notebook()
-    config = config_from_metadata(notebook)
-    assert config == MetadataConfig()
+def test_regression_fail():
+    """Test a regression that will fail."""
+    fixture = NBRegressionFixture()
+    with pytest.raises(NBRegressionError):
+        fixture.check(os.path.join(PATH, "raw_files", "different_outputs.ipynb"))
 
 
-def test_config_from_metadata():
-    notebook = nbformat.v4.new_notebook()
-    notebook.metadata[META_KEY] = {"diff_ignore": ["/", "/cells/*/outputs"]}
-    notebook.cells.extend(
-        [
-            prepare_cell_v4({"metadata": {}}),
-            prepare_cell_v4(
-                {"metadata": {META_KEY: {"diff_ignore": ["/", "/outputs"]}}}
-            ),
-            prepare_cell_v4({"metadata": {}}),
-        ]
+def test_regression_diff_ignore_pass():
+    """Test a regression that will succeed by ignoring certain notebook paths."""
+    fixture = NBRegressionFixture()
+    fixture.diff_ignore = (
+        "/metadata/language_info/version",
+        "/cells/*/execution_count",
+        "/cells/*/outputs/*/traceback",
+        "/cells/*/outputs/*/execution_count",
+        "/cells/12/outputs/0/data/text/latex",
+        "/cells/9/outputs/0/metadata/application/json",
     )
+    fixture.check(os.path.join(PATH, "raw_files", "different_outputs.ipynb"))
 
-    config = config_from_metadata(notebook)
-    print(config)
-    assert config == MetadataConfig(
-        {"/", "/cells/*/outputs", "/cells/1/", "/cells/1/outputs"}
+
+def test_regression_regex_replace_pass():
+    """Test a regression that will succeed by regex replacing certain paths."""
+    fixture = NBRegressionFixture()
+    fixture.diff_ignore = (
+        "/metadata/language_info/version",
+        "/cells/*/execution_count",
+        "/cells/*/outputs/*/execution_count",
+        "/cells/12/outputs/0/data/text/latex",
+        "/cells/9/outputs/0/metadata/application/json",
     )
+    fixture.diff_replace = (
+        ("/cells/*/outputs/*/traceback", r"\<module\>.*\n", "<module>\n"),
+        ("/cells/*/outputs/*/traceback", r"[\-]+", "-"),
+        (
+            "/cells/*/outputs/*/traceback",
+            r"\s*Traceback \(most recent call last\)",
+            " Traceback (most recent call last)",
+        ),
+        (
+            "/cells/*/outputs/*/traceback",
+            r"\<ipython\-input\-[\-0-9a-zA-Z]*\>",
+            "<ipython-input-XXX>",
+        ),
+    )
+    fixture.check(os.path.join(PATH, "raw_files", "different_outputs.ipynb"))

@@ -12,6 +12,10 @@ from nbdime.utils import defaultdict2, join_path, split_path
 from nbformat import NotebookNode
 
 
+# TODO nbdime is currently hard coded to version 4 notebooks,
+# this should be reviewed in new releases
+
+
 def diff_sequence_simple(
     initial: Sequence,
     final: Sequence,
@@ -111,9 +115,9 @@ def star_path(path):
 def filter_diff(
     diff: List[DiffEntry], remove_paths: List[str], path: str = ""
 ) -> List[DiffEntry]:
-    """Filter a notebook diff object, removing a list of paths.
+    r"""Filter a notebook diff object, removing a list of paths.
 
-    Paths are joined by '/' and may be starred, e.g. '/cells/\\*/outputs'.
+    Paths are joined by '/' and may be starred, e.g. '/cells/\*/outputs'.
     """
 
     if isinstance(diff, list):
@@ -130,7 +134,7 @@ def filter_diff(
         for i in reversed(range(len(path_elements))):
             # iteratively star more elements from the right side
             new_path = join_path(path_elements[:i] + star_path(path_elements[i:]))
-            if any([new_path.startswith(p) for p in remove_paths]):
+            if any(new_path.startswith(p) for p in remove_paths):
                 return None
 
         new_diff = copy.deepcopy(diff)

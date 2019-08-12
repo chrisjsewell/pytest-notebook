@@ -14,6 +14,14 @@ pytest-notebook
    :hidden:
 
    user_guide/tutorial_intro
+   user_guide/tutorial_config
+
+.. toctree::
+   :maxdepth: 1
+   :caption: Validation Schemas
+   :hidden:
+
+   literal_includes/nb_metadata_schema
 
 .. toctree::
    :maxdepth: 1
@@ -56,7 +64,7 @@ Features
    2. As a pytest fixtures.
    3. Using the ``pytest_notebook`` python package.
 
--  All stages are highly configurable *via*:
+-  All stages are highly configurable (see :ref:`configuring_pytest_notebook`) *via*:
 
    1. The pytest command-line interface.
    2. The pytest configuration file.
@@ -64,7 +72,7 @@ Features
 
 -  Post-processor plugin entry-points, allow for customisable
    modifications of the notebook, including source code formatting with
-   `black`_
+   `black`_ (see :ref:`post_processors`).
 
 .. image:: _static/collaged_in_out.png
    :alt: Configuration Examples

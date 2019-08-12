@@ -3,10 +3,7 @@ import os
 
 import attr
 import textwrap
-from typing import Any, Callable, Mapping, Union
 import warnings
-
-from nbformat import from_dict, NotebookNode
 
 
 def running_as_test():
@@ -24,30 +21,6 @@ def running_as_test():
 
     """
     return os.environ.get("PYTEST_CURRENT_TEST", None) is not None
-
-
-def mapping_to_dict(
-    obj: Any, strip_keys: list = (), leaf_func: Union[Callable, None] = None
-) -> dict:
-    """Recursively convert mappable objects to dicts, including in lists and tuples.
-
-    :param list[str] strip_keys: list of keys to strip from the output
-    :param leaf_func: a function to apply to leaf values
-
-    """
-
-    if isinstance(obj, Mapping):
-        return {
-            k: mapping_to_dict(obj[k], strip_keys, leaf_func)
-            for k in sorted(obj.keys())
-            if k not in strip_keys
-        }
-    elif isinstance(obj, (list, tuple)):
-        return [mapping_to_dict(i, strip_keys, leaf_func) for i in obj]
-    elif leaf_func is not None:
-        return leaf_func(obj)
-    else:
-        return obj
 
 
 def autodoc(attrs_class):
@@ -163,35 +136,3 @@ def autodoc(attrs_class):
         attrs_class.__doc__ = params_section
 
     return attrs_class
-
-
-def is_json_mime(mime):
-    """Test if mime-type is JSON-like."""
-    return mime == "application/json" or (
-        mime.startswith("application/") and mime.endswith("+json")
-    )
-
-
-def rejoin_mimebundle(data):
-    """Rejoin the multi-line string fields in a mimebundle (in-place)."""
-    for key, value in list(data.items()):
-        if (
-            not is_json_mime(key)
-            and isinstance(value, list)
-            and all(isinstance(line, str) for line in value)
-        ):
-            data[key] = "".join(value)
-    return data
-
-
-def prepare_cell_v4(cell: dict) -> NotebookNode:
-    """Convert raw notebook cell (in v4 format) to a ``NotebookNode``."""
-    cell = from_dict(cell)
-    for output in cell.get("outputs", []):
-        output_type = output.get("output_type", "")
-        if output_type in {"execute_result", "display_data"}:
-            rejoin_mimebundle(output.get("data", {}))
-        elif output_type:
-            if isinstance(output.get("text", ""), list):
-                output.text = "".join(output.text)
-    return cell

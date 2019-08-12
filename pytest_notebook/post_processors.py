@@ -5,6 +5,7 @@ and output a (new notebook, resources).
 """
 import copy
 import functools
+import logging
 import pkg_resources
 import re
 import textwrap
@@ -12,6 +13,7 @@ from typing import Tuple
 
 from nbformat import NotebookNode
 
+logger = logging.getLogger(__name__)
 
 ENTRY_POINT_NAME = "nbreg.post_proc"
 
@@ -147,7 +149,7 @@ def blacken_code(
     try:
         cell.source = black.format_str(cell.source, mode=black.FileMode())
     except (SyntaxError, black.InvalidInput):
-        pass
+        logger.debug(f"cell {index} could not be formatted by black.")
 
     return cell, resources
 

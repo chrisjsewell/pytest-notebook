@@ -40,12 +40,13 @@ def test_run_fail(testdir):
     )
     # fnmatch_lines does an assertion internally
     result.stdout.fnmatch_lines(
-        [
-            "*::nbregression(test_nb) FAILED*",
-            "*pytest_notebook.nb_regression.NBRegressionError:*",
-            "*## modified /cells/11/outputs/0/data/image/svg+xml*",
-        ]
+        ["*::nbregression(test_nb) FAILED*", "*CellExecutionError:*"]
     )
+    # result.stderr.fnmatch_lines(
+    #     [
+    #         "*## modified /cells/11/outputs/0/data/image/svg+xml*",
+    #     ]
+    # )
 
     # make sure that that we get a non '0' exit code for the testsuite
     assert result.ret != 0

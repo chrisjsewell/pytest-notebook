@@ -1,0 +1,56 @@
+{
+    "$schema": "http://json-schema.org/draft-07/schema",
+    "type": "object",
+    "definitions": {
+        "nb_path": {
+            "description": "a path in the notebook",
+            "examples": [
+                "/cells/*/outputs/0/text"
+            ],
+            "type": "string",
+            "pattern": "^/[\\_a-z0-9\\/\\+\\-\\*]*$"
+        }
+    },
+    "properties": {
+        "diff_replace": {
+            "description": "notebook paths to replace before diffing",
+            "type": "array",
+            "items": {
+                "type": "array",
+                "additionalItems": false,
+                "items": [
+                    {
+                        "$ref": "#/definitions/nb_path"
+                    },
+                    {
+                        "type": "string",
+                        "description": "regex pattern",
+                        "examples": [
+                            "\\d{2,4}-\\d{1,2}-\\d{1,2}",
+                            "\\/([A-z0-9-_+]+\\/)*[A-z0-9-_+]+\\.ipynb"
+                        ]
+                    },
+                    {
+                        "type": "string",
+                        "description": "replacement string"
+                    }
+                ]
+            }
+        },
+        "diff_ignore": {
+            "description": "notebook paths to ignore during diffing",
+            "type": "array",
+            "items": {
+                "$ref": "#/definitions/nb_path"
+            }
+        },
+        "skip": {
+            "description": "skip testing of this notebook",
+            "type": "boolean"
+        },
+        "skip_reason": {
+            "description": "reason for skipping testing of this notebook",
+            "type": "string"
+        }
+    }
+}
