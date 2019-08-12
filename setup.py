@@ -20,7 +20,7 @@ setup(
     python_requires=">=3.5",
     install_requires=[
         "pytest>=3.5.0",
-        "attr",
+        "attrs",
         "jupyter_client",
         "nbconvert",
         "nbdime",
