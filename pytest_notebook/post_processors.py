@@ -114,7 +114,7 @@ def coalesce_streams(
         output.text = RGX_CARRIAGERETURN.sub("", output.text)
 
     # We also want to ensure stdout and stderr are always in the same consecutive order,
-    # because, they are asynchronous, so order isn't guaranteed.
+    # because they are asynchronous, so order isn't guaranteed.
     for i, output in enumerate(new_outputs):
         if output.output_type == "stream" and output.name == "stderr":
             if (
