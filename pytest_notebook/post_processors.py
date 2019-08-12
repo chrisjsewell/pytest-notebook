@@ -44,7 +44,7 @@ def document_processors():
     return "\n\n".join(
         [
             "{}:\n{}".format(n, textwrap.indent(load_processor(n).__doc__, "  "))
-            for n in list_processor_names()
+            for n in sorted(list_processor_names())
         ]
     )
 
@@ -85,8 +85,7 @@ def coalesce_streams(
     This ensure deterministic outputs.
 
     Adapted from:
-    https://github.com/computationalmodelling/nbval/blob/master/nbval/plugin.py
-
+    https://github.com/computationalmodelling/nbval/blob/master/nbval/plugin.py.
     """
 
     if "outputs" not in cell:
@@ -164,7 +163,6 @@ def beautifulsoup(
     """Format text/html and image/svg+xml outputs with beautiful-soup.
 
     See: https://beautiful-soup-4.readthedocs.io.
-
     """
     try:
         from bs4 import BeautifulSoup
