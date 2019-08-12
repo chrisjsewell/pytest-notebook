@@ -2,8 +2,26 @@ Changelog
 =========
 
 
-(development)
--------------
+v0.4.0 (2019-08-12)
+-------------------
+- Added regex-replacement functionality (#1) [Chris Sewell]
+
+  Also added:
+
+  - Cell execution logging.
+  - Tutorial on configuring `pytest-notebook`.
+- Added Conda install documentation. [Chris Sewell]
+
+
+v0.3.1 (2019-08-10)
+-------------------
+- Add screenshot to manifest. [Chris Sewell]
+
+
+v0.3.0 (2019-08-10)
+-------------------
+- Add travis deployment key. [Chris Sewell]
+
 - Add documentation and make relevant improvements to the code. [Chris Sewell]
 
 - Add nb_post_processors to configuration options. [Chris Sewell]
