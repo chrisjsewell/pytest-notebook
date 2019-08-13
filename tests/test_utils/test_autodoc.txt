@@ -28,11 +28,11 @@ cov_config: str, NoneType
     Determines what coverage configuration file to read. This value is accessible, after
     initialization, via the ``cov_config`` attribute. Default: None
 
-cov_source: str, Tuple
+cov_source: str, Tuple[str]
     A list of file paths or package names to measure coverage for. This value is accessible,
     after initialization, via the ``cov_source`` attribute. Default: None
 
-cov_merge: Coverage, NoneType
+cov_merge: coverage.control.Coverage, NoneType
     A coverage.Coverage instance, to merge coverage results with. This value is accessible,
     after initialization, via the ``cov_merge`` attribute. Default: None
 
@@ -97,11 +97,11 @@ cov_config: str, NoneType
     Determines what coverage configuration file to read. This value is accessible, after
     initialization, via the ``cov_config`` attribute. Default: None
 
-cov_source: str, Tuple
+cov_source: str, Tuple[str]
     A list of file paths or package names to measure coverage for. This value is accessible,
     after initialization, via the ``cov_source`` attribute. Default: None
 
-cov_merge: Coverage, NoneType
+cov_merge: coverage.control.Coverage, NoneType
     A coverage.Coverage instance, to merge coverage results with. This value is accessible,
     after initialization, via the ``cov_merge`` attribute. Default: None
 
