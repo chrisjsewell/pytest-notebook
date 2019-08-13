@@ -26,6 +26,29 @@ def running_as_test():
     return os.environ.get("PYTEST_CURRENT_TEST", None) is not None
 
 
+def type_to_sphinx(typ, field_name):
+    """Convert a type object to a string acceptable by Sphinx."""
+    # TODO better implementation of type_to_sphinx
+    if typ is None:
+        field_type = "Any"
+        warnings.warn(f'Field "{field_name}" has no declared type.')
+    elif getattr(typ, "__module__", None) == "typing":
+        field_type = str(typ).replace("typing.", "")
+        if field_type.startswith("Union["):
+            field_type = field_type[6:-1]
+    elif (
+        hasattr(typ, "__name__")
+        and getattr(typ, "__module__", "builtins") != "builtins"
+    ):
+        field_type = f"{typ.__module__}.{typ.__name__}"
+    elif hasattr(typ, "__name__"):
+        field_type = typ.__name__
+    else:
+        warnings.warn(f'Field "{field_name}" type could not be converted.')
+        field_type = "Any"
+    return field_type
+
+
 def autodoc(attrs_class):
     """Decorate an :class:`attr.s` class to update its docstring with attributes.
 
@@ -86,15 +109,7 @@ def autodoc(attrs_class):
                 f"via the ``{field.name}`` attribute. "
             )
 
-        if field.type is None:
-            field_type = "Any"
-            warnings.warn(f'Field "{field_fn}" has no declared type.')
-        else:
-            try:
-                field_type = field.type.__name__
-            except AttributeError:
-                # this is required for types.Union
-                field_type = ", ".join([a.__name__ for a in field.type.__args__])
+        field_type = type_to_sphinx(field.type, field_fn)
 
         if field.default is not attr.NOTHING:
             optional = ""  # ", optional" this isn't accepted by sphinx

@@ -2,6 +2,14 @@ Changelog
 =========
 
 
+v0.6.0 (2019-08-13)
+-------------------
+- Add Coverage Functionality (#3) [Chris Sewell]
+
+  An ``ExecuteCoveragePreprocessor`` class has been implemented,
+  and integrated into the ``NBRegressionFixture`` and ``pytest_notebook.plugin``.
+  Also, tests and a tutorial have been added.
+
 v0.5.2 (2019-08-12)
 -------------------
 - Add documentation for beautifulsoup post-processor. [Chris Sewell]

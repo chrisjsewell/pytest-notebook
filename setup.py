@@ -30,7 +30,6 @@ setup(
         "importlib_resources",
         # "numpy",
         # "pillow",
-        # "ruamel.yaml",
     ],
     extras_require={
         "testing": [
@@ -56,7 +55,9 @@ setup(
             "sphinx>=1.6",
             "sphinx_rtd_theme",
             "ipypublish>=0.10.7",
+            "ruamel.yaml",
             "ruamel.yaml.clib",
+            "coverage",
         ],
     },
     classifiers=[

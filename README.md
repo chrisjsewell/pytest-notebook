@@ -1,8 +1,8 @@
 # pytest-notebook
 
-[![Build Status](https://travis-ci.org/chrisjsewell/pytest-notebook.svg?branch=master)](https://travis-ci.org/chrisjsewell/pytest-notebook)
-[![Coverage Status](https://coveralls.io/repos/github/chrisjsewell/pytest-notebook/badge.svg?branch=master)](https://coveralls.io/github/chrisjsewell/pytest-notebook?branch=master)
-[![Docs status](https://readthedocs.org/projects/pytest-notebook/badge)](http://pytest-notebook.readthedocs.io/)
+[![CI Status](https://travis-ci.org/chrisjsewell/pytest-notebook.svg?branch=master)](https://travis-ci.org/chrisjsewell/pytest-notebook)
+[![Coverage](https://coveralls.io/repos/github/chrisjsewell/pytest-notebook/badge.svg?branch=master)](https://coveralls.io/github/chrisjsewell/pytest-notebook?branch=master)
+[![RTD](https://readthedocs.org/projects/pytest-notebook/badge)](http://pytest-notebook.readthedocs.io/)
 [![PyPI](https://img.shields.io/pypi/v/pytest-notebook.svg)](https://pypi.org/project/pytest-notebook)
 [![Conda](https://anaconda.org/conda-forge/pytest-notebook/badges/version.svg)](https://anaconda.org/conda-forge/pytest-notebook)
 [![Code style: black](https://img.shields.io/badge/code%20style-black-000000.svg)](https://github.com/ambv/black)
@@ -24,6 +24,9 @@ regenerate the notebooks, saving the new outputs.
 
 - Recognise, collect, execute (optionally output) then diff input vs. output [Jupyter Notebooks](https://jupyter.org/).
 - Provides clear and colorized diffs of the notebooks (using [nbdime](https://nbdime.readthedocs.io))
+- Regenerate failing notebooks.
+- Integration with [coverage](https://coverage.readthedocs.io) and [pytest_cov](https://pytest-cov.readthedocs.io).
+
 - A well defined API allows notebook regression tests to be run:
 
     1. Using the pytest test collection architecture.

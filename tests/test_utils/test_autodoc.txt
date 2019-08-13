@@ -20,15 +20,31 @@ exec_timeout: int
     The maximum time to wait (in seconds) for execution of each cell. This value is
     accessible, after initialization, via the ``exec_timeout`` attribute. Default: 120
 
+coverage: bool
+    Record coverage data, with coverage.py. This value is accessible, after initialization,
+    via the ``coverage`` attribute. Default: False
+
+cov_config: str, NoneType
+    Determines what coverage configuration file to read. This value is accessible, after
+    initialization, via the ``cov_config`` attribute. Default: None
+
+cov_source: str, Tuple[str]
+    A list of file paths or package names to measure coverage for. This value is accessible,
+    after initialization, via the ``cov_source`` attribute. Default: None
+
+cov_merge: coverage.control.Coverage, NoneType
+    A coverage.Coverage instance, to merge coverage results with. This value is accessible,
+    after initialization, via the ``cov_merge`` attribute. Default: None
+
 post_processors: tuple
     post-processors to apply to the new workbook, relating to entry points in the
     'nbreg.post_proc' group This value is accessible, after initialization, via the
     ``post_processors`` attribute. Default: ('coalesce_streams',)
 
-post_proc_resources: dict
-    Resources to parse to post processor functions. This value is accessible, after
-    initialization, via the ``post_proc_resources`` attribute. Default:
-    Factory(factory=<class 'dict'>, takes_self=False)
+process_resources: dict
+    Resources to parse to processor functions. This value is accessible, after
+    initialization, via the ``process_resources`` attribute. Default: Factory(factory=<class
+    'dict'>, takes_self=False)
 
 diff_replace: tuple
     A list of regex replacements to apply before diffing, e.g. ``[('/cells/*/outputs',
@@ -73,15 +89,31 @@ exec_timeout: int
     The maximum time to wait (in seconds) for execution of each cell. This value is
     accessible, after initialization, via the ``exec_timeout`` attribute. Default: 120
 
+coverage: bool
+    Record coverage data, with coverage.py. This value is accessible, after initialization,
+    via the ``coverage`` attribute. Default: False
+
+cov_config: str, NoneType
+    Determines what coverage configuration file to read. This value is accessible, after
+    initialization, via the ``cov_config`` attribute. Default: None
+
+cov_source: str, Tuple[str]
+    A list of file paths or package names to measure coverage for. This value is accessible,
+    after initialization, via the ``cov_source`` attribute. Default: None
+
+cov_merge: coverage.control.Coverage, NoneType
+    A coverage.Coverage instance, to merge coverage results with. This value is accessible,
+    after initialization, via the ``cov_merge`` attribute. Default: None
+
 post_processors: tuple
     post-processors to apply to the new workbook, relating to entry points in the
     'nbreg.post_proc' group This value is accessible, after initialization, via the
     ``post_processors`` attribute. Default: ('coalesce_streams',)
 
-post_proc_resources: dict
-    Resources to parse to post processor functions. This value is accessible, after
-    initialization, via the ``post_proc_resources`` attribute. Default:
-    Factory(factory=<class 'dict'>, takes_self=False)
+process_resources: dict
+    Resources to parse to processor functions. This value is accessible, after
+    initialization, via the ``process_resources`` attribute. Default: Factory(factory=<class
+    'dict'>, takes_self=False)
 
 diff_replace: tuple
     A list of regex replacements to apply before diffing, e.g. ``[('/cells/*/outputs',

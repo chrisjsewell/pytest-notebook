@@ -272,7 +272,7 @@ def prepare_cell(cell: dict, as_version=DEFAULT_NB_VERSION) -> NotebookNode:
     return nb["cells"][0]
 
 
-def create_notebook(as_version=DEFAULT_NB_VERSION):
+def create_notebook(as_version: int = DEFAULT_NB_VERSION):
     """Create a new notebook."""
     if as_version == 1:
         notebook = nbformat.v1.new_notebook()
@@ -285,6 +285,24 @@ def create_notebook(as_version=DEFAULT_NB_VERSION):
     else:
         raise NotImplementedError(f"notebook version: {as_version}")
     return notebook
+
+
+def create_cell(
+    source: str = "",
+    cell_type: str = "code",
+    as_version: int = DEFAULT_NB_VERSION,
+    **kwargs,
+) -> NotebookNode:
+    """Create a new notebook cell."""
+    if not as_version == 4:
+        raise NotImplementedError("cell not version 4")
+    if cell_type == "code":
+        return nbformat.v4.new_code_cell(source=source, **kwargs)
+    if cell_type == "markdown":
+        return nbformat.v4.new_markdown_cell(source=source, **kwargs)
+    if cell_type == "raw":
+        return nbformat.v4.new_raw_cell(source=source, **kwargs)
+    raise ValueError(f"cell_type '{cell_type}' not recognised.")
 
 
 def dump_notebook(nb: NotebookNode, as_version=nbformat.NO_CONVERT) -> NotebookNode:
