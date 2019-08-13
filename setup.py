@@ -57,6 +57,7 @@ setup(
             "sphinx_rtd_theme",
             "ipypublish>=0.10.7",
             "ruamel.yaml.clib",
+            "coverage",
         ],
     },
     classifiers=[
