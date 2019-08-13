@@ -223,7 +223,7 @@ class NBRegressionFixture:
             self.exec_cwd = os.path.dirname(abspath)
 
         if self.exec_notebook:
-            exec_error, nb_final = execute_notebook(
+            exec_error, nb_final, exec_resources = execute_notebook(
                 nb_initial,
                 cwd=self.exec_cwd,
                 timeout=self.exec_timeout,
