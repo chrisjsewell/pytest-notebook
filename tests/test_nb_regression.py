@@ -3,6 +3,7 @@ import os
 
 import pytest
 
+from pytest_notebook.execution import COVERAGE_KEY
 from pytest_notebook.nb_regression import NBRegressionFixture, NBRegressionError
 
 PATH = os.path.dirname(os.path.realpath(__file__))
@@ -60,3 +61,18 @@ def test_regression_regex_replace_pass():
         ),
     )
     fixture.check(os.path.join(PATH, "raw_files", "different_outputs.ipynb"))
+
+
+def test_regression_coverage():
+    """Test a regression that will fail."""
+    fixture = NBRegressionFixture()
+    fixture.diff_ignore = ("/metadata/language_info/version",)
+    fixture.coverage = True
+    result = fixture.check(
+        os.path.join(PATH, "raw_files", "coverage_test", "call_package.ipynb")
+    )
+
+    assert COVERAGE_KEY in result.process_resources
+    assert "!coverage.py:" in result.process_resources[COVERAGE_KEY]
+    assert "package.py" in result.process_resources[COVERAGE_KEY]
+    assert "[1,2,3]" in result.process_resources[COVERAGE_KEY]

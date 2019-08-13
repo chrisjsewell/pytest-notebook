@@ -18,6 +18,7 @@ import shlex
 import pytest
 
 from pytest_notebook.nb_regression import (
+    HELP_COVERAGE,
     HELP_DIFF_COLOR_WORDS,
     HELP_DIFF_IGNORE,
     HELP_DIFF_REPLACE,
@@ -68,6 +69,13 @@ def pytest_addoption(parser):
         "--nb-exec-timeout", dest="nb_exec_timeout", type=int, help=HELP_EXEC_TIMEOUT
     )
     group.addoption(
+        "--nb-coverage",
+        action="store_true",
+        default=None,
+        dest="nb_coverage",
+        help=HELP_COVERAGE,
+    )
+    group.addoption(
         "--nb-diff-color-words",
         action="store_true",
         default=None,
@@ -97,6 +105,7 @@ def pytest_addoption(parser):
         default=NotSet(),
     )
     parser.addini("nb_exec_timeout", help=HELP_EXEC_TIMEOUT, default=NotSet())
+    parser.addini("nb_coverage", type="bool", help=HELP_COVERAGE, default=NotSet())
     parser.addini(
         "nb_post_processors", type="linelist", help=HELP_POST_PROCS, default=NotSet()
     )
@@ -174,6 +183,7 @@ def gather_config_options(pytestconfig):
         ("nb_exec_cwd", str),
         ("nb_exec_allow_errors", str2bool),
         ("nb_exec_timeout", int),
+        ("nb_coverage", str2bool),
         ("nb_post_processors", tuple),
         ("nb_diff_ignore", tuple),
         ("nb_diff_use_color", str2bool),
@@ -197,6 +207,21 @@ def gather_config_options(pytestconfig):
     nb_diff_replace = validate_diff_replace(pytestconfig)
     if nb_diff_replace is not None:
         nbreg_kwargs["diff_replace"] = nb_diff_replace
+
+    # options from pytest_cov
+    # see: https://github.com/pytest-dev/pytest-cov/blob/master/src/pytest_cov/plugin.py
+    if pytestconfig.getoption("cov_source", None) is not None:
+        if pytestconfig.getoption("cov_source") == [""]:
+            # this is returned if --cov= is used
+            nbreg_kwargs["cov_source"] = None
+        else:
+            nbreg_kwargs["cov_source"] = tuple(pytestconfig.getoption("cov_source"))
+    if pytestconfig.getoption("cov_config", None) is not None:
+        nbreg_kwargs["cov_config"] = pytestconfig.getoption("cov_config")
+    if pytestconfig.pluginmanager.hasplugin("_cov"):
+        plugin = pytestconfig.pluginmanager.getplugin("_cov")
+        if plugin.cov_controller:
+            nbreg_kwargs["cov_merge"] = plugin.cov_controller.cov
 
     return nbreg_kwargs, other_args
 

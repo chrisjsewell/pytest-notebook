@@ -15,6 +15,7 @@ pytest-notebook
 
    user_guide/tutorial_intro
    user_guide/tutorial_config
+   user_guide/tutorial_coverage
 
 .. toctree::
    :maxdepth: 1
@@ -56,6 +57,8 @@ Features
 -  Provides clear and colorized diffs of the notebooks (using `nbdime`_)
 
 -  Regenerate failing notebooks (see :ref:`regen_notebooks`).
+
+-  Integration with `coverage`_ and `pytest_cov`_ (see :ref:`tutorial_coverage`).
 
 -  A well defined API allows notebook regression tests to be run in multiple ways
    (see :ref:`pytest_notebook_by_example`):
@@ -107,6 +110,8 @@ Indices and tables
 * :ref:`search`
 
 .. _pytest: https://github.com/pytest-dev/pytest
+.. _coverage: https://coverage.readthedocs.io
+.. _pytest_cov: https://pytest-cov.readthedocs.io
 .. _Jupyter: https://jupyter.org/
 .. _nbdime: https://nbdime.readthedocs.io
 .. _black: https://github.com/ambv/black
