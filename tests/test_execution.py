@@ -14,8 +14,8 @@ def test_execute_notebook_fail():
     notebook = nbformat.read(
         os.path.join(PATH, "raw_files", "different_outputs.ipynb"), as_version=4
     )
-    exec_error, new_notebook, resources = execute_notebook(notebook)
-    assert exec_error
+    exec_results = execute_notebook(notebook)
+    assert exec_results.exec_error
 
 
 def test_execute_notebook_success():
@@ -23,12 +23,10 @@ def test_execute_notebook_success():
     notebook = nbformat.read(
         os.path.join(PATH, "raw_files", "different_outputs.ipynb"), as_version=4
     )
-    exec_error, new_notebook, resources = execute_notebook(
-        notebook, cwd=os.path.join(PATH, "raw_files")
-    )
-    if exec_error:
-        raise exec_error
-    assert isinstance(new_notebook, nbformat.NotebookNode)
+    exec_results = execute_notebook(notebook, cwd=os.path.join(PATH, "raw_files"))
+    if exec_results.exec_error:
+        raise exec_results.exec_error
+    assert isinstance(exec_results.notebook, nbformat.NotebookNode)
 
 
 def test_execute_notebook_with_coverage():
@@ -45,10 +43,10 @@ def test_execute_notebook_with_coverage():
             )
         )
     ]
-    exec_error, new_notebook, resources = execute_notebook(
+    exec_results = execute_notebook(
         notebook, cwd=os.path.join(PATH, "raw_files"), with_coverage=True
     )
-    if exec_error:
-        raise exec_error
-    assert isinstance(new_notebook, nbformat.NotebookNode)
-    assert "!coverage.py" in resources[COVERAGE_KEY]
+    if exec_results.exec_error:
+        raise exec_results.exec_error
+    assert isinstance(exec_results.notebook, nbformat.NotebookNode)
+    assert "!coverage.py" in exec_results.resources[COVERAGE_KEY]

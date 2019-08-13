@@ -59,6 +59,7 @@ intersphinx_mapping = {
     "nbconvert": ("http://nbconvert.readthedocs.io/en/latest/", None),
     "nbformat": ("http://nbformat.readthedocs.io/en/latest/", None),
     "attr": ("http://www.attrs.org/en/stable/", None),
+    "coverage": ("https://coverage.readthedocs.io/en/v4.5.x/", None),
 }
 
 intersphinx_aliases = {
@@ -74,6 +75,11 @@ intersphinx_aliases = {
         "py:class",
         "nbformat.NotebookNode",
     ),
+    ("py:class", "nbconvert.preprocessors.execute.ExecutePreprocessor"): (
+        "py:class",
+        "nbconvert.preprocessors.ExecutePreprocessor",
+    ),
+    ("py:class", "coverage.control.Coverage"): ("py:class", "coverage.Coverage"),
 }
 
 nitpick_ignore = [
@@ -82,9 +88,7 @@ nitpick_ignore = [
     ("py:class", "attr.s"),
     ("py:class", "ruamel.yaml.dumper.RoundTripDumper"),
     ("py:exc", "nbconvert.preprocessors.CellExecutionError"),
-    ("py:class", "nbconvert.preprocessors.execute.ExecutePreprocessor"),
     ("py:class", "nbdime.diff_format.DiffEntry"),
-    ("py:class", "coverage.control.Coverage"),
 ]
 
 # The reST default role (used for this markup: `text`) to use for all

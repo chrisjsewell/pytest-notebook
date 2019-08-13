@@ -1,16 +1,22 @@
 """Execution of notebooks."""
 import copy
+from io import StringIO
+import json
 import logging
+import re
 import shutil
 import tempfile
 from textwrap import dedent
-from typing import List, Tuple, Union
+from typing import List, Union
 
+import attr
+from attr.validators import instance_of
 from nbconvert.preprocessors import CellExecutionError, ExecutePreprocessor
 from nbformat import NotebookNode
 import traitlets
 
 from pytest_notebook.notebook import create_cell, DEFAULT_NB_VERSION
+from pytest_notebook.utils import autodoc
 
 logger = logging.getLogger(__name__)
 
@@ -43,7 +49,7 @@ class CoverageError(Exception):
         )
 
 
-class ExecutePreprocessorCoverage(ExecutePreprocessor):
+class ExecuteCoveragePreprocessor(ExecutePreprocessor):
     """A subclass of ``ExecutePreprocessor`` that can record python code coverage.
 
     Code coverage is recorded using coverage.py:
@@ -169,6 +175,49 @@ class ExecutePreprocessorCoverage(ExecutePreprocessor):
         return super().preprocess_cell(cell, resources, cell_index)
 
 
+@autodoc
+@attr.s(frozen=True, slots=True)
+class ExecuteResult:
+    """Result of notebook execution."""
+
+    exec_error: Union[None, Exception] = attr.ib(
+        validator=instance_of((type(None), Exception)),
+        metadata={"help": "Execution exception."},
+    )
+    notebook: NotebookNode = attr.ib(
+        validator=instance_of(NotebookNode), metadata={"help": "Executed notebook."}
+    )
+    resources: dict = attr.ib(
+        validator=instance_of(dict), metadata={"help": "Resources dictionary."}
+    )
+
+    @property
+    def has_coverage(self):
+        """Return whether coverage information is available."""
+        return COVERAGE_KEY in self.resources
+
+    def coverage_data(self, debug=None):
+        """Return coverage.py coverage data as `coverage.CoverageData`."""
+        coverage_str = self.resources.get(COVERAGE_KEY, None)
+        if not coverage_str:
+            return None
+        from coverage import CoverageData
+
+        coverage_data = CoverageData(debug=debug)
+        coverage_data.read_fileobj(StringIO(coverage_str))
+        return coverage_data
+
+    @property
+    def coverage_dict(self) -> dict:
+        """Return coverage.py coverage data as a dict."""
+        coverage_str = self.resources.get(COVERAGE_KEY, None)
+        if not coverage_str:
+            return None
+        match = re.findall("^[^\\{]*(\\{.+\\})$", coverage_str)
+        if match:
+            return json.loads(match[0])
+
+
 def execute_notebook(
     notebook: NotebookNode,
     *,
@@ -179,7 +228,7 @@ def execute_notebook(
     with_coverage: bool = False,
     cov_config_file: Union[str, None] = None,
     cov_source: Union[List[str], None] = None,
-) -> Tuple[bool, NotebookNode]:
+) -> ExecuteResult:
     """Execute a notebook.
 
     :param cwd: Path to the directory which the notebook will run in
@@ -187,13 +236,15 @@ def execute_notebook(
     :param timeout: The maximum time to wait (in seconds) for execution of each cell.
     :param allow_errors: If False, execution is stopped after the first unexpected
         exception (cells tagged ``raises-exception`` are expected)
-    :param with_coverage: execute notebook with coverage.py
+    :param with_coverage: Record code coverage with coverage.py
+    :param cov_config_file: Determines what coverage configuration file to read.
+    :param cov_source: A list of file paths or package names to measure coverage for.
 
     :returns: (exception or None, new_notebook, resources)
 
     """
     new_notebook = copy.deepcopy(notebook)
-    proc = ExecutePreprocessorCoverage(
+    proc = ExecuteCoveragePreprocessor(
         timeout=timeout,
         allow_errors=allow_errors,
         coverage=with_coverage,
@@ -215,4 +266,4 @@ def execute_notebook(
         if not cwd:
             shutil.rmtree(cwd_dir)
 
-    return exec_error, new_notebook, resources
+    return ExecuteResult(exec_error, new_notebook, resources)

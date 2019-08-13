@@ -1,6 +1,5 @@
 """Jupyter Notebook Regression Test Class."""
 import copy
-from io import StringIO
 import logging
 import os
 import sys
@@ -15,13 +14,11 @@ from nbformat import NotebookNode
 try:
     # coverage is an optional dependency
     from coverage import Coverage as CoverageType
-    from coverage import CoverageData
 except ImportError:
     CoverageType = Any
 
 from pytest_notebook.diffing import diff_notebooks, diff_to_string, filter_diff
 from pytest_notebook.execution import (
-    COVERAGE_KEY,
     execute_notebook,
     HELP_COVERAGE,
     HELP_COVERAGE_CONFIG,
@@ -284,7 +281,7 @@ class NBRegressionFixture:
 
         if self.exec_notebook:
             logger.debug("Executing notebook.")
-            exec_error, nb_final, resources = execute_notebook(
+            exec_results = execute_notebook(
                 nb_initial,
                 resources=resources,
                 cwd=self.exec_cwd,
@@ -294,17 +291,19 @@ class NBRegressionFixture:
                 cov_config_file=self.cov_config,
                 cov_source=self.cov_source,
             )
+            exec_error = exec_results.exec_error
+            nb_final = exec_results.notebook
+            resources = exec_results.resources
         else:
             exec_error = None
             nb_final = nb_initial
 
         # TODO merge on fail option (using pytest-cov --no-cov-on-fail)
-        if self.cov_merge and COVERAGE_KEY in resources:
-            logger.debug(f"Merging coverage.")
-            coverage_data = CoverageData(debug=self.cov_merge.debug)
-            coverage_data.read_fileobj(StringIO(resources[COVERAGE_KEY]))
+        if self.cov_merge and exec_results.has_coverage:
+            logger.info(f"Merging coverage.")
             self.cov_merge.data.update(
-                coverage_data, aliases=_get_coverage_aliases(self.cov_merge)
+                exec_results.coverage_data(self.cov_merge.debug),
+                aliases=_get_coverage_aliases(self.cov_merge),
             )
             # we also take this opportunity to remove ''
             # from the unmatched source packages, which is caused by using `--cov=`

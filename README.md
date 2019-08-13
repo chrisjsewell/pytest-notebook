@@ -24,6 +24,9 @@ regenerate the notebooks, saving the new outputs.
 
 - Recognise, collect, execute (optionally output) then diff input vs. output [Jupyter Notebooks](https://jupyter.org/).
 - Provides clear and colorized diffs of the notebooks (using [nbdime](https://nbdime.readthedocs.io))
+- Regenerate failing notebooks.
+- Integration with [coverage](https://coverage.readthedocs.io) and [pytest_cov](https://pytest-cov.readthedocs.io).
+
 - A well defined API allows notebook regression tests to be run:
 
     1. Using the pytest test collection architecture.
