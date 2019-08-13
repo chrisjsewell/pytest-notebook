@@ -65,6 +65,9 @@ def test_nb_regression_cmndline_setting_init(testdir):
                         "exec_allow_errors": True,
                         "exec_timeout": 90,
                         "force_regen": True,
+                        # the following are the defaults for pytest-cov
+                        "cov_source": (),
+                        "cov_config": ".coveragerc",
                     }
                 )
             )
@@ -138,6 +141,9 @@ def test_nb_regression_ini_setting_init(testdir):
                         ),
                         "diff_use_color": True,
                         "diff_color_words": True,
+                        # the following are the defaults for pytest-cov
+                        "cov_source": (),
+                        "cov_config": ".coveragerc",
                     }
                 )
             )

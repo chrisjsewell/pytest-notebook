@@ -14,6 +14,10 @@ from pytest_notebook.notebook import create_cell, DEFAULT_NB_VERSION
 
 logger = logging.getLogger(__name__)
 
+HELP_COVERAGE = "Record coverage data, with coverage.py."
+HELP_COVERAGE_CONFIG = "Determines what coverage configuration file to read."
+HELP_COVERAGE_SOURCE = "A list of file paths or package names to measure coverage for."
+
 COVERAGE_KEY = "coverage_data"
 
 
@@ -46,26 +50,22 @@ class ExecutePreprocessorCoverage(ExecutePreprocessor):
 
     - Before running any cells, we run a mock cell, containing coverage setup code.
     - After execution, we run a mock cell, containing code to teardown the coverage,
-      and dump the coverage data to ``/cell/output/0/data/text/plain``.
+      and print the coverage data to ``/cell/output/0/text``.
     - Coverage data is then saved in resources["coverage_data"]
 
     :raises CoverageError: If a coverage cell execution errors.
 
     """
 
-    coverage = traitlets.Bool(
-        default_value=False, help="Record coverage data, with coverage.py"
-    ).tag(config=True)
+    coverage = traitlets.Bool(default_value=False, help=HELP_COVERAGE).tag(config=True)
     cov_config_file = traitlets.Unicode(
-        default_value=None,
-        allow_none=True,
-        help="Determines what coverage configuration file to read.",
+        default_value=None, allow_none=True, help=HELP_COVERAGE_CONFIG
     ).tag(config=True)
     cov_source = traitlets.List(
         traitlets.Unicode(),
         default_value=None,
         allow_none=True,
-        help="A list of file paths or package names to measure coverage for.",
+        help=HELP_COVERAGE_SOURCE,
     ).tag(config=True)
 
     def coverage_setup(self, nb_version):
@@ -94,7 +94,8 @@ class ExecutePreprocessorCoverage(ExecutePreprocessor):
                     """
                 ),
                 as_version=nb_version,
-            )
+            ),
+            store_history=False,
         )
         for out in outputs:
             if out.output_type == "error":
@@ -113,7 +114,7 @@ class ExecutePreprocessorCoverage(ExecutePreprocessor):
                     # __cov.save()
                     __stream = __StringIO()
                     __cov.get_data().write_fileobj(__stream)
-                    __stream.getvalue()
+                    print(__stream.getvalue())
                     """
                 ),
                 as_version=nb_version,
@@ -126,14 +127,14 @@ class ExecutePreprocessorCoverage(ExecutePreprocessor):
             raise CoverageError.from_exec_reply("teardown", reply)
         if (
             len(outputs) != 1
-            or outputs[0]["output_type"] != "execute_result"
-            or "text/plain" not in outputs[0]["data"]
+            or outputs[0]["output_type"] != "stream"
+            or outputs[0]["name"] != "stdout"
         ):
             raise CoverageError(
                 "The teardown coverage cell did not produce the expected output: "
                 f"{outputs}"
             )
-        resources[COVERAGE_KEY] = outputs[0]["data"]["text/plain"]
+        resources[COVERAGE_KEY] = outputs[0]["text"]
         return resources
 
     def preprocess(self, nb, resources, km=None):
@@ -170,6 +171,8 @@ class ExecutePreprocessorCoverage(ExecutePreprocessor):
 
 def execute_notebook(
     notebook: NotebookNode,
+    *,
+    resources: Union[dict, None] = None,
     cwd: Union[str, None] = None,
     timeout: int = 120,
     allow_errors: bool = False,
@@ -199,11 +202,10 @@ def execute_notebook(
         log=logger,
     )
 
-    if not cwd:
-        cwd_dir = tempfile.mkdtemp()
-    resources = {
-        "metadata": {"path": str(cwd) if cwd else cwd_dir}
-    }  # metadata/path specifies the directory the kernel will run in
+    cwd_dir = cwd or tempfile.mkdtemp()
+    resources = resources or {}
+    # metadata/path specifies the directory the kernel will run in
+    resources.setdefault("metadata", {})["path"] = str(cwd_dir)
     exec_error = None
     try:
         proc.preprocess(new_notebook, resources)

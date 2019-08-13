@@ -1,9 +1,10 @@
 """Jupyter Notebook Regression Test Class."""
 import copy
+from io import StringIO
 import logging
 import os
 import sys
-from typing import List, TextIO, Union
+from typing import Any, List, TextIO, Tuple, Union
 
 import attr
 from attr.validators import instance_of
@@ -11,8 +12,21 @@ from nbdime.diff_format import DiffEntry
 import nbformat
 from nbformat import NotebookNode
 
+try:
+    # coverage is an optional dependency
+    from coverage import Coverage as CoverageType
+    from coverage import CoverageData
+except ImportError:
+    CoverageType = Any
+
 from pytest_notebook.diffing import diff_notebooks, diff_to_string, filter_diff
-from pytest_notebook.execution import execute_notebook
+from pytest_notebook.execution import (
+    COVERAGE_KEY,
+    execute_notebook,
+    HELP_COVERAGE,
+    HELP_COVERAGE_CONFIG,
+    HELP_COVERAGE_SOURCE,
+)
 from pytest_notebook.notebook import (
     load_notebook_with_config,
     regex_replace_nb,
@@ -56,6 +70,7 @@ HELP_POST_PROCS = (
     "post-processors to apply to the new workbook, "
     f"relating to entry points in the '{ENTRY_POINT_NAME}' group"
 )
+HELP_COVERAGE_MERGE = "A coverage.Coverage instance, to merge coverage results with."
 
 
 class NBRegressionError(Exception):
@@ -91,6 +106,12 @@ class NBRegressionResult:
         metadata={"help": "The formatte string of diff_filtered."},
     )
 
+    process_resources: dict = attr.ib(
+        attr.Factory(dict),
+        instance_of(dict),
+        metadata={"help": "Resources returned from notebook processors."},
+    )
+
     def __repr__(self):
         """Represent the class instance."""
         return (
@@ -107,7 +128,9 @@ class NBRegressionFixture:
     exec_notebook: bool = attr.ib(
         True, instance_of(bool), metadata={"help": HELP_EXEC_NOTEBOOK}
     )
-    exec_cwd: Union[str, None] = attr.ib(None, metadata={"help": HELP_EXEC_CWD})
+    exec_cwd: Union[str, None] = attr.ib(
+        None, instance_of((type(None), str)), metadata={"help": HELP_EXEC_CWD}
+    )
 
     @exec_cwd.validator
     def _validate_exec_cwd(self, attribute, value):
@@ -121,7 +144,9 @@ class NBRegressionFixture:
     exec_allow_errors: bool = attr.ib(
         False, instance_of(bool), metadata={"help": HELP_EXEC_ALLOW_ERRORS}
     )
-    exec_timeout: int = attr.ib(120, metadata={"help": HELP_EXEC_TIMEOUT})
+    exec_timeout: int = attr.ib(
+        120, instance_of((int, float)), metadata={"help": HELP_EXEC_TIMEOUT}
+    )
 
     @exec_timeout.validator
     def _validate_exec_timeout(self, attribute, value):
@@ -129,6 +154,40 @@ class NBRegressionFixture:
             raise TypeError("exec_timeout must be an integer")
         if value <= 0:
             raise ValueError("exec_timeout must be larger than 0")
+
+    coverage: bool = attr.ib(False, metadata={"help": HELP_COVERAGE})
+
+    @coverage.validator
+    def _validate_coverage(self, attribute, value):
+        if not isinstance(value, bool):
+            raise TypeError("coverage must be an boolean")
+        if value:
+            try:
+                import coverage  # noqa: F401
+            except ImportError:
+                raise ImportError("The 'coverage' package must be installed.")
+
+    cov_config: Union[str, None] = attr.ib(
+        None, instance_of((type(None), str)), metadata={"help": HELP_COVERAGE_CONFIG}
+    )
+    cov_source: Union[str, Tuple[str]] = attr.ib(
+        None, instance_of((type(None), tuple)), metadata={"help": HELP_COVERAGE_SOURCE}
+    )
+
+    cov_merge: Union[CoverageType, None] = attr.ib(
+        None, metadata={"help": HELP_COVERAGE_MERGE}, hash=True
+    )
+
+    @cov_merge.validator
+    def _validate_cov_merge(self, attribute, value):
+        if value is None:
+            return
+        try:
+            from coverage import Coverage
+        except ImportError:
+            raise ImportError("The 'coverage' package must be installed")
+        if not isinstance(value, Coverage):
+            raise TypeError("cov_merge must be an instance of coverage.Coverage")
 
     post_processors: tuple = attr.ib(
         ("coalesce_streams",), metadata={"help": HELP_POST_PROCS}
@@ -144,10 +203,10 @@ class NBRegressionFixture:
                     f"name '{name}' not found in entry points: {list_processor_names()}"
                 )
 
-    post_proc_resources: dict = attr.ib(
+    process_resources: dict = attr.ib(
         attr.Factory(dict),
         instance_of(dict),
-        metadata={"help": "Resources to parse to post processor functions."},
+        metadata={"help": "Resources to parse to processor functions."},
     )
 
     diff_replace: tuple = attr.ib((), metadata={"help": HELP_DIFF_REPLACE})
@@ -215,33 +274,53 @@ class NBRegressionFixture:
             abspath = os.path.abspath(path.name)
         else:
             abspath = os.path.abspath(str(path))
-        logger.debug(f"checking file: {abspath}")
+        logger.debug(f"Checking file: {abspath}")
 
         nb_initial, nb_config = load_notebook_with_config(path)
 
+        resources = copy.deepcopy(self.process_resources)
         if not self.exec_cwd:
             self.exec_cwd = os.path.dirname(abspath)
 
         if self.exec_notebook:
-            exec_error, nb_final, exec_resources = execute_notebook(
+            logger.debug("Executing notebook.")
+            exec_error, nb_final, resources = execute_notebook(
                 nb_initial,
+                resources=resources,
                 cwd=self.exec_cwd,
                 timeout=self.exec_timeout,
                 allow_errors=self.exec_allow_errors,
+                with_coverage=self.coverage,
+                cov_config_file=self.cov_config,
+                cov_source=self.cov_source,
             )
         else:
             exec_error = None
             nb_final = nb_initial
 
-        resources = copy.deepcopy(self.post_proc_resources)
+        # TODO merge on fail option (using pytest-cov --no-cov-on-fail)
+        if self.cov_merge and COVERAGE_KEY in resources:
+            logger.debug(f"Merging coverage.")
+            coverage_data = CoverageData(debug=self.cov_merge.debug)
+            coverage_data.read_fileobj(StringIO(resources[COVERAGE_KEY]))
+            self.cov_merge.data.update(
+                coverage_data, aliases=_get_coverage_aliases(self.cov_merge)
+            )
+            # we also take this opportunity to remove ''
+            # from the unmatched source packages, which is caused by using `--cov=`
+            self.cov_merge.source_pkgs_unmatched = [
+                p for p in self.cov_merge.source_pkgs_unmatched if p
+            ]
+
         for proc_name in self.post_processors:
+            logger.debug(f"Applying post processor: {proc_name}")
             post_proc = load_processor(proc_name)
             nb_final, resources = post_proc(nb_final, resources)
 
         regex_replace = list(self.diff_replace) + list(nb_config.diff_replace)
 
         if regex_replace:
-            logger.debug(f"applying replacements: {regex_replace}")
+            logger.debug(f"Applying replacements: {regex_replace}")
             nb_initial_replace = regex_replace_nb(nb_initial, regex_replace)
             nb_final_replace = regex_replace_nb(nb_final, regex_replace)
         else:
@@ -290,5 +369,19 @@ class NBRegressionFixture:
             raise NBRegressionError(diff_string)
 
         return NBRegressionResult(
-            nb_initial, nb_final, full_diff, filtered_diff, diff_string
+            nb_initial, nb_final, full_diff, filtered_diff, diff_string, resources
         )
+
+
+def _get_coverage_aliases(cov):
+    """Retrieve path aliases from coverage.Coverage object."""
+    from coverage.files import PathAliases
+
+    aliases = None
+    if cov.config.paths:
+        aliases = PathAliases()
+        for paths in cov.config.paths.values():
+            result = paths[0]
+            for pattern in paths[1:]:
+                aliases.add(pattern, result)
+    return aliases
