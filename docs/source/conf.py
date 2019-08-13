@@ -65,10 +65,15 @@ intersphinx_aliases = {
     ("py:class", "List"): ("py:class", "list"),
     ("py:class", "Sequence"): ("py:class", "list"),
     ("py:class", "Mapping"): ("py:class", "dict"),
+    ("py:class", "Tuple"): ("py:class", "tuple"),
     ("py:class", "Callable"): ("py:class", "collections.abc.Callable"),
     ("py:class", "callable"): ("py:class", "collections.abc.Callable"),
     ("py:class", "_pytest.nodes.File"): ("py:class", "_pytest.nodes.Node"),
     ("py:class", "NotebookNode"): ("py:class", "nbformat.NotebookNode"),
+    ("py:class", "nbformat.notebooknode.NotebookNode"): (
+        "py:class",
+        "nbformat.NotebookNode",
+    ),
 }
 
 nitpick_ignore = [
@@ -78,6 +83,8 @@ nitpick_ignore = [
     ("py:class", "ruamel.yaml.dumper.RoundTripDumper"),
     ("py:exc", "nbconvert.preprocessors.CellExecutionError"),
     ("py:class", "nbconvert.preprocessors.execute.ExecutePreprocessor"),
+    ("py:class", "nbdime.diff_format.DiffEntry"),
+    ("py:class", "coverage.control.Coverage"),
 ]
 
 # The reST default role (used for this markup: `text`) to use for all
