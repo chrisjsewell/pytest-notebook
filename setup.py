@@ -33,7 +33,7 @@ setup(
     ],
     extras_require={
         "testing": [
-            "coverage",
+            "coverage<5",
             "pytest-cov",
             "pytest-regressions",
             "black==19.3b0",
