@@ -34,4 +34,6 @@ def test_blacken_code(data_regression):
     )
 
     new_notebook, _ = blacken_code(notebook, {})
-    data_regression.check(mapping_to_dict(new_notebook))
+    output = mapping_to_dict(new_notebook)
+    output["nbformat_minor"] = 2
+    data_regression.check(output)

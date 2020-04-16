@@ -33,7 +33,7 @@ setup(
     ],
     extras_require={
         "testing": [
-            "coverage",
+            "coverage<5",
             "pytest-cov",
             "pytest-regressions",
             "black==19.3b0",
@@ -52,7 +52,7 @@ setup(
             "import-order",
         ],
         "docs": [
-            "sphinx>=1.6",
+            "sphinx>=1.6,<3",
             "sphinx_rtd_theme",
             "ipypublish>=0.10.7",
             "ruamel.yaml",
