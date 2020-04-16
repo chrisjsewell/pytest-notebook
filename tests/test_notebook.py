@@ -98,14 +98,15 @@ def test_regex_replace_nb_source():
     new_notebook = regex_replace_nb(
         notebook, [("/cells/0/source", "p", "s"), ("/cells/1/source", "p", "t")]
     )
-    assert mapping_to_dict(new_notebook) == {
+    output = mapping_to_dict(new_notebook)
+    output.pop("nbformat_minor")
+    assert output == {
         "cells": [
             {"metadata": {}, "outputs": [], "source": "srint(1)\nsrint(2)"},
             {"metadata": {}, "outputs": [], "source": "trint(1)\ntrint(2)"},
         ],
         "metadata": {},
         "nbformat": 4,
-        "nbformat_minor": 2,
     }
 
 
@@ -132,7 +133,9 @@ def test_regex_replace_nb_output():
     new_notebook = regex_replace_nb(
         notebook, [("/cells/0/outputs/0", r"\d{2,4}-\d{1,2}-\d{1,2}", "DATE-STAMP")]
     )
-    assert mapping_to_dict(new_notebook) == {
+    output = mapping_to_dict(new_notebook)
+    output.pop("nbformat_minor")
+    assert output == {
         "cells": [
             {
                 "metadata": {},
@@ -148,7 +151,6 @@ def test_regex_replace_nb_output():
         ],
         "metadata": {},
         "nbformat": 4,
-        "nbformat_minor": 2,
     }
 
 
@@ -169,14 +171,15 @@ def test_regex_replace_nb_with_wildcard():
         notebook, [("/cells/*/source", "p", "s"), ("/cells/0/source", "t", "y")]
     )
 
-    assert mapping_to_dict(new_notebook) == {
+    output = mapping_to_dict(new_notebook)
+    output.pop("nbformat_minor")
+    assert output == {
         "cells": [
             {"metadata": {}, "outputs": [], "source": "sriny(1)\nsriny(2)"},
             {"metadata": {}, "outputs": [], "source": "srint(1)\nsrint(2)"},
         ],
         "metadata": {},
         "nbformat": 4,
-        "nbformat_minor": 2,
     }
 
 
