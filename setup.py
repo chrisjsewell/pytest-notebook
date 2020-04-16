@@ -52,7 +52,7 @@ setup(
             "import-order",
         ],
         "docs": [
-            "sphinx>=1.6",
+            "sphinx>=1.6,<3",
             "sphinx_rtd_theme",
             "ipypublish>=0.10.7",
             "ruamel.yaml",
