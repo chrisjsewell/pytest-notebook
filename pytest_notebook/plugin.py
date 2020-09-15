@@ -254,7 +254,7 @@ def pytest_collect_file(path, parent):
     if other_args.get("nb_test_files", False) and any(
         path.fnmatch(pat) for pat in other_args.get("nb_file_fnmatch", ["*.ipynb"])
     ):
-        return JupyterNbCollector(path, parent)
+        return JupyterNbCollector.from_parent(parent, fspath=path)
 
 
 class JupyterNbCollector(pytest.File):
