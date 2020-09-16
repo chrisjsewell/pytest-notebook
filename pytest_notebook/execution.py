@@ -153,7 +153,7 @@ class ExecuteCoveragePreprocessor(ExecutePreprocessor):
         with self.setup_preprocessor(nb, resources, km=km):
             self.log.info(f"Executing notebook with kernel: {self.kernel_name}")
             if self.coverage and self.kernel_name.startswith("python"):
-                self.log.info(f"Recording coverage for notebook")
+                self.log.info("Recording coverage for notebook")
                 self.coverage_setup(nb_version)
             try:
                 nb, resources = super(ExecutePreprocessor, self).preprocess(
