@@ -84,6 +84,7 @@ intersphinx_aliases = {
 
 nitpick_ignore = [
     ("py:class", "NoneType"),
+    ("py:class", "TypeIO"),
     ("py:class", "attr.ib"),
     ("py:class", "attr.s"),
     ("py:class", "ruamel.yaml.dumper.RoundTripDumper"),
