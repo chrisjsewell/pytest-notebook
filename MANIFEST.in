@@ -10,6 +10,7 @@ exclude .readthedocs.yml
 exclude .flake8
 exclude tox.ini
 exclude .gitchangelog.rc
+exclude codecov.yml
 
 include LICENSE
 include README.md
