@@ -1,6 +1,11 @@
 Changelog
 =========
 
+v0.6.1 (2020-10-16)
+-------------------
+
+🐛 Fixed compatibility with pytest version 6
+👌 Improved repository and documentation
 
 v0.6.0 (2019-08-13)
 -------------------
