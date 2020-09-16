@@ -68,10 +68,10 @@ The documentation can be created locally by:
 >> tox -e py37-docs-update
 ```
 
-[ci-badge]: https://travis-ci.org/chrisjsewell/pytest-notebook.svg?branch=master
-[ci-link]: https://travis-ci.org/chrisjsewell/pytest-notebook
-[cov-badge]:https://coveralls.io/repos/github/chrisjsewell/pytest-notebook/badge.svg?branch=master
-[cov-link]: https://coveralls.io/github/chrisjsewell/pytest-notebook?branch=master
+[ci-badge]: ttps://github.com/chrisjsewell/pytest-notebook/workflows/continuous-integration/badge.svg?branch=master
+[ci-link]: https://github.com/chrisjsewell/pytest-notebook
+[cov-badge]:https://codecov.io/gh/chrisjsewell/pytest-notebook/branch/master/graph/badge.svg
+[cov-link]: https://codecov.io/gh/chrisjsewell/pytest-notebook
 [rtd-badge]: https://readthedocs.org/projects/pytest-notebook/badge
 [rtd-link]: http://pytest-notebook.readthedocs.io/
 [pypi-badge]: https://img.shields.io/pypi/v/pytest-notebook.svg
