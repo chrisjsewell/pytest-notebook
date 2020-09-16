@@ -23,7 +23,7 @@ setup(
         "pytest>=3.5.0",
         "attrs",
         "jupyter_client",
-        "nbconvert",
+        "nbconvert~=5.6.0",
         "nbdime",
         "nbformat",
         "jsonschema",
