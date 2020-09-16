@@ -4,35 +4,38 @@
 repos:
 
   - repo: git://github.com/pre-commit/pre-commit-hooks
-    rev: v2.2.3
+    rev: v3.2.0
     hooks:
     - id: check-json
     - id: check-yaml
     - id: end-of-file-fixer
     - id: trailing-whitespace
-    # - id: double-quote-string-fixer
-    - id: flake8
 
   - repo: https://github.com/psf/black
-    rev: stable
+    rev: 20.8b1
     hooks:
     - id: black
-      language_version: python3.6
 
-  - repo: local
+  - repo: https://gitlab.com/pycqa/flake8
+    rev: 3.8.3
     hooks:
+    - id: flake8
+      additional_dependencies:
+        - flake8-comprehensions
+        # - flake8-docstrings
+        - flake8_builtins
+        - import-order
 
-    # - id: travis-linter
-    #  name: Travis Lint
-    #  entry: travis lint
-    #  files: .travis.yml
-    #  language: ruby
-    #  additional_dependencies: ['travis']
+  - repo: https://github.com/mgedmin/check-manifest
+    rev: "0.39"
+    hooks:
+    - id: check-manifest
 
-    - id: doc8
-      entry: doc8
-      language: system
-      types: [rst]
-      name: doc8 - Lint the documentation.
+  # - repo: local
+  #   hooks:
 
-    # TODO could also add check-manifest
+  #   - id: doc8
+  #     entry: doc8
+  #     language: system
+  #     types: [rst]
+  #     name: doc8 - Lint the documentation.

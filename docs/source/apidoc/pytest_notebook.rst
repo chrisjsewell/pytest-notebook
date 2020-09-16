@@ -5,6 +5,7 @@ Subpackages
 -----------
 
 .. toctree::
+   :maxdepth: 4
 
    pytest_notebook.example_nbs
    pytest_notebook.resources
@@ -13,6 +14,7 @@ Submodules
 ----------
 
 .. toctree::
+   :maxdepth: 4
 
    pytest_notebook.diffing
    pytest_notebook.execution
@@ -30,3 +32,4 @@ Module contents
    :members:
    :undoc-members:
    :show-inheritance:
+   :private-members:
