@@ -21,7 +21,7 @@ setup(
     include_package_data=True,
     install_requires=[
         "pytest>=3.5.0",
-        "attrs",
+        "attrs<21,>=19",
         "jupyter_client",
         "nbconvert~=5.6.0",
         "nbdime",
