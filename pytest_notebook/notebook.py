@@ -281,7 +281,7 @@ def create_notebook(as_version: int = DEFAULT_NB_VERSION):
     elif as_version == 3:
         notebook = nbformat.v3.new_notebook()
     elif as_version == 4:
-        notebook = nbformat.v4.new_notebook()
+        notebook = nbformat.v4.new_notebook(nbformat_minor=2)
     else:
         raise NotImplementedError(f"notebook version: {as_version}")
     return notebook
