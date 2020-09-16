@@ -57,7 +57,7 @@ setup(
             "ipypublish>=0.10.7",
             "ruamel.yaml",
             "ruamel.yaml.clib",
-            "coverage",
+            "coverage~=4.5.1",
         ],
     },
     classifiers=[
