@@ -121,7 +121,7 @@ If you encounter any problems, please [file an issue](https://github.com/chrisjs
 - [nbdime](https://nbdime.readthedocs.io)
 - [nbval](https://github.com/computationalmodelling/nbval)
 
-[ci-badge]: ttps://github.com/chrisjsewell/pytest-notebook/workflows/continuous-integration/badge.svg?branch=master
+[ci-badge]: https://github.com/chrisjsewell/pytest-notebook/workflows/continuous-integration/badge.svg?branch=master
 [ci-link]: https://github.com/chrisjsewell/pytest-notebook
 [cov-badge]:https://codecov.io/gh/chrisjsewell/pytest-notebook/branch/master/graph/badge.svg
 [cov-link]: https://codecov.io/gh/chrisjsewell/pytest-notebook
