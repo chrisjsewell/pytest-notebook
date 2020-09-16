@@ -84,12 +84,13 @@ intersphinx_aliases = {
 
 nitpick_ignore = [
     ("py:class", "NoneType"),
-    ("py:class", "TypeIO"),
+    ("py:class", "TextIO"),
     ("py:class", "attr.ib"),
     ("py:class", "attr.s"),
     ("py:class", "ruamel.yaml.dumper.RoundTripDumper"),
     ("py:exc", "nbconvert.preprocessors.CellExecutionError"),
     ("py:class", "nbdime.diff_format.DiffEntry"),
+    ("py:class", "_pytest.nodes.Item"),
 ]
 
 # The reST default role (used for this markup: `text`) to use for all
