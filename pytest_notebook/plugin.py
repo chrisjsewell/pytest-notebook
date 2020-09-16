@@ -266,7 +266,7 @@ class JupyterNbCollector(pytest.File):
     def collect(self):
         """Collect tests for the notebook."""
         name = os.path.splitext(os.path.basename(self.fspath))[0]
-        yield JupyterNbTest(f"nbregression({name})", self)
+        yield JupyterNbTest.from_parent(self, name=f"nbregression({name})")
 
 
 class JupyterNbTest(pytest.Item):
