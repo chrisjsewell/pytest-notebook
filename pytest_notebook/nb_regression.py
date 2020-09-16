@@ -300,7 +300,7 @@ class NBRegressionFixture:
 
         # TODO merge on fail option (using pytest-cov --no-cov-on-fail)
         if self.cov_merge and exec_results.has_coverage:
-            logger.info(f"Merging coverage.")
+            logger.info("Merging coverage.")
             self.cov_merge.data.update(
                 exec_results.coverage_data(self.cov_merge.debug),
                 aliases=_get_coverage_aliases(self.cov_merge),

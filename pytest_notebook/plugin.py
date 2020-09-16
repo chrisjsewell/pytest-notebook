@@ -254,7 +254,10 @@ def pytest_collect_file(path, parent):
     if other_args.get("nb_test_files", False) and any(
         path.fnmatch(pat) for pat in other_args.get("nb_file_fnmatch", ["*.ipynb"])
     ):
-        return JupyterNbCollector(path, parent)
+        try:
+            return JupyterNbCollector.from_parent(parent, fspath=path)
+        except AttributeError:
+            return JupyterNbCollector(path, parent)
 
 
 class JupyterNbCollector(pytest.File):
@@ -266,7 +269,10 @@ class JupyterNbCollector(pytest.File):
     def collect(self):
         """Collect tests for the notebook."""
         name = os.path.splitext(os.path.basename(self.fspath))[0]
-        yield JupyterNbTest(f"nbregression({name})", self)
+        try:
+            yield JupyterNbTest.from_parent(self, name=f"nbregression({name})")
+        except AttributeError:
+            yield JupyterNbTest(f"nbregression({name})", self)
 
 
 class JupyterNbTest(pytest.Item):

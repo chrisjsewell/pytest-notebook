@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 """Test the  ``nb_regression`` plugin fixture."""
 import os
+import sys
 
 import attr
 import pytest
@@ -182,6 +183,9 @@ def test_nb_regression_fixture_check_fail(testdir):
     assert result.ret != 0
 
 
+@pytest.mark.skipif(
+    sys.version_info.minor == 8, reason="svg attributes different order"
+)
 def test_nb_regression_fixture_check_pass(testdir):
     """Test running an nb_regression.check that passes."""
 

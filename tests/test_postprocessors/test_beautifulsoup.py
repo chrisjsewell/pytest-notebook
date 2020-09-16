@@ -70,6 +70,5 @@ def test_beautifulsoup(data_regression):
         "/cells/0/outputs/0/text/html",
         "/cells/1/outputs/0/image/svg+xml",
     ]
-    output = mapping_to_dict(new_notebook)
-    output["nbformat_minor"] = 2
-    data_regression.check(output)
+    new_notebook.nbformat_minor = None
+    data_regression.check(mapping_to_dict(new_notebook))

@@ -1,9 +1,20 @@
-include LICENSE
-include README.rst
-include pytest-notebook-screenshot.png
-
 recursive-exclude * __pycache__
 recursive-exclude * *.py[co]
+exclude docs
+recursive-exclude docs *
+exclude tests
+recursive-exclude tests *
+
+exclude .pre-commit-config.yaml
+exclude .readthedocs.yml
+exclude .flake8
+exclude tox.ini
+exclude .gitchangelog.rc
+exclude codecov.yml
+
+include LICENSE
+include README.md
+include pytest-notebook-screenshot.png
 
 recursive-include pytest_notebook/example_nbs *.ipynb
 recursive-include pytest_notebook/resources *.json

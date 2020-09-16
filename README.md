@@ -1,11 +1,11 @@
 # pytest-notebook
 
-[![CI Status](https://travis-ci.org/chrisjsewell/pytest-notebook.svg?branch=master)](https://travis-ci.org/chrisjsewell/pytest-notebook)
-[![Coverage](https://coveralls.io/repos/github/chrisjsewell/pytest-notebook/badge.svg?branch=master)](https://coveralls.io/github/chrisjsewell/pytest-notebook?branch=master)
-[![RTD](https://readthedocs.org/projects/pytest-notebook/badge)](http://pytest-notebook.readthedocs.io/)
-[![PyPI](https://img.shields.io/pypi/v/pytest-notebook.svg)](https://pypi.org/project/pytest-notebook)
-[![Conda](https://anaconda.org/conda-forge/pytest-notebook/badges/version.svg)](https://anaconda.org/conda-forge/pytest-notebook)
-[![Code style: black](https://img.shields.io/badge/code%20style-black-000000.svg)](https://github.com/ambv/black)
+[![CI][ci-badge]][ci-link]
+[![Coverage][cov-badge]][cov-link]
+[![RTD][rtd-badge]][rtd-link]
+[![PyPI][pypi-badge]][pypi-link]
+[![Conda][conda-badge]][conda-link]
+[![Code style: black][black-badge]][black-link]
 
 A [pytest](https://github.com/pytest-dev/pytest) plugin for regression testing and regenerating [Jupyter Notebooks](https://jupyter.org/).
 
@@ -120,3 +120,16 @@ If you encounter any problems, please [file an issue](https://github.com/chrisjs
 
 - [nbdime](https://nbdime.readthedocs.io)
 - [nbval](https://github.com/computationalmodelling/nbval)
+
+[ci-badge]: ttps://github.com/chrisjsewell/pytest-notebook/workflows/continuous-integration/badge.svg?branch=master
+[ci-link]: https://github.com/chrisjsewell/pytest-notebook
+[cov-badge]:https://codecov.io/gh/chrisjsewell/pytest-notebook/branch/master/graph/badge.svg
+[cov-link]: https://codecov.io/gh/chrisjsewell/pytest-notebook
+[rtd-badge]: https://readthedocs.org/projects/pytest-notebook/badge
+[rtd-link]: http://pytest-notebook.readthedocs.io/
+[pypi-badge]: https://img.shields.io/pypi/v/pytest-notebook.svg
+[pypi-link]: https://pypi.org/project/pytest-notebook
+[conda-badge]: https://anaconda.org/conda-forge/pytest-notebook/badges/version.svg
+[conda-link]: https://anaconda.org/conda-forge/pytest-notebook
+[black-badge]: https://img.shields.io/badge/code%20style-black-000000.svg
+[black-link]: https://github.com/ambv/black
