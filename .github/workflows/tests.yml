@@ -27,7 +27,7 @@ jobs:
       matrix:
         os: [ubuntu-latest]
         python-version: [3.6, 3.7, 3.8]
-    
+
     runs-on: ${{ matrix.os }}
 
     steps:
@@ -42,6 +42,9 @@ jobs:
         pip install .[testing]
     - name: Run pytest
       run: pytest --durations=10 --cov=pytest_notebook --cov-report=xml --cov-report=term-missing
+
+    - name: Create cov
+      run: coverage xml
 
     - name: Upload to Codecov
       if: matrix.os == 'ubuntu-latest' && matrix.python-version == 3.7 && github.repository == 'chrisjsewell/pytest-notebook'
