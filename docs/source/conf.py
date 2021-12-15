@@ -38,12 +38,12 @@ version = ".".join(release.split(".")[:2])
 
 intersphinx_mapping = {
     "python": ("https://docs.python.org/3.6", None),
-    "_pytest": ("http://doc.pytest.org/en/latest/", None),
+    "_pytest": ("https://doc.pytest.org/en/latest/", None),
     # "PIL": ("http://pillow.readthedocs.org/en/latest/", None),
-    "nbconvert": ("http://nbconvert.readthedocs.io/en/latest/", None),
-    "nbformat": ("http://nbformat.readthedocs.io/en/latest/", None),
-    "attr": ("http://www.attrs.org/en/stable/", None),
-    "coverage": ("https://coverage.readthedocs.io/en/v4.5.x/", None),
+    "nbconvert": ("https://nbconvert.readthedocs.io/en/latest/", None),
+    "nbformat": ("https://nbformat.readthedocs.io/en/latest/", None),
+    "attr": ("https://www.attrs.org/en/stable/", None),
+    "coverage": ("https://coverage.readthedocs.io/en/v4.5.4/", None),
 }
 
 intersphinx_aliases = {
