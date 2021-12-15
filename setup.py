@@ -22,7 +22,7 @@ setup(
     install_requires=[
         "pytest>=3.5.0",
         "attrs<21,>=19",
-        "jupyter_client",
+        "jupyter_client<7.0",  # <7.0 for https://github.com/jupyter/jupyter_client/issues/637#issuecomment-902149763
         "nbconvert~=5.6.0",
         "nbdime",
         "nbformat",
