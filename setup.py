@@ -27,7 +27,7 @@ setup(
         "nbdime",
         "nbformat",
         "jsonschema",
-        "importlib_resources",
+        "importlib_resources>=1.3.0",
     ],
     extras_require={
         "testing": [
