@@ -141,9 +141,9 @@ def validate_regex_replace(args, index):
 
 @lru_cache()
 def _load_validator():
-    schema = json.loads(
-        importlib_resources.read_text(resources, "nb_metadata.schema.json")
-    )
+    source = importlib_resources.files(resources).joinpath("nb_metadata.schema.json")
+    with open(source) as fp:
+        schema = json.loads(fp.read())
     validator_cls = jsonschema.validators.validator_for(schema)
     return validator_cls(schema=schema)
 
