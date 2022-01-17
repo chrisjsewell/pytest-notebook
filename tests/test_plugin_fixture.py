@@ -169,7 +169,7 @@ def test_nb_regression_fixture_check_fail(testdir):
         def test_nb(nb_regression):
             nb_regression.check("{path}")
     """.format(
-            path=os.path.join(PATH, "raw_files", "different_outputs.ipynb")
+            path=os.path.join(PATH, "raw_files", "simple-diff-output.ipynb")
         )
     )
 
@@ -184,7 +184,7 @@ def test_nb_regression_fixture_check_fail(testdir):
 
 
 @pytest.mark.skipif(
-    sys.version_info.minor == 8, reason="svg attributes different order"
+    sys.version_info.minor <= 7, reason="svg attributes different order"
 )
 def test_nb_regression_fixture_check_pass(testdir):
     """Test running an nb_regression.check that passes."""
@@ -224,7 +224,7 @@ def test_nb_regression_fixture_regen(testdir):
     """
 
     with open(
-        os.path.join(PATH, "raw_files", "different_outputs.ipynb"), "rb"
+        os.path.join(PATH, "raw_files", "simple-diff-output.ipynb"), "rb"
     ) as handle:
         data = handle.read()
     with open("test_nb.ipynb", "wb") as handle:
@@ -239,9 +239,7 @@ def test_nb_regression_fixture_regen(testdir):
     )
 
     # run pytest with the following cmd args
-    result = testdir.runpytest(
-        "--nb-exec-cwd", os.path.join(PATH, "raw_files"), "--nb-force-regen", "-v"
-    )
+    result = testdir.runpytest("--nb-force-regen", "-v")
 
     # fnmatch_lines does an assertion internally
     result.stdout.fnmatch_lines(["*::test_nb FAILED*"])
@@ -250,7 +248,7 @@ def test_nb_regression_fixture_regen(testdir):
     assert result.ret != 0
 
     # re-run pytest with the following cmd args
-    result = testdir.runpytest("--nb-exec-cwd", os.path.join(PATH, "raw_files"), "-v")
+    result = testdir.runpytest("-v")
 
     # fnmatch_lines does an assertion internally
     result.stdout.fnmatch_lines(["*::test_nb PASSED*"])

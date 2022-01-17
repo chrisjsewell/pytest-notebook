@@ -1,13 +1,13 @@
 """Module for working with notebook."""
 import copy
 from functools import lru_cache
+from importlib import resources as importlib_resources
 import json
 import re
 from typing import Any, Callable, Mapping, TextIO, Tuple, Union
 
 import attr
 from attr.validators import instance_of
-import importlib_resources
 import jsonschema
 import nbformat
 from nbformat import NotebookNode
@@ -272,16 +272,16 @@ def prepare_cell(cell: dict, as_version=DEFAULT_NB_VERSION) -> NotebookNode:
     return nb["cells"][0]
 
 
-def create_notebook(as_version: int = DEFAULT_NB_VERSION):
+def create_notebook(as_version: int = DEFAULT_NB_VERSION, **kwargs):
     """Create a new notebook."""
     if as_version == 1:
-        notebook = nbformat.v1.new_notebook()
+        notebook = nbformat.v1.new_notebook(**kwargs)
     elif as_version == 2:
-        notebook = nbformat.v2.new_notebook()
+        notebook = nbformat.v2.new_notebook(**kwargs)
     elif as_version == 3:
-        notebook = nbformat.v3.new_notebook()
+        notebook = nbformat.v3.new_notebook(**kwargs)
     elif as_version == 4:
-        notebook = nbformat.v4.new_notebook()
+        notebook = nbformat.v4.new_notebook(**kwargs)
     else:
         raise NotImplementedError(f"notebook version: {as_version}")
     return notebook

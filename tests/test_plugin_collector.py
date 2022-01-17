@@ -56,7 +56,7 @@ def test_run_fail(testdir):
 
 
 @pytest.mark.skipif(
-    sys.version_info.minor == 8, reason="svg attributes different order"
+    sys.version_info.minor <= 7, reason="svg attributes different order"
 )
 def test_run_pass_with_meta(testdir):
     copy_nb_to_tempdir("different_outputs_with_metadata.ipynb")

@@ -15,23 +15,21 @@ classifiers = [
   "Topic :: Software Development :: Testing",
   "Programming Language :: Python",
   "Programming Language :: Python :: 3",
-  "Programming Language :: Python :: 3.6",
   "Programming Language :: Python :: 3.7",
   "Programming Language :: Python :: 3.8",
+  "Programming Language :: Python :: 3.9",
   "Programming Language :: Python :: Implementation :: CPython",
   "Operating System :: OS Independent",
   "License :: OSI Approved :: BSD License",
 ]
-requires-python = ">=3.6"
+requires-python = "~=3.7"
 dependencies = [
   "pytest>=3.5.0",
-  "attrs<21,>=19",
-  "jupyter_client",
-  "nbconvert~=5.6.0",
+  "attrs<23,>=19",
+  "nbclient~=0.5.10",
   "nbdime",
   "nbformat",
   "jsonschema",
-  "importlib_resources",
 ]
 
 [project.urls]
@@ -40,9 +38,10 @@ Documentation = "https://pytest-notebook.readthedocs.io"
 
 [project.optional-dependencies]
 testing = [
-  "coverage~=4.5.1",
   "pytest-cov",
   "pytest-regressions",
+  "ipykernel",
+  "coverage~=5.0",
   "black==19.3b0",
   "beautifulsoup4==4.8.0",
 ]
