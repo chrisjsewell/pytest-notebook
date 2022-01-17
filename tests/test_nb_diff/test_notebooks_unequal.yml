@@ -2,10 +2,7 @@
   - diff:
     - key: execution_count
       op: replace
-      value: 1
-    key: 2
-    op: patch
-  - diff:
+      value: 3
     - diff:
       - diff:
         - diff:
@@ -22,6 +19,9 @@
     key: 3
     op: patch
   - diff:
+    - key: execution_count
+      op: replace
+      value: 12
     - diff:
       - diff:
         - diff:
@@ -40,6 +40,21 @@
     key: 4
     op: patch
   - diff:
+    - key: execution_count
+      op: replace
+      value: 5
+    key: 5
+    op: patch
+  - diff:
+    - key: execution_count
+      op: replace
+      value: 8
+    key: 6
+    op: patch
+  - diff:
+    - key: execution_count
+      op: replace
+      value: 29
     - diff:
       - diff:
         - diff:
@@ -54,6 +69,9 @@
             op: patch
           key: data
           op: patch
+        - key: execution_count
+          op: replace
+          value: 29
         key: 0
         op: patch
       key: outputs
@@ -61,6 +79,9 @@
     key: 7
     op: patch
   - diff:
+    - key: execution_count
+      op: replace
+      value: 26
     - diff:
       - diff:
         - diff:
@@ -75,6 +96,9 @@
             op: patch
           key: data
           op: patch
+        - key: execution_count
+          op: replace
+          value: 26
         key: 0
         op: patch
       key: outputs
@@ -82,6 +106,9 @@
     key: 8
     op: patch
   - diff:
+    - key: execution_count
+      op: replace
+      value: 32
     - diff:
       - diff:
         - diff:
@@ -100,6 +127,14 @@
             op: patch
           key: data
           op: patch
+        - key: execution_count
+          op: replace
+          value: 32
+        - diff:
+          - key: application/json
+            op: remove
+          key: metadata
+          op: patch
         key: 0
         op: patch
       key: outputs
@@ -107,6 +142,9 @@
     key: 9
     op: patch
   - diff:
+    - key: execution_count
+      op: replace
+      value: 30
     - diff:
       - diff:
         - diff:
@@ -121,6 +159,9 @@
             op: patch
           key: data
           op: patch
+        - key: execution_count
+          op: replace
+          value: 30
         key: 0
         op: patch
       key: outputs
@@ -128,16 +169,25 @@
     key: 10
     op: patch
   - diff:
+    - key: execution_count
+      op: replace
+      value: 37
     - diff:
       - diff:
         - diff:
           - diff:
             - diff:
-              - key: 40
+              - key: 26
+                op: addrange
+                valuelist: 'fill="red" '
+              - key: 29
                 op: addrange
                 valuelist: '7'
-              - key: 40
+              - key: 29
                 length: 1
+                op: removerange
+              - key: 64
+                length: 11
                 op: removerange
               key: 1
               op: patch
@@ -145,11 +195,42 @@
             op: patch
           key: data
           op: patch
+        - key: execution_count
+          op: replace
+          value: 37
         key: 0
         op: patch
       key: outputs
       op: patch
     key: 11
+    op: patch
+  - diff:
+    - key: execution_count
+      op: replace
+      value: 39
+    - diff:
+      - diff:
+        - diff:
+          - diff:
+            - key: 0
+              op: addrange
+              valuelist:
+              - $$a = b + c$$
+            - key: 0
+              length: 1
+              op: removerange
+            key: text/latex
+            op: patch
+          key: data
+          op: patch
+        - key: execution_count
+          op: replace
+          value: 39
+        key: 0
+        op: patch
+      key: outputs
+      op: patch
+    key: 12
     op: patch
   - diff:
     - key: execution_count
@@ -174,7 +255,7 @@
       op: patch
     - diff:
       - diff:
-        - key: 22
+        - key: 31
           op: addrange
           valuelist: _altered
         key: 1
@@ -206,7 +287,7 @@
       op: patch
     - diff:
       - diff:
-        - key: 22
+        - key: 31
           op: addrange
           valuelist: _altered
         key: 1
@@ -231,10 +312,52 @@
     key: 15
     op: patch
   - diff:
+    - key: execution_count
+      op: replace
+      value: 53
     - diff:
       - key: tags
         op: remove
       key: metadata
+      op: patch
+    - diff:
+      - diff:
+        - diff:
+          - key: 0
+            op: addrange
+            valuelist:
+            - "\e[0;31m--------------------------------------------------------------\e\
+              [0m"
+            - "\e[0;31mValueError\e[0m                   Traceback (most recent call\
+              \ last)"
+            - "\e[0;32m<ipython-input-53-3a084a2c507f>\e[0m in \e[0;36m<module>\e\
+              [0;34m()\e[0m\n\e[1;32m      3\e[0m     \e[0;32mraise\e[0m \e[0mValueError\e\
+              [0m\e[0;34m(\e[0m\e[0;34m'there was an error'\e[0m\e[0;34m)\e[0m\e[0;34m\e\
+              [0m\e[0;34m\e[0m\e[0m\n\e[1;32m      4\e[0m \e[0;32mfor\e[0m \e[0mi\e\
+              [0m \e[0;32min\e[0m \e[0mrange\e[0m\e[0;34m(\e[0m\e[0;36m10\e[0m\e[0;34m)\e\
+              [0m\e[0;34m:\e[0m\e[0;34m\e[0m\e[0;34m\e[0m\e[0m\n\e[0;32m----> 5\e\
+              [0;31m     \e[0mfunc\e[0m\e[0;34m(\e[0m\e[0mi\e[0m\e[0;34m)\e[0m\e[0;34m\e\
+              [0m\e[0;34m\e[0m\e[0m\n\e[0m"
+            - "\e[0;32m<ipython-input-53-3a084a2c507f>\e[0m in \e[0;36mfunc\e[0;34m(b)\e\
+              [0m\n\e[1;32m      1\e[0m \e[0mprint\e[0m\e[0;34m(\e[0m\e[0;34m'before\
+              \ exception'\e[0m\e[0;34m)\e[0m\e[0;34m\e[0m\e[0;34m\e[0m\e[0m\n\e[1;32m\
+              \      2\e[0m \e[0;32mdef\e[0m \e[0mfunc\e[0m\e[0;34m(\e[0m\e[0mb\e\
+              [0m\e[0;34m)\e[0m\e[0;34m:\e[0m\e[0;34m\e[0m\e[0;34m\e[0m\e[0m\n\e[0;32m---->\
+              \ 3\e[0;31m     \e[0;32mraise\e[0m \e[0mValueError\e[0m\e[0;34m(\e[0m\e\
+              [0;34m'there was an error'\e[0m\e[0;34m)\e[0m\e[0;34m\e[0m\e[0;34m\e\
+              [0m\e[0m\n\e[0m\e[1;32m      4\e[0m \e[0;32mfor\e[0m \e[0mi\e[0m \e\
+              [0;32min\e[0m \e[0mrange\e[0m\e[0;34m(\e[0m\e[0;36m10\e[0m\e[0;34m)\e\
+              [0m\e[0;34m:\e[0m\e[0;34m\e[0m\e[0;34m\e[0m\e[0m\n\e[1;32m      5\e\
+              [0m     \e[0mfunc\e[0m\e[0;34m(\e[0m\e[0mi\e[0m\e[0;34m)\e[0m\e[0;34m\e\
+              [0m\e[0;34m\e[0m\e[0m\n"
+          - key: 0
+            length: 4
+            op: removerange
+          key: traceback
+          op: patch
+        key: 1
+        op: patch
+      key: outputs
       op: patch
     key: 16
     op: patch
@@ -243,5 +366,18 @@
 - diff:
   - key: celltoolbar
     op: remove
+  - diff:
+    - diff:
+      - key: 0
+        op: addrange
+        valuelist:
+        - 3.6.7
+      - key: 0
+        length: 1
+        op: removerange
+      key: version
+      op: patch
+    key: language_info
+    op: patch
   key: metadata
   op: patch

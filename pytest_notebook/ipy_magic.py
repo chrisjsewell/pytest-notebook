@@ -7,13 +7,12 @@ then ``%pytest`` and ``%%pytest`` can be accessed.
 # TODO post solution to stackoverflow:
 # https://stackoverflow.com/questions/41304311/running-pytest-test-functions-inside-a-jupyter-notebook
 import os
-import shlex
-import sys
 from pathlib import Path
+import shlex
 import subprocess
-from typing import List, Tuple, Union
-
+import sys
 import tempfile
+from typing import List, Tuple, Union
 
 EXEC_NAME = "pytest"
 CONFIG_FILE_NAME = "pytest.ini"
@@ -188,6 +187,6 @@ def pytest(
 
 def load_ipython_extension(ipython):
     """Load the ipython magic, when the module is called via ``%load_ext``."""
-    from IPython.core.magic import register_line_cell_magic, needs_local_scope
+    from IPython.core.magic import needs_local_scope, register_line_cell_magic
 
     register_line_cell_magic(needs_local_scope(pytest))

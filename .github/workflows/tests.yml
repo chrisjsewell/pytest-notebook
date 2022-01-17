@@ -26,7 +26,7 @@ jobs:
     strategy:
       matrix:
         os: [ubuntu-latest]
-        python-version: [3.6, 3.7, 3.8]
+        python-version: [3.7, 3.8, 3.9]
 
     runs-on: ${{ matrix.os }}
 
@@ -47,10 +47,10 @@ jobs:
       run: coverage xml
 
     - name: Upload to Codecov
-      if: matrix.os == 'ubuntu-latest' && matrix.python-version == 3.7 && github.repository == 'chrisjsewell/pytest-notebook'
-      uses: codecov/codecov-action@v1
+      if: github.repository == 'chrisjsewell/pytest-notebook'
+      uses: codecov/codecov-action@v2
       with:
-        name: pytests-py3.7
+        name: pytests-notebook
         flags: pytests
         file: ./coverage.xml
         fail_ci_if_error: true
@@ -62,18 +62,18 @@ jobs:
     if: github.event_name == 'push' && startsWith(github.event.ref, 'refs/tags')
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout source
-        uses: actions/checkout@v2
-      - name: Set up Python 3.7
-        uses: actions/setup-python@v1
-        with:
-          python-version: 3.7
-      - name: Build package
-        run: |
-          pip install wheel
-          python setup.py sdist bdist_wheel
-      - name: Publish
-        uses: pypa/gh-action-pypi-publish@v1.1.0
-        with:
-          user: __token__
-          password: ${{ secrets.PYPI_KEY }}
+    - name: Checkout source
+      uses: actions/checkout@v2
+    - name: Set up Python 3.8
+      uses: actions/setup-python@v2
+      with:
+        python-version: '3.8'
+    - name: install flit
+      run: |
+        pip install flit~=3.4
+    - name: Build and publish
+      run: |
+        flit publish
+      env:
+        FLIT_USERNAME: __token__
+        FLIT_PASSWORD: ${{ secrets.PYPI_KEY }}

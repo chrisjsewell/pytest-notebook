@@ -21,29 +21,34 @@ This notebook was rendered with [myst-nb](https://myst-nb.readthedocs.io): {nb-d
 
 +++
 
-The core component of the notebook execution API is the {py:class}`~pytest_notebook.execution.ExecuteCoveragePreprocessor` class,
-which is a subclass of {py:class}`nbconvert.preprocessors.ExecutePreprocessor`,
+The core component of the notebook execution API is the {py:class}`~pytest_notebook.execution.CoverageNotebookClient` class,
+which is a subclass of {py:class}`nbclient.client.NotebookClient`,
 that can additionally create code [coverage](https://coverage.readthedocs.io) analytics.
 
 This class is called by {py:func}`~pytest_notebook.execution.execute_notebook`,
 which returns an {py:class}`~pytest_notebook.execution.ExecuteResult` object.
 
 ```{code-cell} ipython3
-import yaml
 from pytest_notebook.execution import execute_notebook
 from pytest_notebook.notebook import create_notebook, create_cell, dump_notebook
 ```
 
 ```{code-cell} ipython3
-notebook = create_notebook()
-notebook.cells = [
-    create_cell("""
+notebook = create_notebook(
+    metadata={
+        "kernelspec": {
+            "name": "python3",
+            "display_name": "Python 3",
+        }
+    },
+    cells=[
+        create_cell("""
 from pytest_notebook import __version__
 from pytest_notebook.notebook import create_notebook
 print(__version__)
 """
-    )
-]
+    )]
+)
 ```
 
 ```{code-cell} ipython3
@@ -56,7 +61,9 @@ result.coverage_data()
 ```
 
 ```{code-cell} ipython3
-print(yaml.dump(result.coverage_dict))
+:tags: [hide-output]
+
+result.coverage_dict
 ```
 
 The coverage can be limited to particular files or modules, by setting `cov_source`.
@@ -64,7 +71,7 @@ The coverage can be limited to particular files or modules, by setting `cov_sour
 ```{code-cell} ipython3
 result = execute_notebook(
     notebook, with_coverage=True, cov_source=['pytest_notebook.notebook'])
-print(yaml.dump(result.coverage_dict))
+result.coverage_dict
 ```
 
 ## Integration with pytest-cov
@@ -87,7 +94,7 @@ and merge the data back into the main {py:class}`~coverage.Coverage` object.
 %%pytest --disable-warnings --color=yes --cov=pytest_notebook --nb-coverage --log-cli-level=info
 
 import logging
-import importlib_resources
+from importlib import resources as importlib_resources
 from pytest_notebook import example_nbs
 
 def test_notebook(nb_regression):

@@ -1,13 +1,14 @@
 """Tests for pytest_notebook.notebook."""
 from pytest_notebook.notebook import (
-    config_from_metadata,
-    mapping_to_dict,
     META_KEY,
     MetadataConfig,
+    config_from_metadata,
+    create_notebook,
     gather_json_paths,
+    mapping_to_dict,
+    prepare_cell,
     regex_replace_nb,
 )
-from pytest_notebook.notebook import create_notebook, prepare_cell
 
 
 def test_gather_paths():

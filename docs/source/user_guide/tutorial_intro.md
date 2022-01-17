@@ -25,10 +25,10 @@ This notebook was rendered with [myst-nb](https://myst-nb.readthedocs.io): {nb-d
 
 The principal component of `pytest-notebook` is the
 {py:class}`~pytest_notebook.nb_regression.NBRegressionFixture` class,
-which is an [attrs](http://www.attrs.org) class, whose parameters can be instatiated or set via attibutes.
+which is an [attrs](http://www.attrs.org) class, whose parameters can be instantiated or set via attributes.
 
 ```{code-cell} ipython3
-import importlib_resources
+from importlib import resources as importlib_resources
 from pytest_notebook import example_nbs
 from pytest_notebook.nb_regression import NBRegressionFixture
 ```

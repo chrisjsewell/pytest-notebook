@@ -6,12 +6,12 @@ and output a (new notebook, resources).
 import copy
 import functools
 import logging
-import pkg_resources
 import re
 import textwrap
 from typing import Tuple
 
 from nbformat import NotebookNode
+import pkg_resources
 
 logger = logging.getLogger(__name__)
 
