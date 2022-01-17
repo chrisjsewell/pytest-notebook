@@ -1,5 +1,16 @@
 # Changelog
 
+## v0.7.0 (2022-01-17)
+
+🔀 Merge: Update package (#20)
+
+- ⬆️ UPGRADE: nbconvert -> nbclient (for notebook execution)
+- ⬆️ UPGRADE: coverage v4 -> v5 API (for execution with code coverage)
+- 📚 DOCS: Use https for inter-sphinx URLs
+- 📚 DOCS: Update documentation packages
+- 🔧 Move to flit for PEP 621 packaging
+- 🔧 Add isort pre-commit hook
+
 ## v0.6.1 (2020-10-16)
 
 - 🐛 Fixed compatibility with pytest version 6
