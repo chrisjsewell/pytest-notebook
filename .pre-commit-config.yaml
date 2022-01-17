@@ -3,8 +3,8 @@
 
 repos:
 
-  - repo: git://github.com/pre-commit/pre-commit-hooks
-    rev: v3.2.0
+  - repo: https://github.com/pre-commit/pre-commit-hooks
+    rev: v4.1.0
     hooks:
     - id: check-json
     - id: check-yaml
@@ -12,12 +12,12 @@ repos:
     - id: trailing-whitespace
 
   - repo: https://github.com/psf/black
-    rev: 20.8b1
+    rev: 21.12b0
     hooks:
     - id: black
 
   - repo: https://gitlab.com/pycqa/flake8
-    rev: 3.8.3
+    rev: 3.9.2
     hooks:
     - id: flake8
       additional_dependencies:
@@ -25,11 +25,6 @@ repos:
         # - flake8-docstrings
         - flake8_builtins
         - import-order
-
-  - repo: https://github.com/mgedmin/check-manifest
-    rev: "0.39"
-    hooks:
-    - id: check-manifest
 
   # - repo: local
   #   hooks:

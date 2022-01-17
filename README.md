@@ -63,6 +63,7 @@ To install the development version:
 ```shell
 >> git clone https://github.com/chrisjsewell/pytest-notebook .
 >> cd pytest-notebook
+>> pip install --upgrade pip
 >> pip install -e .
 >> # pip install -e .[code_style,testing,docs] # install extras for more features
 ```
