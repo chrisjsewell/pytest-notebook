@@ -50,11 +50,11 @@ code_style = [
   "doc8<0.9.0,>=0.8.0",
 ]
 docs = [
-  "sphinx>=2",
+  "sphinx>=3",
   "pyyaml",
-  "sphinx-book-theme~=0.0.36",
-  "myst-nb~=0.10.1",
-  "coverage~=4.5.1",
+  "sphinx-book-theme~=0.1.0",
+  "myst-nb~=0.13.1",
+  "coverage~=5.0",
 ]
 
 [project.entry-points."pytest11"]

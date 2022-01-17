@@ -40,10 +40,10 @@ intersphinx_mapping = {
     "python": ("https://docs.python.org/3.6", None),
     "_pytest": ("https://doc.pytest.org/en/latest/", None),
     # "PIL": ("http://pillow.readthedocs.org/en/latest/", None),
-    "nbconvert": ("https://nbconvert.readthedocs.io/en/latest/", None),
+    "nbclient": ("https://nbclient.readthedocs.io/en/latest/", None),
     "nbformat": ("https://nbformat.readthedocs.io/en/latest/", None),
     "attr": ("https://www.attrs.org/en/stable/", None),
-    "coverage": ("https://coverage.readthedocs.io/en/v4.5.x/", None),
+    "coverage": ("https://coverage.readthedocs.io/en/6.2/", None),
 }
 
 intersphinx_aliases = {
@@ -68,6 +68,7 @@ intersphinx_aliases = {
 
 nitpick_ignore = [
     ("py:class", "NoneType"),
+    ("py:class", "Config"),
     ("py:class", "TextIO"),
     ("py:class", "attr.ib"),
     ("py:class", "attr.s"),
@@ -77,29 +78,8 @@ nitpick_ignore = [
     ("py:class", "_pytest.nodes.Item"),
 ]
 
-# The reST default role (used for this markup: `text`) to use for all
-# documents.
-# default_role = None
-
-# If true, '()' will be appended to :func: etc. cross-reference text.
-# add_function_parentheses = True
-
-# If true, the current module name will be prepended to all description
-# unit titles (such as .. function::).
-# add_module_names = True
-
-# If true, sectionauthor and moduleauthor directives will be shown in the
-# output. They are ignored by default.
-# show_authors = False
-
 # The name of the Pygments (syntax highlighting) style to use.
 pygments_style = "sphinx"
-
-# A list of ignored prefixes for module index sorting.
-# modindex_common_prefix = []
-
-# If true, keep warnings as "system message" paragraphs in the built documents.
-# keep_warnings = False
 
 # If true, `todo` and `todoList` produce output, else they produce nothing.
 todo_include_todos = False
@@ -108,53 +88,18 @@ todo_include_todos = False
 # -- Options for HTML output ----------------------------------------------
 
 html_theme = "sphinx_book_theme"
+html_theme_options = {
+    "repository_url": "https://github.com/chrisjsewell/pytest-notebook",
+    "repository_branch": "master",
+    "path_to_docs": "docs/source",
+    "use_edit_page_button": True,
+    "use_issues_button": True,
+    "use_repository_button": True,
+}
 jupyter_execute_notebooks = "cache"
 execution_show_tb = "READTHEDOCS" in os.environ
 execution_timeout = 60  # Note: 30 was timing out on RTD
-myst_admonition_enable = True
-
-# Output file base name for HTML help builder.
-htmlhelp_basename = "pytest-notebookdoc"
-
-
-# -- Options for other outputs ---------------------------------------
-
-latex_documents = [
-    (
-        master_doc,
-        "pytest-notebook.tex",
-        "pytest-notebook Documentation",
-        "Chris Sewell",
-        "manual",
-    )
-]
-# latex_logo = None
-latex_elements = {
-    # The paper size ('letterpaper' or 'a4paper').
-    # 'papersize': 'letterpaper',
-    # The font size ('10pt', '11pt' or '12pt').
-    # 'pointsize': '10pt',
-    # Additional stuff for the LaTeX preamble.
-    # 'preamble': '',
-    # Latex figure (float) alignment
-    # 'figure_align': 'htbp',
-}
-
-man_pages = [
-    (master_doc, "pytest-notebook", u"pytest-notebook Documentation", [author], 1)
-]
-
-texinfo_documents = [
-    (
-        master_doc,
-        "pytest-notebook",
-        u"pytest-notebook Documentation",
-        author,
-        "pytest-notebook",
-        "A pytest plugin for testing Jupyter Notebooks.",
-        "Miscellaneous",
-    )
-]
+myst_enable_extensions = ["colon_fence"]
 
 # -- Sphinx setup for other outputs ---------------------------------------
 
