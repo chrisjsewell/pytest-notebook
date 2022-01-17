@@ -2,8 +2,8 @@ import os
 
 import nbformat
 
-from pytest_notebook.notebook import mapping_to_dict
 from pytest_notebook.diffing import diff_notebooks, diff_to_string
+from pytest_notebook.notebook import mapping_to_dict
 
 path = os.path.dirname(os.path.realpath(__file__))
 

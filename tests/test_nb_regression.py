@@ -5,7 +5,7 @@ import sys
 import pytest
 
 from pytest_notebook.execution import COVERAGE_KEY
-from pytest_notebook.nb_regression import NBRegressionFixture, NBRegressionError
+from pytest_notebook.nb_regression import NBRegressionError, NBRegressionFixture
 
 PATH = os.path.dirname(os.path.realpath(__file__))
 

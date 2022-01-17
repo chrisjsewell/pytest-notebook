@@ -1,9 +1,9 @@
 """Utility functions."""
 import os
-
-import attr
 import textwrap
 import warnings
+
+import attr
 
 
 def running_as_test():

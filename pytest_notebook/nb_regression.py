@@ -19,10 +19,10 @@ except ImportError:
 
 from pytest_notebook.diffing import diff_notebooks, diff_to_string, filter_diff
 from pytest_notebook.execution import (
-    execute_notebook,
     HELP_COVERAGE,
     HELP_COVERAGE_CONFIG,
     HELP_COVERAGE_SOURCE,
+    execute_notebook,
 )
 from pytest_notebook.notebook import (
     load_notebook_with_config,

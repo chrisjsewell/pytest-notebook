@@ -4,7 +4,7 @@ from textwrap import dedent
 import nbformat
 
 from pytest_notebook.execution import COVERAGE_KEY, execute_notebook
-from pytest_notebook.notebook import create_notebook, create_cell
+from pytest_notebook.notebook import create_cell, create_notebook
 
 PATH = os.path.dirname(os.path.realpath(__file__))
 

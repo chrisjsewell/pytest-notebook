@@ -3,7 +3,6 @@ import os
 
 from pytest_notebook.diffing import filter_diff
 
-
 PATH = os.path.dirname(os.path.realpath(__file__))
 
 

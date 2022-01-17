@@ -7,10 +7,9 @@ from typing import List, Sequence, Union
 from nbdime.diff_format import DiffEntry, SequenceDiffBuilder
 from nbdime.diffing.generic import default_differs, default_predicates, diff
 from nbdime.diffing.notebooks import diff_attachments, diff_single_outputs
-from nbdime.prettyprint import pretty_print_diff, PrettyPrintConfig
+from nbdime.prettyprint import PrettyPrintConfig, pretty_print_diff
 from nbdime.utils import defaultdict2, join_path, split_path
 from nbformat import NotebookNode
-
 
 # TODO nbdime is currently hard coded to version 4 notebooks,
 # this should be reviewed in new releases

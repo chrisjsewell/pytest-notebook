@@ -15,7 +15,7 @@ from nbconvert.preprocessors import CellExecutionError, ExecutePreprocessor
 from nbformat import NotebookNode
 import traitlets
 
-from pytest_notebook.notebook import create_cell, DEFAULT_NB_VERSION
+from pytest_notebook.notebook import DEFAULT_NB_VERSION, create_cell
 from pytest_notebook.utils import autodoc
 
 logger = logging.getLogger(__name__)
