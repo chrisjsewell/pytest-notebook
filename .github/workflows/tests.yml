@@ -48,7 +48,7 @@ jobs:
 
     - name: Upload to Codecov
       if: github.repository == 'chrisjsewell/pytest-notebook'
-      uses: codecov/codecov-action@v1
+      uses: codecov/codecov-action@v2
       with:
         name: pytests-notebook
         flags: pytests
