@@ -72,6 +72,23 @@ To install the development version:
 
 See the documentation at: http://pytest-notebook.readthedocs.io/
 
+If you want to test some sample notebooks, add the `--nb-test-files` flag:
+
+```shell
+>> git clone https://github.com/chrisjsewell/pytest-notebook
+>> cd pytest-notebook/samples
+>> pip install pytest ipykernel pytest-notebook
+>> pytest --nb-test-files *.ipynb
+```
+
+You should see `success.ipynb` passed the test and `fail.ipynb` failed the test.
+
+You can regenerate the outputs of `fail.ipynb` with the `--nb-force-regen` flag:
+
+```shell
+>> pytest --nb-test-files --nb-force-regen *.ipynb
+```
+
 ## Contributing
 
 Contributions are very welcome.
