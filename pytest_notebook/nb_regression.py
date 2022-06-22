@@ -301,14 +301,14 @@ class NBRegressionFixture:
         # TODO merge on fail option (using pytest-cov --no-cov-on-fail)
         if self.cov_merge and exec_results.has_coverage:
             logger.info("Merging coverage.")
-            self.cov_merge.data.update(
-                exec_results.coverage_data(self.cov_merge.debug),
+            self.cov_merge.get_data().update(
+                exec_results.coverage_data(debug=self.cov_merge._debug),
                 aliases=_get_coverage_aliases(self.cov_merge),
             )
             # we also take this opportunity to remove ''
             # from the unmatched source packages, which is caused by using `--cov=`
-            self.cov_merge.source_pkgs_unmatched = [
-                p for p in self.cov_merge.source_pkgs_unmatched if p
+            self.cov_merge._inorout.source_pkgs_unmatched = [
+                p for p in self.cov_merge._inorout.source_pkgs_unmatched if p
             ]
 
         for proc_name in self.post_processors:
