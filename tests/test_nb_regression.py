@@ -43,6 +43,7 @@ def test_regression_diff_ignore_pass():
 @pytest.mark.skipif(
     sys.version_info.minor <= 7, reason="svg attributes different order"
 )
+@pytest.mark.skipif(sys.version_info.minor > 7, reason="ipython error message changes")
 def test_regression_regex_replace_pass():
     """Test a regression that will succeed by regex replacing certain paths."""
     fixture = NBRegressionFixture()
