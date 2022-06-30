@@ -28,9 +28,9 @@ exclude_patterns = ["_build", "**/.ipynb_checkpoints", "**/example_nbs"]
 master_doc = "index"
 
 # General information about the project.
-project = u"pytest-notebook"
-copyright = u"2019, Chris Sewell"  # noqa: A001
-author = u"Chris Sewell"
+project = "pytest-notebook"
+copyright = "2019, Chris Sewell"  # noqa: A001
+author = "Chris Sewell"
 # The full version, including alpha/beta/rc tags, will replace |release|
 release = pytest_notebook.__version__
 # The short X.Y version, will replace |version|
