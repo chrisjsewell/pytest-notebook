@@ -76,7 +76,7 @@ If you want to test some sample notebooks, add the `--nb-test-files` flag:
 
 ```shell
 >> git clone https://github.com/chrisjsewell/pytest-notebook
->> cd pytest-notebook/samples
+>> cd pytest-notebook/examples
 >> pip install pytest ipykernel pytest-notebook
 >> pytest --nb-test-files *.ipynb
 ```
