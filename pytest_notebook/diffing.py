@@ -62,7 +62,7 @@ def diff_sequence_simple(
 
 
 def diff_notebooks(
-    intial: NotebookNode, final: NotebookNode, initial_path: str = ""
+    initial: NotebookNode, final: NotebookNode, initial_path: str = ""
 ) -> List[DiffEntry]:
     """Compare two notebooks.
 
@@ -77,7 +77,7 @@ def diff_notebooks(
 
     """
     return diff(
-        intial,
+        initial,
         final,
         path=initial_path,
         predicates=defaultdict2(lambda: [operator.__eq__], {}),
