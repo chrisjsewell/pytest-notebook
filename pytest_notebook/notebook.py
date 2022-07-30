@@ -306,5 +306,5 @@ def create_cell(
 
 
 def dump_notebook(nb: NotebookNode, as_version=nbformat.NO_CONVERT) -> NotebookNode:
-    """Dump the notebook to a sting."""
+    """Dump the notebook to a string."""
     return nbformat.writes(nb, version=as_version)
