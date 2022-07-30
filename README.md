@@ -49,23 +49,23 @@ regenerate the notebooks, saving the new outputs.
 To install from [Conda](https://docs.conda.io) (recommended):
 
 ```shell
->> conda install -c conda-forge pytest-notebook
+conda install -c conda-forge pytest-notebook
 ```
 
 To install *via* [pip](https://pypi.org/project/pip/) from [PyPI](https://pypi.org/project):
 
 ```shell
->> pip install pytest-notebook
+pip install pytest-notebook
 ```
 
 To install the development version:
 
 ```shell
->> git clone https://github.com/chrisjsewell/pytest-notebook .
->> cd pytest-notebook
->> pip install --upgrade pip
->> pip install -e .
->> # pip install -e .[code_style,testing,docs] # install extras for more features
+git clone https://github.com/chrisjsewell/pytest-notebook .
+cd pytest-notebook
+pip install --upgrade pip
+pip install -e .
+# pip install -e .[code_style,testing,docs] # install extras for more features
 ```
 
 ## Usage
@@ -75,10 +75,10 @@ See the documentation at: http://pytest-notebook.readthedocs.io/
 If you want to test some sample notebooks, add the `--nb-test-files` flag:
 
 ```shell
->> git clone https://github.com/chrisjsewell/pytest-notebook
->> cd pytest-notebook/examples
->> pip install pytest ipykernel pytest-notebook
->> pytest --nb-test-files *.ipynb
+git clone https://github.com/chrisjsewell/pytest-notebook
+cd pytest-notebook/examples
+pip install pytest ipykernel pytest-notebook
+pytest --nb-test-files *.ipynb
 ```
 
 You should see `success.ipynb` passed the test and `fail.ipynb` failed the test.
@@ -86,7 +86,7 @@ You should see `success.ipynb` passed the test and `fail.ipynb` failed the test.
 You can regenerate the outputs of `fail.ipynb` with the `--nb-force-regen` flag:
 
 ```shell
->> pytest --nb-test-files --nb-force-regen *.ipynb
+pytest --nb-test-files --nb-force-regen *.ipynb
 ```
 
 ## Contributing
@@ -96,8 +96,8 @@ Contributions are very welcome.
 The following will discover and run all unit test:
 
 ```shell
->> pip install -e .[testing]
->> pytest -v
+pip install -e .[testing]
+pytest -v
 ```
 
 ### Coding Style Requirements
@@ -112,15 +112,15 @@ and testing for lint errors before submitting a commit.
 It can be setup by:
 
 ```shell
->> cd pytest-notebook
->> pre-commit install
+cd pytest-notebook
+pre-commit install
 ```
 
 Optionally you can run `black` and `flake8` separately:
 
 ```shell
->> black .
->> flake8 .
+black .
+flake8 .
 ```
 
 Editors like VS Code also have automatic code reformat utilities, which can adhere to this standard.
