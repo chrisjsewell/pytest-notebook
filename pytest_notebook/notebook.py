@@ -1,7 +1,13 @@
 """Module for working with notebook."""
 import copy
 from functools import lru_cache
-from importlib import resources as importlib_resources
+
+try:
+    # Python <= 3.8
+    from importlib_resources import files
+except ImportError:
+    from importlib.resources import files
+
 import json
 import re
 from typing import Any, Callable, Mapping, TextIO, Tuple, Union
@@ -142,7 +148,7 @@ def validate_regex_replace(args, index):
 @lru_cache()
 def _load_validator():
     schema = json.loads(
-        importlib_resources.read_text(resources, "nb_metadata.schema.json")
+        files(resources).joinpath("nb_metadata.schema.json").read_text(encoding="utf-8")
     )
     validator_cls = jsonschema.validators.validator_for(schema)
     return validator_cls(schema=schema)

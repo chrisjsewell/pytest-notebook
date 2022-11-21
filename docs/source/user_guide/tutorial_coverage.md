@@ -94,12 +94,16 @@ and merge the data back into the main {py:class}`~coverage.Coverage` object.
 %%pytest --disable-warnings --color=yes --cov=pytest_notebook --nb-coverage --log-cli-level=info
 
 import logging
-from importlib import resources as importlib_resources
+try:
+    # Python <= 3.8
+    from importlib_resources import files
+except ImportError:
+    from importlib.resources import files
 from pytest_notebook import example_nbs
 
 def test_notebook(nb_regression):
     logging.getLogger(__name__).info(nb_regression)
-    with importlib_resources.path(example_nbs, "coverage.ipynb") as path:
+    with files(example_nbs).joinpath("coverage.ipynb") as path:
         nb_regression.check(str(path))
 ```
 
