@@ -28,7 +28,11 @@ The principal component of `pytest-notebook` is the
 which is an [attrs](http://www.attrs.org) class, whose parameters can be instantiated or set via attributes.
 
 ```{code-cell} ipython3
-from importlib import resources as importlib_resources
+try:
+    # Python <= 3.8
+    from importlib_resources import files
+except ImportError:
+    from importlib.resources import files
 from pytest_notebook import example_nbs
 from pytest_notebook.nb_regression import NBRegressionFixture
 ```
@@ -44,14 +48,14 @@ The main method is {py:meth}`~pytest_notebook.nb_regression.NBRegressionFixture.
 ```{code-cell} ipython3
 :tags: [raises-exception]
 
-with importlib_resources.path(example_nbs, "example1.ipynb") as path:
+with files(example_nbs).joinpath("example1.ipynb") as path:
     fixture.check(str(path))
 ```
 
 To return the results, without raising an exception, use ``raise_errors=False``. This returns a {py:class}`~pytest_notebook.nb_regression.NBRegressionResult` instance.
 
 ```{code-cell} ipython3
-with importlib_resources.path(example_nbs, "example1.ipynb") as path:
+with files(example_nbs).joinpath("example1.ipynb") as path:
     result = fixture.check(str(path), raise_errors=False)
 
 result
@@ -103,12 +107,15 @@ The command-line parameter takes precedence over the configuration file one.
 [pytest]
 nb_diff_color_words = True
 ---
-
-import importlib_resources
+try:
+    # Python <= 3.8
+    from importlib_resources import files
+except ImportError:
+    from importlib.resources import files
 from pytest_notebook import example_nbs
 
 def test_notebook(nb_regression):
-    with importlib_resources.path(example_nbs, "example1.ipynb") as path:
+    with files(example_nbs).joinpath("example1.ipynb") as path:
         nb_regression.check(str(path))
 ```
 
@@ -120,8 +127,8 @@ def test_notebook(nb_regression):
 To activate this feature, set `--nb-test-files` on the command-line, or `nb_test_files = True` in the configuration file.
 
 ```{code-cell} ipython3
-notebook1_content = importlib_resources.read_text(example_nbs, "example1_pass.ipynb")
-notebook2_content = importlib_resources.read_text(example_nbs, "example1.ipynb")
+notebook1_content = files(example_nbs).joinpath("example1_pass.ipynb").read_text()
+notebook2_content = files(example_nbs).joinpath("example1.ipynb").read_text()
 ```
 
 ```{code-cell} ipython3
@@ -224,7 +231,7 @@ def notebook():
     tmphandle, tmppath = tempfile.mkstemp(suffix=".ipynb")
     with open(tmppath, "w") as handle:
         handle.write(
-            importlib_resources.read_text(example_nbs, "example1.ipynb")
+            files(example_nbs).joinpath("example1.ipynb").read_text()
         )
     yield tmppath
     os.remove(tmppath)
