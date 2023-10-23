@@ -5,7 +5,6 @@ from pytest_notebook.notebook import prepare_cell
 
 
 def get_test_cell(type_name, variable="hallo"):
-
     cells = {
         "stdout": {
             "cell_type": "code",
