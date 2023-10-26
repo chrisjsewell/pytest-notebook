@@ -11,7 +11,6 @@ For more information on writing pytest plugins see:
 - https://docs.pytest.org/en/latest/_modules/_pytest/hookspec.html
 
 """
-from distutils.util import strtobool as _str2bool
 import os
 import shlex
 
@@ -135,7 +134,26 @@ def str2bool(string):
     """
     if isinstance(string, bool):
         return string
-    return True if _str2bool(string) else False
+
+    _MAP = {
+        'y': True,
+        'yes': True,
+        't': True,
+        'true': True,
+        'on': True,
+        '1': True,
+        'n': False,
+        'no': False,
+        'f': False,
+        'false': False,
+        'off': False,
+        '0': False
+    }
+
+    try:
+        return _MAP[string.lower()]
+    except KeyError:
+        raise ValueError(f'"{string}" is not a valid bool value')
 
 
 def strip_quotes(string):
