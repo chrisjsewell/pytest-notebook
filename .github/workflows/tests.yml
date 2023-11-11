@@ -52,6 +52,7 @@ jobs:
       uses: codecov/codecov-action@v2
       with:
         name: pytests-notebook
+        token: ${{ secrets.CODECOV_TOKEN }}
         flags: pytests
         file: ./coverage.xml
         fail_ci_if_error: true

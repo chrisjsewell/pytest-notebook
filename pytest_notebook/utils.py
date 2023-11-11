@@ -31,7 +31,7 @@ def type_to_sphinx(typ, field_name):
     # TODO better implementation of type_to_sphinx
     if typ is None:
         field_type = "Any"
-        warnings.warn(f'Field "{field_name}" has no declared type.')
+        warnings.warn(f'Field "{field_name}" has no declared type.')  # noqa: B028
     elif getattr(typ, "__module__", None) == "typing":
         field_type = str(typ).replace("typing.", "")
         if field_type.startswith("Union["):
@@ -44,7 +44,9 @@ def type_to_sphinx(typ, field_name):
     elif hasattr(typ, "__name__"):
         field_type = typ.__name__
     else:
-        warnings.warn(f'Field "{field_name}" type could not be converted.')
+        warnings.warn(  # noqa: B028
+            f'Field "{field_name}" type could not be converted.'
+        )
         field_type = "Any"
     return field_type
 
@@ -129,7 +131,7 @@ def autodoc(attrs_class):
             )
         else:
             description = help_complement
-            warnings.warn(f"Field {field_fn} not documented.")
+            warnings.warn(f"Field {field_fn} not documented.")  # noqa: B028
 
         return title + "\n" + description
 
