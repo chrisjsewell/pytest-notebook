@@ -100,6 +100,7 @@ myst_enable_extensions = ["colon_fence"]
 nb_execution_mode = "cache"
 nb_execution_show_tb = "READTHEDOCS" in os.environ
 nb_execution_timeout = 60  # Note: 30 was timing out on RTD
+nb_merge_streams = True
 
 # -- Sphinx setup for other outputs ---------------------------------------
 
