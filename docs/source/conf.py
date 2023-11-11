@@ -96,10 +96,10 @@ html_theme_options = {
     "use_issues_button": True,
     "use_repository_button": True,
 }
-jupyter_execute_notebooks = "cache"
-execution_show_tb = "READTHEDOCS" in os.environ
-execution_timeout = 60  # Note: 30 was timing out on RTD
 myst_enable_extensions = ["colon_fence"]
+nb_execution_mode = "cache"
+nb_execution_show_tb = "READTHEDOCS" in os.environ
+nb_execution_timeout = 60  # Note: 30 was timing out on RTD
 
 # -- Sphinx setup for other outputs ---------------------------------------
 
