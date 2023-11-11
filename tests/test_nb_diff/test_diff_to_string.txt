@@ -121,7 +121,7 @@
 +  4
 
 ## replaced /cells/13/outputs/0/data/image/png:
--  iVBORw0K...<snip base64, md5=f94a82072d4a539b...>
+-  iVBORw0K...<snip base64, md5=d4cb03e0b7c8a788...>
 +  iVBORw0K...<snip base64, md5=506a1e21d3de9d48...>
 
 ## replaced /cells/13/outputs/0/execution_count:
@@ -139,7 +139,7 @@
 +  3
 
 ## replaced /cells/14/outputs/0/data/image/jpeg:
--  /9j/4AAQ...<snip base64, md5=780504154e4118c5...>
+-  /9j/4AAQ...<snip base64, md5=63dc79d972a66eab...>
 +  /9j/4AAQ...<snip base64, md5=582ee962086b62e9...>
 
 ## replaced /cells/14/outputs/0/execution_count:
@@ -188,12 +188,12 @@
 -  item[0]: [0;31m---------------------------------------------------------------------------[0m
 -  item[1]: [0;31mValueError[0m                                Traceback (most recent call last)
 -  item[2]:
--    Input [0;32mIn [15][0m, in [0;36m<module>[0;34m[0m
+-    Cell [0;32mIn[15], line 5[0m
 -    [1;32m      3[0m     [38;5;28;01mraise[39;00m [38;5;167;01mValueError[39;00m([38;5;124m'[39m[38;5;124mthere was an error[39m[38;5;124m'[39m)
 -    [1;32m      4[0m [38;5;28;01mfor[39;00m i [38;5;129;01min[39;00m [38;5;28mrange[39m([38;5;241m10[39m):
 -    [0;32m----> 5[0m     [43mfunc[49m[43m([49m[43mi[49m[43m)[49m
 -  item[3]:
--    Input [0;32mIn [15][0m, in [0;36mfunc[0;34m(b)[0m
+-    Cell [0;32mIn[15], line 3[0m, in [0;36mfunc[0;34m(b)[0m
 -    [1;32m      2[0m [38;5;28;01mdef[39;00m [38;5;21mfunc[39m(b):
 -    [0;32m----> 3[0m     [38;5;28;01mraise[39;00m [38;5;167;01mValueError[39;00m([38;5;124m'[39m[38;5;124mthere was an error[39m[38;5;124m'[39m)
 
@@ -201,6 +201,6 @@
 -  Tags
 
 ## modified /metadata/language_info/version:
--  3.8.12
+-  3.8.18
 +  3.6.7
 
