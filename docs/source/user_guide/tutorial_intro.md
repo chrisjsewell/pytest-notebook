@@ -222,7 +222,6 @@ The regeneration can be observed, if we run two tests on the same notebook.
 %%pytest -v --color=yes --disable-warnings
 
 import os, tempfile
-import importlib_resources
 import pytest
 from pytest_notebook import example_nbs
 
