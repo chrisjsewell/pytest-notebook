@@ -49,7 +49,7 @@ testing = [
   "beautifulsoup4==4.8.0",
 ]
 code_style = [
-  "pre-commit~=2.7.0",
+  "pre-commit~=3.5.0",
   "doc8<0.9.0,>=0.8.0",
 ]
 docs = [
