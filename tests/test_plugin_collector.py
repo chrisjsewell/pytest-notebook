@@ -1,9 +1,6 @@
 # -*- coding: utf-8 -*-
 """Test the  plugin collection and direct invocation of notebooks."""
 import os
-import sys
-
-import pytest
 
 PATH = os.path.dirname(os.path.realpath(__file__))
 
@@ -55,9 +52,6 @@ def test_run_fail(testdir):
     assert result.ret != 0
 
 
-@pytest.mark.skipif(
-    sys.version_info.minor <= 7, reason="svg attributes different order"
-)
 def test_run_pass_with_meta(testdir):
     copy_nb_to_tempdir("different_outputs_with_metadata.ipynb")
     result = testdir.runpytest(
