@@ -9,7 +9,9 @@ repos:
     - id: check-json
     - id: check-yaml
     - id: end-of-file-fixer
+      exclude: ^tests/.*\.txt
     - id: trailing-whitespace
+      exclude: ^tests/.*\.txt
 
   - repo: https://github.com/PyCQA/isort
     rev: 5.12.0
