@@ -29,7 +29,7 @@ master_doc = "index"
 
 # General information about the project.
 project = "pytest-notebook"
-copyright = "2019, Chris Sewell"  # noqa: A001
+copyright = "2019, Chris Sewell"
 author = "Chris Sewell"
 # The full version, including alpha/beta/rc tags, will replace |release|
 release = pytest_notebook.__version__
@@ -138,7 +138,7 @@ def run_apidoc(_):
     # See https://stackoverflow.com/a/30144019
     env = os.environ.copy()
     env["SPHINX_APIDOC_OPTIONS"] = "members,undoc-members,show-inheritance"
-    subprocess.check_call([cmd_path] + options, env=env)
+    subprocess.check_call([cmd_path, *options], env=env)
 
 
 def add_intersphinx_aliases_to_inv(app):

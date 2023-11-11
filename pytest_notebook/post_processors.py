@@ -116,7 +116,7 @@ def coalesce_streams(
     # We also want to ensure stdout and stderr are always in the same consecutive order,
     # because they are asynchronous, so order isn't guaranteed.
     for i, output in enumerate(new_outputs):
-        if output.output_type == "stream" and output.name == "stderr":
+        if output.output_type == "stream" and output.name == "stderr":  # noqa: SIM102
             if (
                 len(new_outputs) >= i + 2
                 and new_outputs[i + 1].output_type == "stream"
@@ -180,7 +180,7 @@ def beautifulsoup(
     for i, output in enumerate(cell.outputs):
         if output.output_type not in ["execute_result", "display_data"]:
             continue
-        for mimetype, value in output.get("data", {}).items():
+        for mimetype, _value in output.get("data", {}).items():
             if mimetype not in ["text/html", "image/svg+xml"]:
                 continue
             path = f"/cells/{index}/outputs/{i}/{mimetype}"

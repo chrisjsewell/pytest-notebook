@@ -35,4 +35,4 @@ def test_diff_to_string(file_regression):
         os.path.join(path, "raw_files", "different_outputs_altered.ipynb"), as_version=4
     )
     diff = diff_notebooks(initial, final)
-    file_regression.check(diff_to_string(initial, diff))
+    file_regression.check(diff_to_string(initial, diff, use_color=False))

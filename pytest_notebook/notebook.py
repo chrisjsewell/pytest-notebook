@@ -74,10 +74,14 @@ def gather_json_paths(
     """
     if isinstance(obj, dict):
         for k, v in obj.items():
-            gather_json_paths(v, paths, types, curr_path=tuple(list(curr_path) + [k]))
+            gather_json_paths(
+                v, paths, types, curr_path=tuple(list(curr_path) + [k])  # noqa: RUF005
+            )
     elif isinstance(obj, list):
         for i, v in enumerate(obj):
-            gather_json_paths(v, paths, types, curr_path=tuple(list(curr_path) + [i]))
+            gather_json_paths(
+                v, paths, types, curr_path=tuple(list(curr_path) + [i])  # noqa: RUF005
+            )
     elif types is None or isinstance(obj, types):
         paths.append(curr_path)
 
