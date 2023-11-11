@@ -44,7 +44,7 @@ testing = [
   "pytest-regressions",
   "ipykernel",
   "coverage~=5.0",
-  "black==19.3b0",
+  "black==23.11.0",
   "beautifulsoup4==4.8.0",
 ]
 code_style = [
