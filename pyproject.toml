@@ -55,7 +55,7 @@ docs = [
   "sphinx>=3",
   "pyyaml",
   "sphinx-book-theme~=1.0.1",
-  "myst-nb~=1.0.0",
+  "myst-nb~=1.0",
   "coverage~=5.0",
   "pytest-cov",
 ]
