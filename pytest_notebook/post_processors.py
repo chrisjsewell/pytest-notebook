@@ -11,7 +11,12 @@ import textwrap
 from typing import Tuple
 
 from nbformat import NotebookNode
-import pkg_resources
+
+try:
+    # python <= 3.9
+    from importlib_metadata import entry_points
+except ImportError:
+    from importlib.metadata import entry_points
 
 logger = logging.getLogger(__name__)
 
@@ -21,22 +26,19 @@ ENTRY_POINT_NAME = "nbreg.post_proc"
 @functools.lru_cache()
 def list_processor_names():
     """List entry point names for  post-processors."""
-    return [ep.name for ep in pkg_resources.iter_entry_points(ENTRY_POINT_NAME)]
+    return [ep.name for ep in entry_points().select(group=ENTRY_POINT_NAME)]
 
 
 @functools.lru_cache()
 def load_processor(name: str):
     """Get a post-processors for an entry point name."""
-    matches = [
-        ep
-        for ep in pkg_resources.iter_entry_points(ENTRY_POINT_NAME)
-        if ep.name == name
-    ]
-    if not matches:
+    try:
+        (entry_point,) = entry_points().select(group=ENTRY_POINT_NAME, name=name)
+    except ValueError:
         raise ValueError(
             "entry point '{}' for group '{}' not found".format(name, ENTRY_POINT_NAME)
         )
-    return matches[0].load()
+    return entry_point.load()
 
 
 def document_processors():
