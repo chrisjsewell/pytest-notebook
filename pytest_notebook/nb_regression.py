@@ -343,7 +343,6 @@ class NBRegressionFixture:
 
         regen_exc = None
         if filtered_diff and self.force_regen and not exec_error:
-
             if hasattr(path, "close") and hasattr(path, "name"):
                 path.close()
                 with open(path.name, "w") as handle:

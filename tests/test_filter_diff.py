@@ -13,19 +13,16 @@ def get_test_diff(filename="different_outputs_alt_diff.json"):
 
 
 def test_filter_diff_no_paths():
-
     diff = filter_diff(get_test_diff(), [])
     assert diff == get_test_diff()
 
 
 def test_filter_diff_cells():
-
     diff = filter_diff(get_test_diff(), ["/cells"])
     assert diff == []
 
 
 def test_filter_diff_outputs():
-
     diff = filter_diff(get_test_diff(), ["/cells/*/outputs"])
     assert diff == [
         {
@@ -43,7 +40,6 @@ def test_filter_diff_outputs():
 
 
 def test_filter_diff_outtypes(data_regression):
-
     diff = filter_diff(
         get_test_diff(),
         [

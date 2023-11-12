@@ -1,6 +1,5 @@
 """Tests for ``NBRegressionFixture``."""
 import os
-import sys
 
 import pytest
 
@@ -23,9 +22,6 @@ def test_regression_fail():
         fixture.check(os.path.join(PATH, "raw_files", "simple-diff-output.ipynb"))
 
 
-@pytest.mark.skipif(
-    sys.version_info.minor <= 7, reason="svg attributes different order"
-)
 def test_regression_diff_ignore_pass():
     """Test a regression that will succeed by ignoring certain notebook paths."""
     fixture = NBRegressionFixture()
@@ -40,10 +36,6 @@ def test_regression_diff_ignore_pass():
     fixture.check(os.path.join(PATH, "raw_files", "different_outputs.ipynb"))
 
 
-@pytest.mark.skipif(
-    sys.version_info.minor <= 7, reason="svg attributes different order"
-)
-@pytest.mark.skipif(sys.version_info.minor > 7, reason="ipython error message changes")
 def test_regression_regex_replace_pass():
     """Test a regression that will succeed by regex replacing certain paths."""
     fixture = NBRegressionFixture()

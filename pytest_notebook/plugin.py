@@ -208,7 +208,6 @@ def gather_config_options(pytestconfig):
         ("nb_diff_color_words", str2bool),
         ("nb_force_regen", str2bool),
     ]:
-
         if pytestconfig.getoption(name, None) is not None:
             nbreg_kwargs[name[3:]] = value_type(pytestconfig.getoption(name))
         elif not isinstance(pytestconfig.getini(name), NotSet):
@@ -216,7 +215,6 @@ def gather_config_options(pytestconfig):
 
     other_args = {}
     for name, value_type in [("nb_test_files", bool), ("nb_file_fnmatch", tuple)]:
-
         if pytestconfig.getoption(name, None) is not None:
             other_args[name] = value_type(pytestconfig.getoption(name))
         elif not isinstance(pytestconfig.getini(name), NotSet):

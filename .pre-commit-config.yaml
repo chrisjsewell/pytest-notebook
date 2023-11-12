@@ -4,38 +4,26 @@
 repos:
 
   - repo: https://github.com/pre-commit/pre-commit-hooks
-    rev: v4.3.0
+    rev: v4.5.0
     hooks:
     - id: check-json
     - id: check-yaml
     - id: end-of-file-fixer
+      exclude: ^tests/.*\.txt
     - id: trailing-whitespace
+      exclude: ^tests/.*\.txt
 
   - repo: https://github.com/PyCQA/isort
-    rev: 5.10.1
+    rev: 5.12.0
     hooks:
       - id: isort
 
   - repo: https://github.com/psf/black
-    rev: 22.6.0
+    rev: 23.11.0
     hooks:
     - id: black
 
-  - repo: https://github.com/PyCQA/flake8
-    rev: 5.0.2
+  - repo: https://github.com/charliermarsh/ruff-pre-commit
+    rev: v0.1.5
     hooks:
-    - id: flake8
-      additional_dependencies:
-        - flake8-comprehensions
-        # - flake8-docstrings
-        - flake8_builtins
-        - import-order
-
-  # - repo: local
-  #   hooks:
-
-  #   - id: doc8
-  #     entry: doc8
-  #     language: system
-  #     types: [rst]
-  #     name: doc8 - Lint the documentation.
+    - id: ruff
