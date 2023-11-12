@@ -60,6 +60,8 @@ nitpick_ignore = [
     ("py:class", "Session"),
     ("py:exc", "nbconvert.preprocessors.CellExecutionError"),
     ("py:class", "nbdime.diff_format.DiffEntry"),
+    ("py:class", "_pytest._py.path.LocalPath"),
+    ("py:meth", "Item.reportinfo"),
 ]
 
 # The name of the Pygments (syntax highlighting) style to use.
