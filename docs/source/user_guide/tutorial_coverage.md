@@ -116,6 +116,8 @@ This is also the case, when using the pytest file collection approach.
 [pytest]
 nb_coverage = True
 nb_test_files = True
+nb_diff_ignore =
+    /metadata/language_info
 ---
 
 ***

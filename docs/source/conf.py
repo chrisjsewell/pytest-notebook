@@ -37,7 +37,7 @@ release = pytest_notebook.__version__
 version = ".".join(release.split(".")[:2])
 
 intersphinx_mapping = {
-    "python": ("https://docs.python.org/3.6", None),
+    "python": ("https://docs.python.org/3.8", None),
     "_pytest": ("https://doc.pytest.org/en/latest/", None),
     # "PIL": ("http://pillow.readthedocs.org/en/latest/", None),
     "nbclient": ("https://nbclient.readthedocs.io/en/latest/", None),
@@ -47,35 +47,21 @@ intersphinx_mapping = {
 }
 
 intersphinx_aliases = {
-    ("py:class", "List"): ("py:class", "list"),
-    ("py:class", "Sequence"): ("py:class", "list"),
-    ("py:class", "Mapping"): ("py:class", "dict"),
-    ("py:class", "Tuple"): ("py:class", "tuple"),
-    ("py:class", "Callable"): ("py:class", "collections.abc.Callable"),
-    ("py:class", "callable"): ("py:class", "collections.abc.Callable"),
-    ("py:class", "_pytest.nodes.File"): ("py:class", "_pytest.nodes.Node"),
     ("py:class", "NotebookNode"): ("py:class", "nbformat.NotebookNode"),
-    ("py:class", "nbformat.notebooknode.NotebookNode"): (
-        "py:class",
-        "nbformat.NotebookNode",
-    ),
-    ("py:class", "nbconvert.preprocessors.execute.ExecutePreprocessor"): (
-        "py:class",
-        "nbconvert.preprocessors.ExecutePreprocessor",
-    ),
-    ("py:class", "coverage.control.Coverage"): ("py:class", "coverage.Coverage"),
+    ("py:class", "Path"): ("py:class", "pathlib.Path"),
 }
 
+nitpicky = True
 nitpick_ignore = [
-    ("py:class", "NoneType"),
+    ("py:class", "t.Any"),
     ("py:class", "Config"),
-    ("py:class", "TextIO"),
     ("py:class", "attr.ib"),
     ("py:class", "attr.s"),
-    ("py:class", "ruamel.yaml.dumper.RoundTripDumper"),
+    ("py:class", "Session"),
     ("py:exc", "nbconvert.preprocessors.CellExecutionError"),
     ("py:class", "nbdime.diff_format.DiffEntry"),
-    ("py:class", "_pytest.nodes.Item"),
+    ("py:class", "_pytest._py.path.LocalPath"),
+    ("py:meth", "Item.reportinfo"),
 ]
 
 # The name of the Pygments (syntax highlighting) style to use.

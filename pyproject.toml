@@ -60,6 +60,7 @@ docs = [
   "myst-nb~=1.0",
   "coverage~=5.0",
   "pytest-cov",
+  "black",
 ]
 
 [project.entry-points."pytest11"]
