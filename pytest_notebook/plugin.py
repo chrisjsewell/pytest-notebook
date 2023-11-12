@@ -135,7 +135,7 @@ def str2bool(string):
     if isinstance(string, bool):
         return string
 
-    _MAP = {
+    _map = {
         "y": True,
         "yes": True,
         "t": True,
@@ -151,7 +151,7 @@ def str2bool(string):
     }
 
     try:
-        return _MAP[string.lower()]
+        return _map[string.lower()]
     except KeyError:
         raise ValueError(f'"{string}" is not a valid bool value')
 
