@@ -136,18 +136,18 @@ def str2bool(string):
         return string
 
     _MAP = {
-        'y': True,
-        'yes': True,
-        't': True,
-        'true': True,
-        'on': True,
-        '1': True,
-        'n': False,
-        'no': False,
-        'f': False,
-        'false': False,
-        'off': False,
-        '0': False
+        "y": True,
+        "yes": True,
+        "t": True,
+        "true": True,
+        "on": True,
+        "1": True,
+        "n": False,
+        "no": False,
+        "f": False,
+        "false": False,
+        "off": False,
+        "0": False,
     }
 
     try:

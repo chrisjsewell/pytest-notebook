@@ -11,6 +11,7 @@ import textwrap
 from typing import Tuple
 
 from nbformat import NotebookNode
+
 try:
     from importlib.metadata import entry_points
 except ImportError:
