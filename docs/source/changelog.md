@@ -1,5 +1,18 @@
 # Changelog
 
+## v0.9.0 (2023-11-12)
+
+* ⬆️ Add support for Python 3.12 by @sphuber in https://github.com/chrisjsewell/pytest-notebook/pull/41
+* ⬆️ Drop Python 3.7 by @chrisjsewell in https://github.com/chrisjsewell/pytest-notebook/pull/55
+
+## v0.8.1 (2022-11-21)
+
+* ⬆️ Add support for Python 3.10 and 3.11 by @sphuber in <https://github.com/chrisjsewell/pytest-notebook/pull/37>
+
+## v0.8.0 (2022-07-30)
+
+* 🐛 Coverage.py fix by @renefritze in <https://github.com/chrisjsewell/pytest-notebook/pull/25>
+
 ## v0.7.0 (2022-01-17)
 
 🔀 Merge: Update package (#20)
