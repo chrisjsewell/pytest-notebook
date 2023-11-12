@@ -15,6 +15,7 @@ from nbformat import NotebookNode
 try:
     from importlib.metadata import entry_points
 except ImportError:
+    # python <= 3.9
     from importlib_metadata import entry_points
 
 logger = logging.getLogger(__name__)
