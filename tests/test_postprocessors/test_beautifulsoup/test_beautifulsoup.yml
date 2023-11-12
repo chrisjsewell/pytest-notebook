@@ -6,7 +6,7 @@ cells:
   - data:
       text/html: "<div class=\"section\" id=\"submodules\">\n <h2>\n  Submodules\n\
         \  <a class=\"headerlink\" href=\"#submodules\" title=\"Permalink to this\
-        \ headline\">\n   ¶\n  </a>\n </h2>\n</div>"
+        \ headline\">\n   ¶\n  </a>\n </h2>\n</div>\n"
       text/plain: <IPython.core.display.HTML object>
     execution_count: 1
     metadata: {}
