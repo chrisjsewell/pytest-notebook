@@ -41,9 +41,8 @@ def diff_sequence_simple(
 
     max_length = max(len(initial), len(final))
     for i, (aval, bval) in enumerate(zip(initial[:max_length], final[:max_length])):
-
         # if a/bval are outputs and the output_type's are different the diff will fail
-        if isinstance(aval, dict) and isinstance(bval, dict):
+        if isinstance(aval, dict) and isinstance(bval, dict):  # noqa: SIM102
             if aval.get("output_type", None) != bval.get("output_type", None):
                 di.removerange(i, 1)
                 di.addrange(i, [bval])

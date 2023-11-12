@@ -29,7 +29,7 @@ master_doc = "index"
 
 # General information about the project.
 project = "pytest-notebook"
-copyright = "2019, Chris Sewell"  # noqa: A001
+copyright = "2019, Chris Sewell"
 author = "Chris Sewell"
 # The full version, including alpha/beta/rc tags, will replace |release|
 release = pytest_notebook.__version__
@@ -96,10 +96,11 @@ html_theme_options = {
     "use_issues_button": True,
     "use_repository_button": True,
 }
-jupyter_execute_notebooks = "cache"
-execution_show_tb = "READTHEDOCS" in os.environ
-execution_timeout = 60  # Note: 30 was timing out on RTD
 myst_enable_extensions = ["colon_fence"]
+nb_execution_mode = "cache"
+nb_execution_show_tb = "READTHEDOCS" in os.environ
+nb_execution_timeout = 60  # Note: 30 was timing out on RTD
+nb_merge_streams = True
 
 # -- Sphinx setup for other outputs ---------------------------------------
 
@@ -138,7 +139,7 @@ def run_apidoc(_):
     # See https://stackoverflow.com/a/30144019
     env = os.environ.copy()
     env["SPHINX_APIDOC_OPTIONS"] = "members,undoc-members,show-inheritance"
-    subprocess.check_call([cmd_path] + options, env=env)
+    subprocess.check_call([cmd_path, *options], env=env)
 
 
 def add_intersphinx_aliases_to_inv(app):

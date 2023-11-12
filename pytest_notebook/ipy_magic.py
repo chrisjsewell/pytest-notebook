@@ -121,7 +121,7 @@ def run_pytest(args: List[str], cwd: Union[str, Path, None] = None):
     """
     os.environ["COLUMNS"] = os.environ.get("COLUMNS", "80")
     process = subprocess.Popen(
-        [EXEC_NAME] + args,
+        [EXEC_NAME, *args],
         cwd=str(cwd) if cwd else None,
         env=os.environ,
         stdout=subprocess.PIPE,
@@ -171,7 +171,6 @@ def pytest(
 
     """
     with tempfile.TemporaryDirectory() as temp_dir:
-
         temp_dir = Path(temp_dir)
 
         args = shlex.split(line)

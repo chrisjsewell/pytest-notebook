@@ -26,7 +26,7 @@ def test_beautifulsoup(data_regression):
                                 "text/html": [
                                     "\n",
                                     '<div class="section" id="submodules">\n',
-                                    '    <h2>Submodules<a class="headerlink" href="#submodules" title="Permalink to this headline">¶</a></h2>\n',  # noqa: E501
+                                    '    <h2>Submodules<a class="headerlink" href="#submodules" title="Permalink to this headline">¶</a></h2>\n',
                                     "</div>",
                                 ],
                                 "text/plain": ["<IPython.core.display.HTML object>"],
@@ -49,7 +49,7 @@ def test_beautifulsoup(data_regression):
                             "data": {
                                 "image/svg+xml": [
                                     '<svg height="100" width="100">\n',
-                                    '  <circle cx="50" cy="50" fill="red" r="40" stroke="black" stroke-width="3"/></svg>\n',  # noqa: E501
+                                    '  <circle cx="50" cy="50" fill="red" r="40" stroke="black" stroke-width="3"/></svg>\n',
                                     "",
                                 ],
                                 "text/plain": ["<IPython.core.display.SVG object>"],

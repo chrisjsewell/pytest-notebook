@@ -135,23 +135,23 @@ def str2bool(string):
     if isinstance(string, bool):
         return string
 
-    _MAP = {
-        'y': True,
-        'yes': True,
-        't': True,
-        'true': True,
-        'on': True,
-        '1': True,
-        'n': False,
-        'no': False,
-        'f': False,
-        'false': False,
-        'off': False,
-        '0': False
+    _map = {
+        "y": True,
+        "yes": True,
+        "t": True,
+        "true": True,
+        "on": True,
+        "1": True,
+        "n": False,
+        "no": False,
+        "f": False,
+        "false": False,
+        "off": False,
+        "0": False,
     }
 
     try:
-        return _MAP[string.lower()]
+        return _map[string.lower()]
     except KeyError:
         raise ValueError(f'"{string}" is not a valid bool value')
 
@@ -208,7 +208,6 @@ def gather_config_options(pytestconfig):
         ("nb_diff_color_words", str2bool),
         ("nb_force_regen", str2bool),
     ]:
-
         if pytestconfig.getoption(name, None) is not None:
             nbreg_kwargs[name[3:]] = value_type(pytestconfig.getoption(name))
         elif not isinstance(pytestconfig.getini(name), NotSet):
@@ -216,7 +215,6 @@ def gather_config_options(pytestconfig):
 
     other_args = {}
     for name, value_type in [("nb_test_files", bool), ("nb_file_fnmatch", tuple)]:
-
         if pytestconfig.getoption(name, None) is not None:
             other_args[name] = value_type(pytestconfig.getoption(name))
         elif not isinstance(pytestconfig.getini(name), NotSet):
