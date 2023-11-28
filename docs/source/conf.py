@@ -60,6 +60,7 @@ nitpick_ignore = [
     ("py:class", "Session"),
     ("py:exc", "nbconvert.preprocessors.CellExecutionError"),
     ("py:class", "nbdime.diff_format.DiffEntry"),
+    ("py:class", "nbdime.diffing.config.DiffConfig"),
     ("py:class", "_pytest._py.path.LocalPath"),
     ("py:meth", "Item.reportinfo"),
 ]
