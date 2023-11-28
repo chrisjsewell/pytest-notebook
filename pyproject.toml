@@ -31,7 +31,7 @@ dependencies = [
   "importlib-metadata~=6.0;python_version<'3.10'",
   "importlib-resources~=5.0;python_version<'3.9'",
   "nbclient~=0.5.10",
-  "nbdime",
+  "nbdime>=4",
   "nbformat",
   "jsonschema",
 ]

@@ -2,9 +2,10 @@
 import copy
 import operator
 import re
-from typing import List, Sequence, Union
+from typing import List, Sequence
 
 from nbdime.diff_format import DiffEntry, SequenceDiffBuilder
+from nbdime.diffing.config import DiffConfig
 from nbdime.diffing.generic import default_differs, default_predicates, diff
 from nbdime.diffing.notebooks import diff_attachments, diff_single_outputs
 from nbdime.prettyprint import PrettyPrintConfig, pretty_print_diff
@@ -19,8 +20,7 @@ def diff_sequence_simple(
     initial: Sequence,
     final: Sequence,
     path: str = "",
-    predicates: Union[None, dict] = None,
-    differs: Union[None, dict] = None,
+    config: DiffConfig = None,
 ) -> dict:
     """Compute diff of two lists with configurable behaviour.
 
@@ -28,14 +28,16 @@ def diff_sequence_simple(
     we assume that items have been appended or removed from the end of the initial list.
 
     """
+    if config is None:
+        config = DiffConfig()
 
-    if predicates is None:
-        predicates = default_predicates()
-    if differs is None:
-        differs = default_differs()
+    if config.predicates is None:
+        config.predicates = default_predicates()
+    if config.differs is None:
+        config.differs = default_differs()
 
     subpath = "/".join((path, "*"))
-    diffit = differs[subpath]
+    diffit = config.differs[subpath]
 
     di = SequenceDiffBuilder()
 
@@ -48,7 +50,7 @@ def diff_sequence_simple(
                 di.addrange(i, [bval])
                 continue
 
-        cd = diffit(aval, bval, path=subpath, predicates=predicates, differs=differs)
+        cd = diffit(aval, bval, path=subpath, config=config)
         if cd:
             di.patch(i, cd)
 
@@ -75,10 +77,7 @@ def diff_notebooks(
     we shouldn't need to worry about insertions.
 
     """
-    return diff(
-        initial,
-        final,
-        path=initial_path,
+    config = DiffConfig(
         predicates=defaultdict2(lambda: [operator.__eq__], {}),
         differs=defaultdict2(
             lambda: diff,
@@ -90,6 +89,12 @@ def diff_notebooks(
                 "/cells/*/attachments": diff_attachments,
             },
         ),
+    )
+    return diff(
+        initial,
+        final,
+        path=initial_path,
+        config=config,
     )
 
 
