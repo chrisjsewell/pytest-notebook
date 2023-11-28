@@ -136,7 +136,7 @@ class NBRegressionFixture:
         if not isinstance(value, str):
             raise TypeError("exec_cwd must be None or a string")
         if not os.path.isdir(value):
-            raise IOError("exec_cwd='{}' is not an existing directory".format(value))
+            raise OSError(f"exec_cwd='{value}' is not an existing directory")
 
     exec_allow_errors: bool = attr.ib(
         False, instance_of(bool), metadata={"help": HELP_EXEC_ALLOW_ERRORS}
@@ -248,7 +248,7 @@ class NBRegressionFixture:
         if x_attr.validator:
             x_attr.validator(self, x_attr, value)
 
-        super(NBRegressionFixture, self).__setattr__(key, value)
+        super().__setattr__(key, value)
 
     def check(
         self, path: Union[TextIO, str], raise_errors: bool = True

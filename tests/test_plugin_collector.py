@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 """Test the  plugin collection and direct invocation of notebooks."""
 import os
 

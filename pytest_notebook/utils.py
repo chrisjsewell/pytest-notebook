@@ -136,15 +136,12 @@ def autodoc(attrs_class):
         return title + "\n" + description
 
     if attr.fields(attrs_class):
-        params_section = (
-            textwrap.dedent(
-                """\
+        params_section = textwrap.dedent(
+            """\
             Parameters
             ----------
             """
-            )
-            + "\n\n".join(param_doc(field) for field in attr.fields(attrs_class))
-        )
+        ) + "\n\n".join(param_doc(field) for field in attr.fields(attrs_class))
     else:
         params_section = ""
 

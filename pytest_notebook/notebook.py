@@ -75,12 +75,18 @@ def gather_json_paths(
     if isinstance(obj, dict):
         for k, v in obj.items():
             gather_json_paths(
-                v, paths, types, curr_path=tuple(list(curr_path) + [k])  # noqa: RUF005
+                v,
+                paths,
+                types,
+                curr_path=tuple(list(curr_path) + [k]),  # noqa: RUF005
             )
     elif isinstance(obj, list):
         for i, v in enumerate(obj):
             gather_json_paths(
-                v, paths, types, curr_path=tuple(list(curr_path) + [i])  # noqa: RUF005
+                v,
+                paths,
+                types,
+                curr_path=tuple(list(curr_path) + [i]),  # noqa: RUF005
             )
     elif types is None or isinstance(obj, types):
         paths.append(curr_path)
@@ -149,7 +155,7 @@ def validate_regex_replace(args, index):
         raise TypeError(f"diff_replace[{index}] replacement '{args[2]}' must a string")
 
 
-@lru_cache()
+@lru_cache
 def _load_validator():
     schema = json.loads(
         files(resources).joinpath("nb_metadata.schema.json").read_text(encoding="utf-8")

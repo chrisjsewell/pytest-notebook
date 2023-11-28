@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 """Test the  ``nb_regression`` plugin fixture."""
 import os
 
@@ -105,9 +104,7 @@ def test_nb_regression_ini_setting_init(testdir):
         nb_post_processors =
         nb_diff_replace =
             /cells/*/outputs/*/traceback \<ipython\-input\-[\-0-9a-zA-Z]*\> "< >"
-        """.format(
-            path=os.path.join(PATH, "raw_files")
-        )
+        """.format(path=os.path.join(PATH, "raw_files"))
     )
 
     testdir.makepyfile(
@@ -167,9 +164,7 @@ def test_nb_regression_fixture_check_fail(testdir):
         """
         def test_nb(nb_regression):
             nb_regression.check("{path}")
-    """.format(
-            path=os.path.join(PATH, "raw_files", "simple-diff-output.ipynb")
-        )
+    """.format(path=os.path.join(PATH, "raw_files", "simple-diff-output.ipynb"))
     )
 
     # run pytest with the following cmd args
@@ -198,9 +193,7 @@ def test_nb_regression_fixture_check_pass(testdir):
                 "/cells/9/outputs/0/metadata/application/json"
             )
             nb_regression.check("{path}")
-    """.format(
-            path=os.path.join(PATH, "raw_files", "different_outputs.ipynb")
-        )
+    """.format(path=os.path.join(PATH, "raw_files", "different_outputs.ipynb"))
     )
 
     # run pytest with the following cmd args

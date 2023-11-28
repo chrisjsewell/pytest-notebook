@@ -23,20 +23,20 @@ logger = logging.getLogger(__name__)
 ENTRY_POINT_NAME = "nbreg.post_proc"
 
 
-@functools.lru_cache()
+@functools.lru_cache
 def list_processor_names():
     """List entry point names for  post-processors."""
     return [ep.name for ep in entry_points().select(group=ENTRY_POINT_NAME)]
 
 
-@functools.lru_cache()
+@functools.lru_cache
 def load_processor(name: str):
     """Get a post-processors for an entry point name."""
     try:
         (entry_point,) = entry_points().select(group=ENTRY_POINT_NAME, name=name)
     except ValueError:
         raise ValueError(
-            "entry point '{}' for group '{}' not found".format(name, ENTRY_POINT_NAME)
+            f"entry point '{name}' for group '{ENTRY_POINT_NAME}' not found"
         )
     return entry_point.load()
 

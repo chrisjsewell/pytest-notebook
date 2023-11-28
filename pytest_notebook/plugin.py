@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 """pytest plugin configuration.
 
 For more information on writing pytest plugins see:
