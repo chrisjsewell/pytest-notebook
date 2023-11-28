@@ -39,7 +39,7 @@ def parse_cell_content(
             if in_config:
                 in_config = False
             elif config_content:
-                raise IOError(f"Line {i}: found second config file section")
+                raise OSError(f"Line {i}: found second config file section")
             else:
                 in_config = True
         elif in_config:
@@ -48,7 +48,7 @@ def parse_cell_content(
             if in_literals:
                 in_literals = False
             elif literals_content:
-                raise IOError(f"Line {i}: found second literals section")
+                raise OSError(f"Line {i}: found second literals section")
             else:
                 in_literals = True
         elif in_literals:
@@ -57,9 +57,9 @@ def parse_cell_content(
             test_content.append(line)
 
     if in_config:
-        raise IOError("found start of config section, but not end")
+        raise OSError("found start of config section, but not end")
     if in_literals:
-        raise IOError("found start of literals section, but not end")
+        raise OSError("found start of literals section, but not end")
 
     return test_content, config_content, literals_content
 
