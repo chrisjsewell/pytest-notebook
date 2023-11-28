@@ -1,9 +1,13 @@
 # Changelog
 
+## v0.10.0 (2023-11-28)
+
+* ⬆️ Support nbdime v4 (drop v3 support) by @amotl and @krassowski in <https://github.com/chrisjsewell/pytest-notebook/pull/62>
+
 ## v0.9.0 (2023-11-12)
 
-* ⬆️ Add support for Python 3.12 by @sphuber in https://github.com/chrisjsewell/pytest-notebook/pull/41
-* ⬆️ Drop Python 3.7 by @chrisjsewell in https://github.com/chrisjsewell/pytest-notebook/pull/55
+* ⬆️ Add support for Python 3.12 by @sphuber in <https://github.com/chrisjsewell/pytest-notebook/pull/41>
+* ⬆️ Drop Python 3.7 by @chrisjsewell in <https://github.com/chrisjsewell/pytest-notebook/pull/55>
 
 ## v0.8.1 (2022-11-21)
 
