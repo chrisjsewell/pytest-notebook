@@ -41,6 +41,7 @@ intersphinx_mapping = {
     "_pytest": ("https://doc.pytest.org/en/latest/", None),
     # "PIL": ("http://pillow.readthedocs.org/en/latest/", None),
     "nbclient": ("https://nbclient.readthedocs.io/en/latest/", None),
+    "nbdime": ("https://nbdime.readthedocs.io/en/latest/", None),
     "nbformat": ("https://nbformat.readthedocs.io/en/latest/", None),
     "attr": ("https://www.attrs.org/en/stable/", None),
     "coverage": ("https://coverage.readthedocs.io/en/6.2/", None),
