@@ -40,6 +40,7 @@ intersphinx_mapping = {
     "_pytest": ("https://doc.pytest.org/en/latest/", None),
     # "PIL": ("http://pillow.readthedocs.org/en/latest/", None),
     "nbclient": ("https://nbclient.readthedocs.io/en/latest/", None),
+    "nbdime": ("https://nbdime.readthedocs.io/en/latest/", None),
     "nbformat": ("https://nbformat.readthedocs.io/en/latest/", None),
     "attr": ("https://www.attrs.org/en/stable/", None),
     "coverage": ("https://coverage.readthedocs.io/en/6.2/", None),
@@ -59,6 +60,7 @@ nitpick_ignore = [
     ("py:class", "Session"),
     ("py:exc", "nbconvert.preprocessors.CellExecutionError"),
     ("py:class", "nbdime.diff_format.DiffEntry"),
+    ("py:class", "nbdime.diffing.config.DiffConfig"),
     ("py:class", "_pytest._py.path.LocalPath"),
     ("py:meth", "Item.reportinfo"),
 ]
