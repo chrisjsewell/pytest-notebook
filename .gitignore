@@ -104,12 +104,18 @@ ENV/
 env.bak/
 venv.bak/
 
+# PyCharm project settings
+.idea
+
 # Spyder project settings
 .spyderproject
 .spyproject
 
 # Rope project settings
 .ropeproject
+
+# VSCode project settings
+.vscode
 
 # mkdocs documentation
 /site
@@ -125,4 +131,3 @@ dmypy.json
 .DS_Store
 _archive/
 docs/source/apidoc/
-.vscode/
