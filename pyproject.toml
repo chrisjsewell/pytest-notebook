@@ -45,7 +45,7 @@ testing = [
   "pytest-cov",
   "pytest-regressions",
   "ipykernel",
-  "coverage~=5.0",
+  "coverage~=7.3",
   "black==23.11.0",
   "beautifulsoup4==4.12.2",
 ]
@@ -58,7 +58,7 @@ docs = [
   "pyyaml",
   "sphinx-book-theme~=1.0.1",
   "myst-nb~=1.0",
-  "coverage~=5.0",
+  "coverage~=7.3",
   "pytest-cov",
   "black",
 ]
