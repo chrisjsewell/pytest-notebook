@@ -51,7 +51,7 @@ testing = [
 ]
 code_style = [
   "pre-commit~=3.5.0",
-  "doc8<0.9.0,>=0.8.0",
+  "doc8>=0.8.0,<1.2.0",
 ]
 docs = [
   "sphinx>=3",
