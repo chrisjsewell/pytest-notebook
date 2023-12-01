@@ -30,7 +30,7 @@ dependencies = [
   "attrs<23,>=19",
   "importlib-metadata~=6.0;python_version<'3.10'",
   "importlib-resources~=5.0;python_version<'3.9'",
-  "nbclient~=0.5.10",
+  "nbclient~=0.9.0",
   "nbdime>=4",
   "nbformat",
   "jsonschema",
