@@ -12,6 +12,7 @@ For more information on writing pytest plugins see:
 """
 import os
 import shlex
+from pathlib import Path
 
 import pytest
 
@@ -270,7 +271,7 @@ def pytest_collect_file(path, parent):
         path.fnmatch(pat) for pat in other_args.get("nb_file_fnmatch", ["*.ipynb"])
     ):
         try:
-            return JupyterNbCollector.from_parent(parent, fspath=path)
+            return JupyterNbCollector.from_parent(parent, path=Path(path))
         except AttributeError:
             return JupyterNbCollector(path, parent)
 
