@@ -1,4 +1,5 @@
 """Tests for pytest_notebook.notebook."""
+
 from pytest_notebook.notebook import (
     META_KEY,
     MetadataConfig,

@@ -1,4 +1,5 @@
 """Diffing of notebooks."""
+
 import copy
 import operator
 import re

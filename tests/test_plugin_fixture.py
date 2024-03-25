@@ -1,4 +1,5 @@
 """Test the  ``nb_regression`` plugin fixture."""
+
 import os
 
 import attr

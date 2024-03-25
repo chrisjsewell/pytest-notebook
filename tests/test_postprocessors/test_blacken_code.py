@@ -1,4 +1,5 @@
 """Tests for blacken_code post-processor."""
+
 import textwrap
 
 from pytest_notebook.notebook import create_notebook, mapping_to_dict, prepare_cell

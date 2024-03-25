@@ -1,4 +1,5 @@
 """Execution of notebooks."""
+
 from contextlib import nullcontext
 import copy
 import json

@@ -4,6 +4,7 @@ Load via: ``%load_ext pytest_notebook.ipy_magic``,
 then ``%pytest`` and ``%%pytest`` can be accessed.
 
 """
+
 # TODO post solution to stackoverflow:
 # https://stackoverflow.com/questions/41304311/running-pytest-test-functions-inside-a-jupyter-notebook
 import os
@@ -20,7 +21,7 @@ MAIN_FILE_NAME = "test_ipycell.py"
 
 
 def parse_cell_content(
-    cell: Union[str, None]
+    cell: Union[str, None],
 ) -> Tuple[List[str], List[str], List[str]]:
     """Parse the cell contents.
 

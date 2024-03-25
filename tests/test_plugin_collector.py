@@ -1,4 +1,5 @@
 """Test the  plugin collection and direct invocation of notebooks."""
+
 import os
 
 PATH = os.path.dirname(os.path.realpath(__file__))
