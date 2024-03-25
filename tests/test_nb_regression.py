@@ -1,4 +1,5 @@
 """Tests for ``NBRegressionFixture``."""
+
 import os
 
 import pytest

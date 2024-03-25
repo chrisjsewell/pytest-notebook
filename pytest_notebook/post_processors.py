@@ -3,6 +3,7 @@
 All functions should take (notebook, resources) as input,
 and output a (new notebook, resources).
 """
+
 import copy
 import functools
 import logging

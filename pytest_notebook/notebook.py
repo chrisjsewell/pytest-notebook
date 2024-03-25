@@ -1,4 +1,5 @@
 """Module for working with notebook."""
+
 import copy
 from functools import lru_cache
 

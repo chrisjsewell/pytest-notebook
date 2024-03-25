@@ -1,4 +1,5 @@
 """Jupyter Notebook Regression Test Class."""
+
 import copy
 import logging
 import os
