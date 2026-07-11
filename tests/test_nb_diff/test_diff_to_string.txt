@@ -183,24 +183,28 @@
 +    [0;32m----> 3[0;31m     [0;32mraise[0m [0mValueError[0m[0;34m([0m[0;34m'there was an error'[0m[0;34m)[0m[0;34m[0m[0;34m[0m[0m
 +    [0m[1;32m      4[0m [0;32mfor[0m [0mi[0m [0;32min[0m [0mrange[0m[0;34m([0m[0;36m10[0m[0;34m)[0m[0;34m:[0m[0;34m[0m[0;34m[0m[0m
 +    [1;32m      5[0m     [0mfunc[0m[0;34m([0m[0mi[0m[0;34m)[0m[0;34m[0m[0;34m[0m[0m
++  item[4]: [0;31mValueError[0m: there was an error
 
-## deleted /cells/16/outputs/1/traceback/0-3:
--  item[0]: [0;31m---------------------------------------------------------------------------[0m
--  item[1]: [0;31mValueError[0m                                Traceback (most recent call last)
+## deleted /cells/16/outputs/1/traceback/0-4:
+-  item[0]: [31m---------------------------------------------------------------------------[39m
+-  item[1]: [31mValueError[39m                                Traceback (most recent call last)
 -  item[2]:
--    Cell [0;32mIn[15], line 5[0m
--    [1;32m      3[0m     [38;5;28;01mraise[39;00m [38;5;167;01mValueError[39;00m([38;5;124m'[39m[38;5;124mthere was an error[39m[38;5;124m'[39m)
--    [1;32m      4[0m [38;5;28;01mfor[39;00m i [38;5;129;01min[39;00m [38;5;28mrange[39m([38;5;241m10[39m):
--    [0;32m----> 5[0m     [43mfunc[49m[43m([49m[43mi[49m[43m)[49m
+-    [36mCell[39m[36m [39m[32mIn[15][39m[32m, line 5[39m
+-    [32m      1[39m print([33m'before exception'[39m)
+-    [32m      2[39m [38;5;28;01mdef[39;00m func(b):
+-    [32m      3[39m     [38;5;28;01mraise[39;00m ValueError([33m'there was an error'[39m)
+-    [32m      4[39m [38;5;28;01mfor[39;00m i [38;5;28;01min[39;00m range([32m10[39m):
+-    [32m----> [39m[32m5[39m     func(i)
 -  item[3]:
--    Cell [0;32mIn[15], line 3[0m, in [0;36mfunc[0;34m(b)[0m
--    [1;32m      2[0m [38;5;28;01mdef[39;00m [38;5;21mfunc[39m(b):
--    [0;32m----> 3[0m     [38;5;28;01mraise[39;00m [38;5;167;01mValueError[39;00m([38;5;124m'[39m[38;5;124mthere was an error[39m[38;5;124m'[39m)
+-    [36mCell[39m[36m [39m[32mIn[15][39m[32m, line 3[39m, in [36mfunc[39m[34m(b)[39m
+-    [32m      2[39m [38;5;28;01mdef[39;00m func(b):
+-    [32m----> [39m[32m3[39m     [38;5;28;01mraise[39;00m ValueError([33m'there was an error'[39m)
+-  item[4]: [31mValueError[39m: there was an error
 
 ## deleted /metadata/celltoolbar:
 -  Tags
 
 ## modified /metadata/language_info/version:
--  3.8.18
+-  3.11.15
 +  3.6.7
 

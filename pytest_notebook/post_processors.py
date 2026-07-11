@@ -3,20 +3,15 @@
 All functions should take (notebook, resources) as input,
 and output a (new notebook, resources).
 """
+
 import copy
 import functools
+from importlib.metadata import entry_points
 import logging
 import re
 import textwrap
-from typing import Tuple
 
 from nbformat import NotebookNode
-
-try:
-    # python <= 3.9
-    from importlib_metadata import entry_points
-except ImportError:
-    from importlib.metadata import entry_points
 
 logger = logging.getLogger(__name__)
 
@@ -81,7 +76,7 @@ RGX_BACKSPACE = re.compile(r"[^\n]\b")
 @cell_preprocessor
 def coalesce_streams(
     cell: NotebookNode, resources: dict, index: int
-) -> Tuple[NotebookNode, dict]:
+) -> tuple[NotebookNode, dict]:
     """Merge all stream outputs with shared names into single streams.
 
     This ensure deterministic outputs.
@@ -135,7 +130,7 @@ def coalesce_streams(
 @cell_preprocessor
 def blacken_code(
     cell: NotebookNode, resources: dict, index: int
-) -> Tuple[NotebookNode, dict]:
+) -> tuple[NotebookNode, dict]:
     """Format python source code with black (see https://black.readthedocs.io)."""
     try:
         import black
@@ -161,7 +156,7 @@ def blacken_code(
 @cell_preprocessor
 def beautifulsoup(
     cell: NotebookNode, resources: dict, index: int
-) -> Tuple[NotebookNode, dict]:
+) -> tuple[NotebookNode, dict]:
     """Format text/html and image/svg+xml outputs with beautiful-soup.
 
     See: https://beautiful-soup-4.readthedocs.io.

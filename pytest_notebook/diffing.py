@@ -1,8 +1,9 @@
 """Diffing of notebooks."""
+
+from collections.abc import Sequence
 import copy
 import operator
 import re
-from typing import List, Sequence
 
 from nbdime.diff_format import DiffEntry, SequenceDiffBuilder
 from nbdime.diffing.config import DiffConfig
@@ -64,7 +65,7 @@ def diff_sequence_simple(
 
 def diff_notebooks(
     initial: NotebookNode, final: NotebookNode, initial_path: str = ""
-) -> List[DiffEntry]:
+) -> list[DiffEntry]:
     """Compare two notebooks.
 
     This is a simplified version of ``nbdime.diff_notebooks()``, where we replace
@@ -116,8 +117,8 @@ def star_path(path):
 
 
 def filter_diff(
-    diff: List[DiffEntry], remove_paths: List[str], path: str = ""
-) -> List[DiffEntry]:
+    diff: list[DiffEntry], remove_paths: list[str], path: str = ""
+) -> list[DiffEntry]:
     r"""Filter a notebook diff object, removing a list of paths.
 
     Paths are joined by '/' and may be starred, e.g. '/cells/\*/outputs'.

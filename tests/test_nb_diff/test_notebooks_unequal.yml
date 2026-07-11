@@ -350,8 +350,9 @@
               [0m\e[0;34m:\e[0m\e[0;34m\e[0m\e[0;34m\e[0m\e[0m\n\e[1;32m      5\e\
               [0m     \e[0mfunc\e[0m\e[0;34m(\e[0m\e[0mi\e[0m\e[0;34m)\e[0m\e[0;34m\e\
               [0m\e[0;34m\e[0m\e[0m\n"
+            - "\e[0;31mValueError\e[0m: there was an error"
           - key: 0
-            length: 4
+            length: 5
             op: removerange
           key: traceback
           op: patch

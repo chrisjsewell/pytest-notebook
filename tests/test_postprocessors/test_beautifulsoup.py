@@ -1,4 +1,5 @@
 """Tests for beautifulsoup post-processor."""
+
 from pytest_notebook.notebook import create_notebook, mapping_to_dict, prepare_cell
 from pytest_notebook.post_processors import beautifulsoup
 
