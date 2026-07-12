@@ -1,5 +1,17 @@
 # Changelog
 
+## v0.11.0 (2026-07-12)
+
+‼️ **BREAKING**: Python 3.10+ and pytest 7.4+ are now required.
+
+* ‼️ Drop Python 3.8/3.9 support; add official Python 3.13 support
+* 🐛 Fix compatibility with pytest 8/9: port the notebook collector from the removed `py.path`/`fspath` API to the `pathlib` based API ([#73](https://github.com/chrisjsewell/pytest-notebook/issues/73), [#81](https://github.com/chrisjsewell/pytest-notebook/issues/81))
+* ⬆️ Un-pin `attrs` (now `>=21`), `nbclient` (now `>=0.5.10`, tested against 0.11) and `coverage` (now v6.5+, tested against v7) ([#84](https://github.com/chrisjsewell/pytest-notebook/issues/84))
+* ✨ Notebooks can now skip themselves at runtime, by raising `pytest.skip(...)` within a cell ([#43](https://github.com/chrisjsewell/pytest-notebook/issues/43))
+* ✨ Add `exec_env` fixture option / `nb_exec_env` ini option (lines of `KEY=VALUE`), to set environment variables for the kernel, e.g. `PYTHONPATH` ([#15](https://github.com/chrisjsewell/pytest-notebook/issues/15), [#85](https://github.com/chrisjsewell/pytest-notebook/issues/85))
+* 🔧 Move development dependencies from `testing`/`code_style` extras to PEP 735 dependency groups (`test`, `pre_commit`); the `docs` extra is retained
+* 🔧 Add `AGENTS.md`, update pre-commit hooks (ruff v0.15) and CI (Python 3.10-3.13 matrix, PyPI trusted publishing, weekly dependabot)
+
 ## v0.10.0 (2023-11-28)
 
 * ⬆️ Support nbdime v4 (drop v3 support) by @amotl and @krassowski in <https://github.com/chrisjsewell/pytest-notebook/pull/62>

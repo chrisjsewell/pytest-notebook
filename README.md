@@ -65,7 +65,7 @@ git clone https://github.com/chrisjsewell/pytest-notebook .
 cd pytest-notebook
 pip install --upgrade pip
 pip install -e .
-# pip install -e .[code_style,testing,docs] # install extras for more features
+# pip install --group test --group pre_commit -e .[docs] # install development dependencies
 ```
 
 ## Usage
@@ -96,31 +96,24 @@ Contributions are very welcome.
 The following will discover and run all unit test:
 
 ```shell
-pip install -e .[testing]
+pip install --group test -e .
 pytest -v
 ```
 
 ### Coding Style Requirements
 
-The code style is tested using [flake8](http://flake8.pycqa.org),
-with the configuration set in `.flake8`,
-and code should be formatted with [black](https://github.com/ambv/black).
+The code style is tested and formatted using [ruff](https://docs.astral.sh/ruff/),
+with the configuration set in `pyproject.toml`.
 
-Installing with `pytest-notebook[code_style]` makes the [pre-commit](https://pre-commit.com/)
-package available, which will ensure these tests are passed by reformatting the code
+Installing the `pre_commit` dependency group (`pip install --group pre_commit -e .`)
+makes the [pre-commit](https://pre-commit.com/) package available, which will
+ensure the code style is met by reformatting the code
 and testing for lint errors before submitting a commit.
 It can be setup by:
 
 ```shell
 cd pytest-notebook
 pre-commit install
-```
-
-Optionally you can run `black` and `flake8` separately:
-
-```shell
-black .
-flake8 .
 ```
 
 Editors like VS Code also have automatic code reformat utilities, which can adhere to this standard.

@@ -36,7 +36,7 @@ release = pytest_notebook.__version__
 version = ".".join(release.split(".")[:2])
 
 intersphinx_mapping = {
-    "python": ("https://docs.python.org/3.8", None),
+    "python": ("https://docs.python.org/3.12", None),
     "_pytest": ("https://doc.pytest.org/en/latest/", None),
     # "PIL": ("http://pillow.readthedocs.org/en/latest/", None),
     "nbclient": ("https://nbclient.readthedocs.io/en/latest/", None),
