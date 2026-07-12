@@ -1,12 +1,13 @@
 """Execution of notebooks."""
+
 from contextlib import nullcontext
 import copy
 import json
 import logging
+import os
 from pathlib import Path
 import tempfile
 from textwrap import dedent
-from typing import List, Optional, Union
 
 import attr
 from attr.validators import instance_of
@@ -24,15 +25,19 @@ logger = logging.getLogger(__name__)
 HELP_COVERAGE = "Record coverage data, with coverage.py."
 HELP_COVERAGE_CONFIG = "Determines what coverage configuration file to read."
 HELP_COVERAGE_SOURCE = "A list of file paths or package names to measure coverage for."
+HELP_EXEC_ENV = (
+    "Environment variables to set for the kernel, "
+    "in addition to the inherited environment."
+)
 
 COVERAGE_KEY = "coverage_data"
 
 
-def coverage_code_setup(
-    source: Optional[str], config_file: Union[None, str, Path]
-) -> str:
+def coverage_code_setup(source: str | None, config_file: None | str | Path) -> str:
     source = f"{source!r}" if source else "None"
-    config_file = f"{config_file!r}" if config_file else "None"
+    # False disables reading a configuration file
+    # (the pre coverage v6.4 meaning of None)
+    config_file = f"{config_file!r}" if config_file else "False"
     return dedent(
         f"""\
         import coverage as __coverage
@@ -94,7 +99,7 @@ class CoverageNotebookClient(NotebookClient):
 
         async with self.async_setup_kernel(**kwargs):
             assert self.kc is not None
-            self.log.info("Executing notebook with kernel: %s" % self.kernel_name)
+            self.log.info(f"Executing notebook with kernel: {self.kernel_name}")
             msg_id = await ensure_async(self.kc.kernel_info())
             info_msg = await self.async_wait_for_reply(msg_id)
             if info_msg is not None:
@@ -177,8 +182,7 @@ class CoverageError(Exception):
     def from_exec_reply(cls, phase, reply):
         """Instantiate from an execution reply."""
         return cls(
-            f"An error occurred while executing coverage {phase}:\n"
-            f"{reply['content']}"
+            f"An error occurred while executing coverage {phase}:\n{reply['content']}"
         )
 
     @classmethod
@@ -188,7 +192,7 @@ class CoverageError(Exception):
         return cls(
             f"An error occurred while executing coverage {phase}:\n"
             f"{traceback}\n"
-            f"{output.get('ename', '<Error>')}: { output.get('evalue', '')}"
+            f"{output.get('ename', '<Error>')}: {output.get('evalue', '')}"
         )
 
 
@@ -197,7 +201,7 @@ class CoverageError(Exception):
 class ExecuteResult:
     """Result of notebook execution."""
 
-    exec_error: Union[None, Exception] = attr.ib(
+    exec_error: None | Exception = attr.ib(
         validator=instance_of((type(None), Exception)),
         metadata={"help": "Execution exception."},
     )
@@ -236,13 +240,14 @@ class ExecuteResult:
 def execute_notebook(
     notebook: NotebookNode,
     *,
-    resources: Union[dict, None] = None,
-    cwd: Union[str, None] = None,
+    resources: dict | None = None,
+    cwd: str | None = None,
     timeout: int = 120,
     allow_errors: bool = False,
+    exec_env: dict | None = None,
     with_coverage: bool = False,
-    cov_config_file: Union[str, None] = None,
-    cov_source: Union[List[str], None] = None,
+    cov_config_file: str | None = None,
+    cov_source: list[str] | None = None,
 ) -> ExecuteResult:
     """Execute a notebook.
 
@@ -251,6 +256,8 @@ def execute_notebook(
     :param timeout: The maximum time to wait (in seconds) for execution of each cell.
     :param allow_errors: If False, execution is stopped after the first unexpected
         exception (cells tagged ``raises-exception`` are expected)
+    :param exec_env: Environment variables to set for the kernel,
+        in addition to the inherited environment.
     :param with_coverage: Record code coverage with coverage.py
     :param cov_config_file: Determines what coverage configuration file to read.
     :param cov_source: A list of file paths or package names to measure coverage for.
@@ -275,8 +282,16 @@ def execute_notebook(
             cov_config_file=cov_config_file,
             cov_source=cov_source,
         )
+        kernel_kwargs = {}
+        if exec_env is not None:
+            # merge with the current environment,
+            # since a supplied `env` replaces it entirely
+            kernel_kwargs["env"] = {
+                **os.environ,
+                **{key: str(value) for key, value in exec_env.items()},
+            }
         try:
-            client.execute()
+            client.execute(**kernel_kwargs)
         except (CellExecutionError, CellTimeoutError, CoverageError) as err:
             exec_error = err
 

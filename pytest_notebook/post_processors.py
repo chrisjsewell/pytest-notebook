@@ -3,20 +3,16 @@
 All functions should take (notebook, resources) as input,
 and output a (new notebook, resources).
 """
+
 import copy
 import functools
+from importlib.metadata import entry_points
+import inspect
 import logging
 import re
 import textwrap
-from typing import Tuple
 
 from nbformat import NotebookNode
-
-try:
-    # python <= 3.9
-    from importlib_metadata import entry_points
-except ImportError:
-    from importlib.metadata import entry_points
 
 logger = logging.getLogger(__name__)
 
@@ -43,9 +39,11 @@ def load_processor(name: str):
 
 def document_processors():
     """Create formatted string of all preprocessor docstrings."""
+    # cleandoc normalises docstring indentation across python versions
+    # (python 3.13+ strips common leading whitespace at compile time)
     return "\n\n".join(
         [
-            f"{n}:\n{textwrap.indent(load_processor(n).__doc__, '  ').rstrip()}"
+            f"{n}:\n{textwrap.indent(inspect.cleandoc(load_processor(n).__doc__), '  ')}"
             for n in sorted(list_processor_names())
         ]
     )
@@ -81,7 +79,7 @@ RGX_BACKSPACE = re.compile(r"[^\n]\b")
 @cell_preprocessor
 def coalesce_streams(
     cell: NotebookNode, resources: dict, index: int
-) -> Tuple[NotebookNode, dict]:
+) -> tuple[NotebookNode, dict]:
     """Merge all stream outputs with shared names into single streams.
 
     This ensure deterministic outputs.
@@ -135,7 +133,7 @@ def coalesce_streams(
 @cell_preprocessor
 def blacken_code(
     cell: NotebookNode, resources: dict, index: int
-) -> Tuple[NotebookNode, dict]:
+) -> tuple[NotebookNode, dict]:
     """Format python source code with black (see https://black.readthedocs.io)."""
     try:
         import black
@@ -161,7 +159,7 @@ def blacken_code(
 @cell_preprocessor
 def beautifulsoup(
     cell: NotebookNode, resources: dict, index: int
-) -> Tuple[NotebookNode, dict]:
+) -> tuple[NotebookNode, dict]:
     """Format text/html and image/svg+xml outputs with beautiful-soup.
 
     See: https://beautiful-soup-4.readthedocs.io.

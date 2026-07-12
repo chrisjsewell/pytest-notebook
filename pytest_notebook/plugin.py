@@ -10,11 +10,15 @@ For more information on writing pytest plugins see:
 - https://docs.pytest.org/en/latest/_modules/_pytest/hookspec.html
 
 """
-import os
+
+import fnmatch
+from pathlib import Path
 import shlex
 
+from nbclient.exceptions import CellExecutionError
 import pytest
 
+from pytest_notebook.execution import HELP_EXEC_ENV
 from pytest_notebook.nb_regression import (
     HELP_COVERAGE,
     HELP_DIFF_COLOR_WORDS,
@@ -103,6 +107,7 @@ def pytest_addoption(parser):
         default=NotSet(),
     )
     parser.addini("nb_exec_timeout", help=HELP_EXEC_TIMEOUT, default=NotSet())
+    parser.addini("nb_exec_env", type="linelist", help=HELP_EXEC_ENV, default=NotSet())
     parser.addini("nb_coverage", type="bool", help=HELP_COVERAGE, default=NotSet())
     parser.addini(
         "nb_post_processors", type="linelist", help=HELP_POST_PROCS, default=NotSet()
@@ -189,6 +194,31 @@ def validate_diff_replace(pytestconfig):
     return tuple(output)
 
 
+def validate_exec_env(pytestconfig):
+    """Extract the ``nb_exec_env`` option from the ini file.
+
+    This should be a list of lines of the format ``KEY=VALUE``::
+
+        nb_exec_env =
+            MY_VAR=my_value
+            PYTHONPATH=src
+
+    """
+    nb_exec_env = pytestconfig.getini("nb_exec_env")
+    if isinstance(nb_exec_env, NotSet):
+        return None
+
+    env = {}
+    for line in nb_exec_env:
+        key, sep, value = line.partition("=")
+        if not sep or not key.strip():
+            raise ValueError(
+                f"nb_exec_env line is not of the format KEY=VALUE: '{line}'"
+            )
+        env[key.strip()] = value
+    return env
+
+
 def gather_config_options(pytestconfig):
     """Gather all options, from command-line and ini file.
 
@@ -223,6 +253,10 @@ def gather_config_options(pytestconfig):
     if nb_diff_replace is not None:
         nbreg_kwargs["diff_replace"] = nb_diff_replace
 
+    nb_exec_env = validate_exec_env(pytestconfig)
+    if nb_exec_env is not None:
+        nbreg_kwargs["exec_env"] = nb_exec_env
+
     # options from pytest_cov
     # see: https://github.com/pytest-dev/pytest-cov/blob/master/src/pytest_cov/plugin.py
     if pytestconfig.getoption("cov_source", None) is not None:
@@ -244,7 +278,7 @@ def gather_config_options(pytestconfig):
 def pytest_report_header(config):
     """Add header information for pytest execution."""
 
-    kwargs, other_args = gather_config_options(config)
+    kwargs, _ = gather_config_options(config)
     header = []
     if kwargs.get("exec_notebook", True) and kwargs.get("exec_cwd", None):
         header.append(f"NB exec dir: {kwargs['exec_cwd']}")
@@ -259,20 +293,29 @@ def pytest_report_header(config):
 def nb_regression(pytestconfig):
     """Fixture to execute a Jupyter Notebook, and test its output is as expected."""
 
-    kwargs, other_args = gather_config_options(pytestconfig)
+    kwargs, _ = gather_config_options(pytestconfig)
     return NBRegressionFixture(**kwargs)
 
 
-def pytest_collect_file(path, parent):
+def _matches_pattern(file_path: Path, pattern: str) -> bool:
+    """Match a file against an fnmatch pattern.
+
+    Patterns containing a path separator are matched against the full path,
+    otherwise against the file name (mirroring ``py.path.local.fnmatch``).
+    """
+    if "/" in pattern:
+        return fnmatch.fnmatch(file_path.as_posix(), pattern)
+    return fnmatch.fnmatch(file_path.name, pattern)
+
+
+def pytest_collect_file(file_path: Path, parent):
     """Collect Jupyter notebooks using the specified pytest hook."""
-    kwargs, other_args = gather_config_options(parent.config)
+    _, other_args = gather_config_options(parent.config)
     if other_args.get("nb_test_files", False) and any(
-        path.fnmatch(pat) for pat in other_args.get("nb_file_fnmatch", ["*.ipynb"])
+        _matches_pattern(file_path, pat)
+        for pat in other_args.get("nb_file_fnmatch", ["*.ipynb"])
     ):
-        try:
-            return JupyterNbCollector.from_parent(parent, fspath=path)
-        except AttributeError:
-            return JupyterNbCollector(path, parent)
+        return JupyterNbCollector.from_parent(parent, path=file_path)
 
 
 class JupyterNbCollector(pytest.File):
@@ -283,11 +326,7 @@ class JupyterNbCollector(pytest.File):
 
     def collect(self):
         """Collect tests for the notebook."""
-        name = os.path.splitext(os.path.basename(self.fspath))[0]
-        try:
-            yield JupyterNbTest.from_parent(self, name=f"nbregression({name})")
-        except AttributeError:
-            yield JupyterNbTest(f"nbregression({name})", self)
+        yield JupyterNbTest.from_parent(self, name=f"nbregression({self.path.stem})")
 
 
 class JupyterNbTest(pytest.Item):
@@ -299,15 +338,22 @@ class JupyterNbTest(pytest.Item):
         self._fixtureinfo = self.session._fixturemanager.getfixtureinfo(
             self.parent, NBRegressionFixture.check, NBRegressionFixture
         )  # this is required for --setup-plan
-        notebook, nb_config = load_notebook_with_config(self.fspath)
+        _, nb_config = load_notebook_with_config(str(self.path))
         if nb_config.skip:
             self.add_marker(pytest.mark.skip(reason=nb_config.skip_reason))
 
     def runtest(self):
         """Run the test."""
-        kwargs, other_args = gather_config_options(self.config)
+        kwargs, _ = gather_config_options(self.config)
         fixture = NBRegressionFixture(**kwargs)
-        fixture.check(self.fspath)
+        try:
+            fixture.check(str(self.path))
+        except CellExecutionError as err:
+            # allow a notebook to skip itself at runtime,
+            # by raising ``pytest.skip(...)`` within a cell
+            if err.ename == "Skipped":
+                pytest.skip(err.evalue)
+            raise
 
     def repr_failure(self, exc_info):
         """Handle exception raised by ``self.runtest()``.
@@ -320,4 +366,4 @@ class JupyterNbTest(pytest.Item):
 
     def reportinfo(self):
         """Report location of item."""
-        return self.fspath, 0, f"notebook: {self.name}"
+        return self.path, 0, f"notebook: {self.name}"

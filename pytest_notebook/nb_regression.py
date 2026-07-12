@@ -1,9 +1,10 @@
 """Jupyter Notebook Regression Test Class."""
+
 import copy
 import logging
 import os
 import sys
-from typing import Any, List, TextIO, Tuple, Union
+from typing import Any, TextIO
 
 import attr
 from attr.validators import instance_of
@@ -22,6 +23,7 @@ from pytest_notebook.execution import (
     HELP_COVERAGE,
     HELP_COVERAGE_CONFIG,
     HELP_COVERAGE_SOURCE,
+    HELP_EXEC_ENV,
     execute_notebook,
 )
 from pytest_notebook.notebook import (
@@ -87,10 +89,10 @@ class NBRegressionResult:
         metadata={"help": "Notebook after execution and post-processing."},
     )
 
-    diff_full: List[DiffEntry] = attr.ib(
+    diff_full: list[DiffEntry] = attr.ib(
         metadata={"help": "Full diff of initial/final notebooks."}
     )
-    diff_filtered: List[DiffEntry] = attr.ib(
+    diff_filtered: list[DiffEntry] = attr.ib(
         metadata={
             "help": (
                 "Diff of initial/final notebooks, "
@@ -125,7 +127,7 @@ class NBRegressionFixture:
     exec_notebook: bool = attr.ib(
         True, instance_of(bool), metadata={"help": HELP_EXEC_NOTEBOOK}
     )
-    exec_cwd: Union[str, None] = attr.ib(
+    exec_cwd: str | None = attr.ib(
         None, instance_of((type(None), str)), metadata={"help": HELP_EXEC_CWD}
     )
 
@@ -152,6 +154,18 @@ class NBRegressionFixture:
         if value <= 0:
             raise ValueError("exec_timeout must be larger than 0")
 
+    exec_env: dict | None = attr.ib(None, metadata={"help": HELP_EXEC_ENV})
+
+    @exec_env.validator
+    def _validate_exec_env(self, attribute, value):
+        if value is None:
+            return
+        if not isinstance(value, dict):
+            raise TypeError("exec_env must be None or a dict")
+        for key in value:
+            if not isinstance(key, str):
+                raise TypeError(f"exec_env key '{key}' must be a string")
+
     coverage: bool = attr.ib(False, metadata={"help": HELP_COVERAGE})
 
     @coverage.validator
@@ -164,14 +178,14 @@ class NBRegressionFixture:
             except ImportError:
                 raise ImportError("The 'coverage' package must be installed.")
 
-    cov_config: Union[str, None] = attr.ib(
+    cov_config: str | None = attr.ib(
         None, instance_of((type(None), str)), metadata={"help": HELP_COVERAGE_CONFIG}
     )
-    cov_source: Union[str, Tuple[str]] = attr.ib(
+    cov_source: str | tuple[str] = attr.ib(
         None, instance_of((type(None), tuple)), metadata={"help": HELP_COVERAGE_SOURCE}
     )
 
-    cov_merge: Union[CoverageType, None] = attr.ib(
+    cov_merge: CoverageType | None = attr.ib(
         None, metadata={"help": HELP_COVERAGE_MERGE}, hash=True
     )
 
@@ -251,7 +265,7 @@ class NBRegressionFixture:
         super().__setattr__(key, value)
 
     def check(
-        self, path: Union[TextIO, str], raise_errors: bool = True
+        self, path: TextIO | str, raise_errors: bool = True
     ) -> NBRegressionResult:
         """Execute the Notebook and compare its initial vs. final contents.
 
@@ -287,6 +301,7 @@ class NBRegressionFixture:
                 cwd=self.exec_cwd,
                 timeout=self.exec_timeout,
                 allow_errors=self.exec_allow_errors,
+                exec_env=self.exec_env,
                 with_coverage=self.coverage,
                 cov_config_file=self.cov_config,
                 cov_source=self.cov_source,

@@ -15,22 +15,19 @@ classifiers = [
   "Topic :: Software Development :: Testing",
   "Programming Language :: Python",
   "Programming Language :: Python :: 3",
-  "Programming Language :: Python :: 3.8",
-  "Programming Language :: Python :: 3.9",
   "Programming Language :: Python :: 3.10",
   "Programming Language :: Python :: 3.11",
   "Programming Language :: Python :: 3.12",
+  "Programming Language :: Python :: 3.13",
   "Programming Language :: Python :: Implementation :: CPython",
   "Operating System :: OS Independent",
   "License :: OSI Approved :: BSD License",
 ]
-requires-python = "~=3.8"
+requires-python = ">=3.10"
 dependencies = [
-  "pytest>=3.5.0",
-  "attrs<23,>=19",
-  "importlib-metadata~=6.0;python_version<'3.10'",
-  "importlib-resources~=5.0;python_version<'3.9'",
-  "nbclient~=0.5.10",
+  "pytest>=7.4",
+  "attrs>=21",
+  "nbclient>=0.5.10",
   "nbdime>=4",
   "nbformat",
   "jsonschema",
@@ -41,27 +38,26 @@ Source = "https://github.com/chrisjsewell/pytest-notebook"
 Documentation = "https://pytest-notebook.readthedocs.io"
 
 [project.optional-dependencies]
-testing = [
-  "pytest-cov",
-  "pytest-regressions",
-  "ipykernel",
-  "coverage~=5.0",
-  "black==23.11.0",
-  "beautifulsoup4==4.12.2",
-]
-code_style = [
-  "pre-commit~=3.5.0",
-  "doc8>=0.8.0,<1.2.0",
-]
 docs = [
-  "sphinx>=3",
+  "sphinx>=5",
   "pyyaml",
-  "sphinx-book-theme~=1.0.1",
+  "sphinx-book-theme~=1.1",
   "myst-nb~=1.0",
-  "coverage~=5.0",
+  "coverage",
   "pytest-cov",
   "black",
 ]
+
+[dependency-groups]
+test = [
+  "pytest-cov",
+  "pytest-regressions",
+  "ipykernel",
+  "coverage>=6.5",
+  "black",
+  "beautifulsoup4~=4.12",
+]
+pre_commit = ["pre-commit"]
 
 [project.entry-points."pytest11"]
 nb_regression = "pytest_notebook.plugin"
@@ -72,6 +68,10 @@ blacken_code = "pytest_notebook.post_processors:blacken_code"
 beautifulsoup = "pytest_notebook.post_processors:beautifulsoup"
 
 [tool.ruff]
+# notebooks contain deliberately unformatted code, used in regression tests
+extend-exclude = ["*.ipynb"]
+
+[tool.ruff.lint]
 extend-select = ["B0", "C4", "I", "ICN", "ISC", "N", "RUF", "SIM", "UP"]
 extend-ignore = ["ISC001"]
 
