@@ -4,6 +4,7 @@ from contextlib import nullcontext
 import copy
 import json
 import logging
+import os
 from pathlib import Path
 import tempfile
 from textwrap import dedent
@@ -24,6 +25,10 @@ logger = logging.getLogger(__name__)
 HELP_COVERAGE = "Record coverage data, with coverage.py."
 HELP_COVERAGE_CONFIG = "Determines what coverage configuration file to read."
 HELP_COVERAGE_SOURCE = "A list of file paths or package names to measure coverage for."
+HELP_EXEC_ENV = (
+    "Environment variables to set for the kernel, "
+    "in addition to the inherited environment."
+)
 
 COVERAGE_KEY = "coverage_data"
 
@@ -239,6 +244,7 @@ def execute_notebook(
     cwd: str | None = None,
     timeout: int = 120,
     allow_errors: bool = False,
+    exec_env: dict | None = None,
     with_coverage: bool = False,
     cov_config_file: str | None = None,
     cov_source: list[str] | None = None,
@@ -250,6 +256,8 @@ def execute_notebook(
     :param timeout: The maximum time to wait (in seconds) for execution of each cell.
     :param allow_errors: If False, execution is stopped after the first unexpected
         exception (cells tagged ``raises-exception`` are expected)
+    :param exec_env: Environment variables to set for the kernel,
+        in addition to the inherited environment.
     :param with_coverage: Record code coverage with coverage.py
     :param cov_config_file: Determines what coverage configuration file to read.
     :param cov_source: A list of file paths or package names to measure coverage for.
@@ -274,8 +282,16 @@ def execute_notebook(
             cov_config_file=cov_config_file,
             cov_source=cov_source,
         )
+        kernel_kwargs = {}
+        if exec_env is not None:
+            # merge with the current environment,
+            # since a supplied `env` replaces it entirely
+            kernel_kwargs["env"] = {
+                **os.environ,
+                **{key: str(value) for key, value in exec_env.items()},
+            }
         try:
-            client.execute()
+            client.execute(**kernel_kwargs)
         except (CellExecutionError, CellTimeoutError, CoverageError) as err:
             exec_error = err
 

@@ -23,6 +23,7 @@ from pytest_notebook.execution import (
     HELP_COVERAGE,
     HELP_COVERAGE_CONFIG,
     HELP_COVERAGE_SOURCE,
+    HELP_EXEC_ENV,
     execute_notebook,
 )
 from pytest_notebook.notebook import (
@@ -152,6 +153,18 @@ class NBRegressionFixture:
             raise TypeError("exec_timeout must be an integer")
         if value <= 0:
             raise ValueError("exec_timeout must be larger than 0")
+
+    exec_env: dict | None = attr.ib(None, metadata={"help": HELP_EXEC_ENV})
+
+    @exec_env.validator
+    def _validate_exec_env(self, attribute, value):
+        if value is None:
+            return
+        if not isinstance(value, dict):
+            raise TypeError("exec_env must be None or a dict")
+        for key in value:
+            if not isinstance(key, str):
+                raise TypeError(f"exec_env key '{key}' must be a string")
 
     coverage: bool = attr.ib(False, metadata={"help": HELP_COVERAGE})
 
@@ -288,6 +301,7 @@ class NBRegressionFixture:
                 cwd=self.exec_cwd,
                 timeout=self.exec_timeout,
                 allow_errors=self.exec_allow_errors,
+                exec_env=self.exec_env,
                 with_coverage=self.coverage,
                 cov_config_file=self.cov_config,
                 cov_source=self.cov_source,

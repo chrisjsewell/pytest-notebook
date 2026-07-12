@@ -2,6 +2,7 @@
 
 import os
 
+import nbformat
 import pytest
 
 from pytest_notebook.execution import COVERAGE_KEY
@@ -14,6 +15,31 @@ def test_init_fixture():
     """Test initialisation of NBRegressionFixture."""
     fixture = NBRegressionFixture(exec_timeout=10)
     assert fixture.exec_timeout == 10
+
+
+def test_regression_exec_env(tmp_path):
+    """Test that ``exec_env`` variables are set for the kernel."""
+    cell = nbformat.v4.new_code_cell(
+        "import os\nprint(os.environ['PYTEST_NB_EXEC_ENV_VAR'])", execution_count=1
+    )
+    cell.outputs = [nbformat.v4.new_output("stream", name="stdout", text="hallo\n")]
+    notebook = nbformat.v4.new_notebook(
+        cells=[cell],
+        metadata={
+            "kernelspec": {
+                "name": "python3",
+                "display_name": "Python 3",
+                "language": "python",
+            }
+        },
+    )
+    path = tmp_path / "test_env.ipynb"
+    nbformat.write(notebook, str(path))
+    fixture = NBRegressionFixture(
+        exec_env={"PYTEST_NB_EXEC_ENV_VAR": "hallo"},
+        diff_ignore=("/metadata/language_info", "/cells/*/execution_count"),
+    )
+    fixture.check(str(path))
 
 
 def test_regression_fail():

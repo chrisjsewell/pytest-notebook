@@ -15,8 +15,10 @@ import fnmatch
 from pathlib import Path
 import shlex
 
+from nbclient.exceptions import CellExecutionError
 import pytest
 
+from pytest_notebook.execution import HELP_EXEC_ENV
 from pytest_notebook.nb_regression import (
     HELP_COVERAGE,
     HELP_DIFF_COLOR_WORDS,
@@ -105,6 +107,7 @@ def pytest_addoption(parser):
         default=NotSet(),
     )
     parser.addini("nb_exec_timeout", help=HELP_EXEC_TIMEOUT, default=NotSet())
+    parser.addini("nb_exec_env", type="linelist", help=HELP_EXEC_ENV, default=NotSet())
     parser.addini("nb_coverage", type="bool", help=HELP_COVERAGE, default=NotSet())
     parser.addini(
         "nb_post_processors", type="linelist", help=HELP_POST_PROCS, default=NotSet()
@@ -191,6 +194,31 @@ def validate_diff_replace(pytestconfig):
     return tuple(output)
 
 
+def validate_exec_env(pytestconfig):
+    """Extract the ``nb_exec_env`` option from the ini file.
+
+    This should be a list of lines of the format ``KEY=VALUE``::
+
+        nb_exec_env =
+            MY_VAR=my_value
+            PYTHONPATH=src
+
+    """
+    nb_exec_env = pytestconfig.getini("nb_exec_env")
+    if isinstance(nb_exec_env, NotSet):
+        return None
+
+    env = {}
+    for line in nb_exec_env:
+        key, sep, value = line.partition("=")
+        if not sep or not key.strip():
+            raise ValueError(
+                f"nb_exec_env line is not of the format KEY=VALUE: '{line}'"
+            )
+        env[key.strip()] = value
+    return env
+
+
 def gather_config_options(pytestconfig):
     """Gather all options, from command-line and ini file.
 
@@ -224,6 +252,10 @@ def gather_config_options(pytestconfig):
     nb_diff_replace = validate_diff_replace(pytestconfig)
     if nb_diff_replace is not None:
         nbreg_kwargs["diff_replace"] = nb_diff_replace
+
+    nb_exec_env = validate_exec_env(pytestconfig)
+    if nb_exec_env is not None:
+        nbreg_kwargs["exec_env"] = nb_exec_env
 
     # options from pytest_cov
     # see: https://github.com/pytest-dev/pytest-cov/blob/master/src/pytest_cov/plugin.py
@@ -314,7 +346,14 @@ class JupyterNbTest(pytest.Item):
         """Run the test."""
         kwargs, _ = gather_config_options(self.config)
         fixture = NBRegressionFixture(**kwargs)
-        fixture.check(str(self.path))
+        try:
+            fixture.check(str(self.path))
+        except CellExecutionError as err:
+            # allow a notebook to skip itself at runtime,
+            # by raising ``pytest.skip(...)`` within a cell
+            if err.ename == "Skipped":
+                pytest.skip(err.evalue)
+            raise
 
     def repr_failure(self, exc_info):
         """Handle exception raised by ``self.runtest()``.
