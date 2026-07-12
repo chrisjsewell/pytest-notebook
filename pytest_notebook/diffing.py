@@ -58,7 +58,7 @@ def diff_sequence_simple(
             di.patch(i, cd)
 
     if len(initial) > len(final):
-        di.removerange(len(initial), len(initial) - len(final))
+        di.removerange(len(final), len(initial) - len(final))
     if len(initial) < len(final):
         di.addrange(len(initial), final[len(initial) :])
 
@@ -140,7 +140,9 @@ def filter_diff(
         for i in reversed(range(len(path_elements))):
             # iteratively star more elements from the right side
             new_path = join_path(path_elements[:i] + star_path(path_elements[i:]))
-            if any(new_path.startswith(p) for p in remove_paths):
+            # match only on full path-segment boundaries,
+            # so that e.g. '/cells/1' does not also match '/cells/11'
+            if any(new_path == p or new_path.startswith(p + "/") for p in remove_paths):
                 return None
 
         new_diff = copy.deepcopy(diff)
@@ -159,7 +161,9 @@ def filter_diff(
     return diff
 
 
-NBDIME_CONFIG_SECTIONS = ("Global", "Diff", "NbDiff")
+# the sections read for the `nbdiff` entrypoint, in increasing precedence
+# (mirroring the class hierarchy merging of ``nbdime.config.build_config``)
+NBDIME_CONFIG_SECTIONS = ("Diff", "GitDiff", "NbDiff")
 
 
 def load_nbdime_ignore_config(path: str | Path) -> tuple[str, ...]:
@@ -179,9 +183,11 @@ def load_nbdime_ignore_config(path: str | Path) -> tuple[str, ...]:
           }
         }
 
-    ``Ignore`` mappings are read from the ``Global``, ``Diff`` and ``NbDiff``
-    sections (with later sections taking precedence, per path).
+    ``Ignore`` mappings are read from the ``Diff``, ``GitDiff`` and ``NbDiff``
+    sections (with later sections taking precedence, per path),
+    mirroring what nbdime itself reads for the ``nbdiff`` command.
     A value of ``True`` ignores the whole path, ``False`` de-selects the path,
+    ``null`` removes the path (as if it was never set),
     and a list of strings ignores ``<path>/<key>`` for each key.
 
     :returns: a tuple of diff-ignore paths, suitable for ``filter_diff``
@@ -208,18 +214,23 @@ def load_nbdime_ignore_config(path: str | Path) -> tuple[str, ...]:
                     f"'{section_name}/Ignore' path '{key}' "
                     f"does not start with '/', in: {path}"
                 )
-            if not (
-                value in (True, False)
+            if value is None:
+                # a null value removes the path, as per nbdime
+                ignores.pop(key, None)
+            elif (
+                value is True
+                or value is False
                 or (
                     isinstance(value, list)
                     and all(isinstance(item, str) for item in value)
                 )
             ):
+                ignores[key] = value
+            else:
                 raise ValueError(
                     f"'{section_name}/Ignore/{key}' value is not "
-                    f"true, false or a list of strings, in: {path}"
+                    f"true, false, null or a list of strings, in: {path}"
                 )
-        ignores.update(ignore)
 
     paths = set()
     for key, value in ignores.items():

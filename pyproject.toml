@@ -53,7 +53,7 @@ test = [
   "pytest-cov",
   "pytest-regressions",
   "ipykernel",
-  "coverage>=6.5",
+  "coverage>=7",
   "black",
   "beautifulsoup4~=4.12",
 ]

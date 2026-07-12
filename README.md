@@ -119,7 +119,7 @@ Editors like VS Code also have automatic code reformat utilities, which can adhe
 
 ## License
 
-Distributed under the terms of the [BSD-3](http://opensource.org/licenses/BSD-3-Clause) license,
+Distributed under the terms of the [BSD-3](https://opensource.org/licenses/BSD-3-Clause) license,
 `pytest-notebook` is free and open source software.
 
 ## Issues

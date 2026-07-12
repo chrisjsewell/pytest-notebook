@@ -17,6 +17,26 @@ def test_coalesce_streams_same():
     assert notebook == new_notebook
 
 
+def test_coalesce_streams_backspace():
+    """Test coalesce_streams cancels out backspace characters."""
+    notebook = create_notebook()
+    notebook.cells.append(
+        prepare_cell(
+            {
+                "cell_type": "code",
+                "execution_count": 1,
+                "metadata": {},
+                "outputs": [
+                    {"name": "stdout", "output_type": "stream", "text": "abc\b\bX\n"}
+                ],
+                "source": "print('abc\\b\\bX')",
+            }
+        )
+    )
+    new_notebook, _ = coalesce_streams(notebook, {})
+    assert new_notebook.cells[0].outputs[0]["text"] == "aX\n"
+
+
 def test_coalesce_streams():
     """Test coalesce_streams if streams require merging."""
     notebook = create_notebook()

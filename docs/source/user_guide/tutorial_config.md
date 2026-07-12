@@ -301,8 +301,9 @@ The equivalent option for {py:class}`~pytest_notebook.nb_regression.NBRegression
 
 If you already configure [nbdime ignores](https://nbdime.readthedocs.io/en/latest/config.html#configuring-ignores)
 with an `nbdime_config.json` file, setting `nb_diff_use_nbdime_config` will also
-load diff-ignore paths from the `Ignore` mappings in its `Global`, `Diff` and `NbDiff` sections
-(merged with any `nb_diff_ignore` setting):
+load diff-ignore paths from the `Ignore` mappings in its `Diff`, `GitDiff` and `NbDiff` sections
+(with later sections taking precedence per path, mirroring the `nbdiff` command).
+These are merged with the `nb_diff_ignore` setting, or the default `diff_ignore`:
 
 ```ini
 [pytest]
@@ -321,8 +322,13 @@ nb_diff_use_nbdime_config = True
 }
 ```
 
-The file is looked up in the current working directory, then the pytest root directory
+Only the first file found is used, looked up in the current working directory,
+then the pytest root directory
 (other locations searched by nbdime itself, such as the Jupyter configuration directories, are not used).
+
+There is no equivalent {py:class}`~pytest_notebook.nb_regression.NBRegressionFixture` option;
+instead call {py:func}`pytest_notebook.diffing.load_nbdime_ignore_config`
+and pass the result to `diff_ignore`.
 
 (post_processors)=
 

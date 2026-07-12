@@ -6,6 +6,12 @@
 
 * ‼️ Drop Python 3.8/3.9 support; add official Python 3.13 support
 * 🐛 Fix compatibility with pytest 8/9: port the notebook collector from the removed `py.path`/`fspath` API to the `pathlib` based API ([#73](https://github.com/chrisjsewell/pytest-notebook/issues/73), [#81](https://github.com/chrisjsewell/pytest-notebook/issues/81))
+* 🐛 Fix merging notebook coverage into pytest-cov's data with coverage v7 (the `aliases` argument was renamed `map_path`); coverage v7+ is now required for coverage features
+* 🐛 Fix an `UnboundLocalError` when `nb_exec_notebook = False` and pytest-cov is active
+* 🐛 Fix removed trailing cells/outputs being diffed at incorrect indices
+* 🐛 Fix `nb_diff_ignore`/`nb_diff_replace` paths also matching longer cell indices with the same prefix (e.g. `/cells/1` also matching `/cells/11`)
+* 🐛 Fix backspace characters not being cancelled out by the `coalesce_streams` post-processor
+* 🐛 Fix `NBRegressionFixture.check` permanently setting `exec_cwd` on first use
 * ⬆️ Un-pin `attrs` (now `>=21`), `nbclient` (now `>=0.5.10`, tested against 0.11) and `coverage` (now v6.5+, tested against v7) ([#84](https://github.com/chrisjsewell/pytest-notebook/issues/84))
 * ✨ Notebooks can now skip themselves at runtime, by raising `pytest.skip(...)` within a cell ([#43](https://github.com/chrisjsewell/pytest-notebook/issues/43))
 * ✨ Add `exec_env` fixture option / `nb_exec_env` ini option (lines of `KEY=VALUE`), to set environment variables for the kernel, e.g. `PYTHONPATH` ([#15](https://github.com/chrisjsewell/pytest-notebook/issues/15), [#85](https://github.com/chrisjsewell/pytest-notebook/issues/85))

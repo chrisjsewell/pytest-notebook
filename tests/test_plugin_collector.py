@@ -87,6 +87,63 @@ def test_run_skip_inside_notebook(testdir):
     assert result.ret == 0
 
 
+def test_matches_pattern():
+    """Test fnmatch patterns against the old ``py.path.local.fnmatch`` semantics."""
+    from pathlib import Path
+
+    from pytest_notebook.plugin import _matches_pattern
+
+    file_path = Path("/repo/docs/test_nb.ipynb")
+    assert _matches_pattern(file_path, "*.ipynb")
+    assert _matches_pattern(file_path, "test_nb.ipynb")
+    assert not _matches_pattern(file_path, "other_*.ipynb")
+    # relative patterns with a separator match any trailing path segments
+    assert _matches_pattern(file_path, "docs/*.ipynb")
+    assert _matches_pattern(file_path, "docs/test_nb.ipynb")
+    assert not _matches_pattern(file_path, "other/*.ipynb")
+    # absolute patterns match the full path
+    assert _matches_pattern(file_path, "/repo/docs/*.ipynb")
+    assert not _matches_pattern(file_path, "/other/docs/*.ipynb")
+
+
+def test_run_with_coverage_merge(testdir):
+    """Test that collected notebook coverage is merged into pytest-cov's data."""
+    copy_nb_to_tempdir(os.path.join("coverage_test", "call_package.ipynb"))
+    with open(os.path.join(PATH, "raw_files", "coverage_test", "package.py")) as fh:
+        data = fh.read()
+    with open("package.py", "w") as fh:
+        fh.write(data)
+    testdir.makeini(
+        """
+        [pytest]
+        nb_diff_ignore =
+            /metadata/language_info
+        """
+    )
+    result = testdir.runpytest(
+        "--nb-test-files", "--nb-coverage", "--cov=package", "-v"
+    )
+    # fnmatch_lines does an assertion internally
+    result.stdout.fnmatch_lines(["*::nbregression(test_nb) PASSED*", "*package.py*"])
+    assert result.ret == 0
+
+
+def test_run_no_exec_with_cov(testdir):
+    """Test a non-executed run with pytest-cov enabled."""
+    copy_nb_to_tempdir()
+    testdir.makeini(
+        """
+        [pytest]
+        nb_test_files = True
+        nb_exec_notebook = False
+        """
+    )
+    result = testdir.runpytest("--cov", "-v")
+    # fnmatch_lines does an assertion internally
+    result.stdout.fnmatch_lines(["*::nbregression(test_nb) PASSED*"])
+    assert result.ret == 0
+
+
 def _write_nb_with_wrong_output(filename="test_nb.ipynb"):
     """Write a notebook whose stored output will differ from its execution."""
     cell = nbformat.v4.new_code_cell("print('hallo')", execution_count=1)
@@ -96,7 +153,7 @@ def _write_nb_with_wrong_output(filename="test_nb.ipynb"):
 
 
 def test_run_with_nbdime_config(testdir):
-    """Test that ignores are loaded from nbdime_config.json, when enabled."""
+    """Test that nbdime_config.json ignores are merged with ``nb_diff_ignore``."""
     import json
 
     _write_nb_with_wrong_output()
@@ -107,7 +164,6 @@ def test_run_with_nbdime_config(testdir):
                     "Ignore": {
                         "/cells/*/outputs": True,
                         "/cells/*/execution_count": True,
-                        "/metadata": ["language_info"],
                     }
                 }
             },
@@ -118,11 +174,53 @@ def test_run_with_nbdime_config(testdir):
         [pytest]
         nb_test_files = True
         nb_diff_use_nbdime_config = True
+        nb_diff_ignore =
+            /metadata/language_info
         """
     )
     result = testdir.runpytest("-v")
     # fnmatch_lines does an assertion internally
     result.stdout.fnmatch_lines(["*::nbregression(test_nb) PASSED*"])
+    assert result.ret == 0
+
+
+def test_run_with_nbdime_config_missing(testdir):
+    """Test an actionable error, when no nbdime_config.json exists."""
+    _write_nb_with_wrong_output()
+    testdir.makeini(
+        """
+        [pytest]
+        nb_test_files = True
+        nb_diff_use_nbdime_config = True
+        """
+    )
+    result = testdir.runpytest()
+    result.stderr.fnmatch_lines(["*no nbdime_config.json found*"])
+    assert result.ret != 0
+
+
+def test_nbdime_config_preserves_default_ignore(testdir):
+    """Test enabling the nbdime config does not drop the default diff_ignore."""
+    import json
+
+    with open("nbdime_config.json", "w") as handle:
+        json.dump({"Diff": {"Ignore": {"/metadata": ["language_info"]}}}, handle)
+    testdir.makeini(
+        """
+        [pytest]
+        nb_diff_use_nbdime_config = True
+        """
+    )
+    testdir.makepyfile(
+        """
+        def test_opts(nb_regression):
+            assert "/cells/*/outputs/*/traceback" in nb_regression.diff_ignore
+            assert "/metadata/language_info" in nb_regression.diff_ignore
+        """
+    )
+    result = testdir.runpytest("-v")
+    # fnmatch_lines does an assertion internally
+    result.stdout.fnmatch_lines(["*::test_opts PASSED*"])
     assert result.ret == 0
 
 

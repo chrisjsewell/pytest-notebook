@@ -85,7 +85,7 @@ License
 -------
 
 Distributed under the terms of the
-`BSD-3 <http://opensource.org/licenses/BSD-3-Clause>`__ license,
+`BSD-3 <https://opensource.org/licenses/BSD-3-Clause>`__ license,
 ``pytest-notebook`` is free and open source software.
 
 Issues

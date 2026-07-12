@@ -71,6 +71,8 @@ HELP_POST_PROCS = (
 )
 HELP_COVERAGE_MERGE = "A coverage.Coverage instance, to merge coverage results with."
 
+DEFAULT_DIFF_IGNORE = ("/cells/*/outputs/*/traceback",)
+
 
 class NBRegressionError(Exception):
     """Exception to signal a regression test fail."""
@@ -231,7 +233,7 @@ class NBRegressionFixture:
 
     diff_ignore: tuple = attr.ib(
         # TODO replace this default with a diff_replace one?
-        ("/cells/*/outputs/*/traceback",),
+        DEFAULT_DIFF_IGNORE,
         metadata={"help": HELP_DIFF_IGNORE},
     )
 
@@ -290,15 +292,14 @@ class NBRegressionFixture:
         nb_initial, nb_config = load_notebook_with_config(path)
 
         resources = copy.deepcopy(self.process_resources)
-        if not self.exec_cwd:
-            self.exec_cwd = os.path.dirname(abspath)
+        exec_cwd = self.exec_cwd or os.path.dirname(abspath)
 
         if self.exec_notebook:
             logger.debug("Executing notebook.")
             exec_results = execute_notebook(
                 nb_initial,
                 resources=resources,
-                cwd=self.exec_cwd,
+                cwd=exec_cwd,
                 timeout=self.exec_timeout,
                 allow_errors=self.exec_allow_errors,
                 exec_env=self.exec_env,
@@ -314,11 +315,13 @@ class NBRegressionFixture:
             nb_final = nb_initial
 
         # TODO merge on fail option (using pytest-cov --no-cov-on-fail)
-        if self.cov_merge and exec_results.has_coverage:
+        if self.exec_notebook and self.cov_merge and exec_results.has_coverage:
             logger.info("Merging coverage.")
+            aliases = _get_coverage_aliases(self.cov_merge)
             self.cov_merge.get_data().update(
                 exec_results.coverage_data(debug=self.cov_merge._debug),
-                aliases=_get_coverage_aliases(self.cov_merge),
+                # note aliases was renamed map_path in coverage v7
+                map_path=aliases.map if aliases else None,
             )
             # we also take this opportunity to remove ''
             # from the unmatched source packages, which is caused by using `--cov=`
