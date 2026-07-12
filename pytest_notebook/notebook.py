@@ -106,7 +106,11 @@ def regex_replace_nb(
             for i in reversed(range(len(nb_path)))
         }
         for path_str, regex, replace in replacements:
-            if not any(p.startswith(path_str) for p in compare_paths):
+            # match only on full path-segment boundaries,
+            # so that e.g. '/cells/1' does not also match '/cells/11'
+            if not any(
+                p == path_str or p.startswith(path_str + "/") for p in compare_paths
+            ):
                 continue
 
             nb_element = new_notebook

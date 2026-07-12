@@ -73,7 +73,8 @@ def cell_preprocessor(function):
 
 
 RGX_CARRIAGERETURN = re.compile(r".*\r(?=[^\n])")
-RGX_BACKSPACE = re.compile(r"[^\n]\b")
+# note: \x08 is the backspace character (\b would be a regex word boundary)
+RGX_BACKSPACE = re.compile("[^\n]\x08")
 
 
 @cell_preprocessor
@@ -105,11 +106,12 @@ def coalesce_streams(
 
     # process \r and \b characters
     for output in streams.values():
-        old = output.text
-        while len(output.text) < len(old):
-            old = output.text
+        while True:
             # Cancel out anything-but-newline followed by backspace
-            output.text = RGX_BACKSPACE.sub("", output.text)
+            new_text = RGX_BACKSPACE.sub("", output.text)
+            if new_text == output.text:
+                break
+            output.text = new_text
         # Replace all carriage returns not followed by newline
         output.text = RGX_CARRIAGERETURN.sub("", output.text)
 

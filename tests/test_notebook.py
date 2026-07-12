@@ -112,6 +112,23 @@ def test_regex_replace_nb_source():
     }
 
 
+def test_regex_replace_nb_segment_boundaries():
+    """Test that paths only replace on full segment boundaries.
+
+    e.g. '/cells/1' should not also replace in '/cells/11'.
+    """
+    notebook = create_notebook()
+    notebook.cells.extend(
+        [
+            prepare_cell({"metadata": {}, "outputs": [], "source": [f"cell{i}"]})
+            for i in range(12)
+        ]
+    )
+    new_notebook = regex_replace_nb(notebook, [("/cells/1", "cell", "replaced")])
+    assert new_notebook.cells[1].source == "replaced1"
+    assert new_notebook.cells[11].source == "cell11"
+
+
 def test_regex_replace_nb_output():
     """Test regex replacing notebook output."""
     notebook = create_notebook()

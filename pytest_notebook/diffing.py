@@ -2,7 +2,9 @@
 
 from collections.abc import Sequence
 import copy
+import json
 import operator
+from pathlib import Path
 import re
 
 from nbdime.diff_format import DiffEntry, SequenceDiffBuilder
@@ -56,7 +58,7 @@ def diff_sequence_simple(
             di.patch(i, cd)
 
     if len(initial) > len(final):
-        di.removerange(len(initial), len(initial) - len(final))
+        di.removerange(len(final), len(initial) - len(final))
     if len(initial) < len(final):
         di.addrange(len(initial), final[len(initial) :])
 
@@ -138,7 +140,9 @@ def filter_diff(
         for i in reversed(range(len(path_elements))):
             # iteratively star more elements from the right side
             new_path = join_path(path_elements[:i] + star_path(path_elements[i:]))
-            if any(new_path.startswith(p) for p in remove_paths):
+            # match only on full path-segment boundaries,
+            # so that e.g. '/cells/1' does not also match '/cells/11'
+            if any(new_path == p or new_path.startswith(p + "/") for p in remove_paths):
                 return None
 
         new_diff = copy.deepcopy(diff)
@@ -155,6 +159,86 @@ def filter_diff(
                 new_diff = None
         return new_diff
     return diff
+
+
+# the sections read for the `nbdiff` entrypoint, in increasing precedence
+# (mirroring the class hierarchy merging of ``nbdime.config.build_config``)
+NBDIME_CONFIG_SECTIONS = ("Diff", "GitDiff", "NbDiff")
+
+
+def load_nbdime_ignore_config(path: str | Path) -> tuple[str, ...]:
+    """Extract diff-ignore paths from an nbdime configuration file.
+
+    The file should be in the `nbdime configuration format
+    <https://nbdime.readthedocs.io/en/latest/config.html#configuring-ignores>`__,
+    e.g.::
+
+        {
+          "Diff": {
+            "Ignore": {
+              "/cells/*/execution_count": true,
+              "/cells/*/metadata": ["collapsed", "autoscroll"],
+              "/metadata": ["language_info"]
+            }
+          }
+        }
+
+    ``Ignore`` mappings are read from the ``Diff``, ``GitDiff`` and ``NbDiff``
+    sections (with later sections taking precedence, per path),
+    mirroring what nbdime itself reads for the ``nbdiff`` command.
+    A value of ``True`` ignores the whole path, ``False`` de-selects the path,
+    ``null`` removes the path (as if it was never set),
+    and a list of strings ignores ``<path>/<key>`` for each key.
+
+    :returns: a tuple of diff-ignore paths, suitable for ``filter_diff``
+        or ``NBRegressionFixture.diff_ignore``.
+    """
+    with open(path, encoding="utf8") as handle:
+        data = json.load(handle)
+    if not isinstance(data, dict):
+        raise TypeError(f"nbdime config is not a mapping: {path}")
+
+    ignores = {}
+    for section_name in NBDIME_CONFIG_SECTIONS:
+        section = data.get(section_name, None)
+        if section is None:
+            continue
+        if not isinstance(section, dict):
+            raise TypeError(f"'{section_name}' is not a mapping, in: {path}")
+        ignore = section.get("Ignore", {})
+        if not isinstance(ignore, dict):
+            raise TypeError(f"'{section_name}/Ignore' is not a mapping, in: {path}")
+        for key, value in ignore.items():
+            if not key.startswith("/"):
+                raise ValueError(
+                    f"'{section_name}/Ignore' path '{key}' "
+                    f"does not start with '/', in: {path}"
+                )
+            if value is None:
+                # a null value removes the path, as per nbdime
+                ignores.pop(key, None)
+            elif (
+                value is True
+                or value is False
+                or (
+                    isinstance(value, list)
+                    and all(isinstance(item, str) for item in value)
+                )
+            ):
+                ignores[key] = value
+            else:
+                raise ValueError(
+                    f"'{section_name}/Ignore/{key}' value is not "
+                    f"true, false, null or a list of strings, in: {path}"
+                )
+
+    paths = set()
+    for key, value in ignores.items():
+        if value is True:
+            paths.add(key)
+        elif isinstance(value, list):
+            paths.update(f"{key}/{sub_key}" for sub_key in value)
+    return tuple(sorted(paths))
 
 
 def diff_to_string(

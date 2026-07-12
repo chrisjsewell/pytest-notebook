@@ -18,8 +18,10 @@ import shlex
 from nbclient.exceptions import CellExecutionError
 import pytest
 
+from pytest_notebook.diffing import load_nbdime_ignore_config
 from pytest_notebook.execution import HELP_EXEC_ENV
 from pytest_notebook.nb_regression import (
+    DEFAULT_DIFF_IGNORE,
     HELP_COVERAGE,
     HELP_DIFF_COLOR_WORDS,
     HELP_DIFF_IGNORE,
@@ -38,6 +40,11 @@ from pytest_notebook.notebook import load_notebook_with_config, validate_regex_r
 HELP_TEST_FILES = "Treat each .ipynb file as a test to be run."
 HELP_FILE_FNMATCH = (
     "The fnmatch pattern(s) for collecting notebooks, default: '*.ipynb'."
+)
+HELP_DIFF_USE_NBDIME_CONFIG = (
+    "Also load diff-ignore paths from an nbdime configuration file "
+    "(nbdime_config.json), looked up in the current working directory, "
+    "then the pytest root directory."
 )
 
 
@@ -114,6 +121,12 @@ def pytest_addoption(parser):
     )
     parser.addini(
         "nb_diff_ignore", type="linelist", help=HELP_DIFF_IGNORE, default=NotSet()
+    )
+    parser.addini(
+        "nb_diff_use_nbdime_config",
+        type="bool",
+        help=HELP_DIFF_USE_NBDIME_CONFIG,
+        default=NotSet(),
     )
     parser.addini(
         "nb_diff_replace", type="linelist", help=HELP_DIFF_REPLACE, default=NotSet()
@@ -219,6 +232,39 @@ def validate_exec_env(pytestconfig):
     return env
 
 
+NBDIME_IGNORE_STASH_KEY = pytest.StashKey()
+
+
+def gather_nbdime_ignore_config(pytestconfig):
+    """Load diff-ignore paths from an ``nbdime_config.json`` file.
+
+    The (first) file is looked up in the current working directory,
+    then the pytest root directory, and the result is cached for the session.
+    """
+    if NBDIME_IGNORE_STASH_KEY in pytestconfig.stash:
+        return pytestconfig.stash[NBDIME_IGNORE_STASH_KEY]
+
+    directories = [Path.cwd()]
+    if pytestconfig.rootpath != directories[0]:
+        directories.append(pytestconfig.rootpath)
+    for directory in directories:
+        config_file = directory / "nbdime_config.json"
+        if config_file.is_file():
+            try:
+                ignores = load_nbdime_ignore_config(config_file)
+            except Exception as exc:
+                raise pytest.UsageError(
+                    f"Invalid nbdime configuration file '{config_file}': {exc}"
+                ) from exc
+            pytestconfig.stash[NBDIME_IGNORE_STASH_KEY] = ignores
+            return ignores
+    locations = " or ".join(str(directory) for directory in directories)
+    raise pytest.UsageError(
+        f"nb_diff_use_nbdime_config is set, but no nbdime_config.json found in: "
+        f"{locations}"
+    )
+
+
 def gather_config_options(pytestconfig):
     """Gather all options, from command-line and ini file.
 
@@ -256,6 +302,15 @@ def gather_config_options(pytestconfig):
     nb_exec_env = validate_exec_env(pytestconfig)
     if nb_exec_env is not None:
         nbreg_kwargs["exec_env"] = nb_exec_env
+
+    use_nbdime_config = pytestconfig.getini("nb_diff_use_nbdime_config")
+    if not isinstance(use_nbdime_config, NotSet) and str2bool(use_nbdime_config):
+        nbreg_kwargs["diff_ignore"] = tuple(
+            sorted(
+                set(nbreg_kwargs.get("diff_ignore", DEFAULT_DIFF_IGNORE))
+                | set(gather_nbdime_ignore_config(pytestconfig))
+            )
+        )
 
     # options from pytest_cov
     # see: https://github.com/pytest-dev/pytest-cov/blob/master/src/pytest_cov/plugin.py
@@ -300,10 +355,13 @@ def nb_regression(pytestconfig):
 def _matches_pattern(file_path: Path, pattern: str) -> bool:
     """Match a file against an fnmatch pattern.
 
-    Patterns containing a path separator are matched against the full path,
+    Patterns containing a path separator are matched against the full path
+    (relative patterns match any trailing path segments),
     otherwise against the file name (mirroring ``py.path.local.fnmatch``).
     """
     if "/" in pattern:
+        if not pattern.startswith("/"):
+            pattern = "*/" + pattern
         return fnmatch.fnmatch(file_path.as_posix(), pattern)
     return fnmatch.fnmatch(file_path.name, pattern)
 

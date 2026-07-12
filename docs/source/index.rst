@@ -85,7 +85,7 @@ License
 -------
 
 Distributed under the terms of the
-`BSD-3 <http://opensource.org/licenses/BSD-3-Clause>`__ license,
+`BSD-3 <https://opensource.org/licenses/BSD-3-Clause>`__ license,
 ``pytest-notebook`` is free and open source software.
 
 Issues
@@ -114,4 +114,4 @@ Indices and tables
 .. _pytest_cov: https://pytest-cov.readthedocs.io
 .. _Jupyter: https://jupyter.org/
 .. _nbdime: https://nbdime.readthedocs.io
-.. _black: https://github.com/ambv/black
+.. _black: https://github.com/psf/black

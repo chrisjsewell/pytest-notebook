@@ -22,6 +22,33 @@ def test_filter_diff_cells():
     assert diff == []
 
 
+def test_filter_diff_segment_boundaries():
+    """Test that paths only filter on full segment boundaries.
+
+    e.g. '/cells/1' should not also filter '/cells/11'.
+    """
+    diff = [
+        {
+            "op": "patch",
+            "key": "cells",
+            "diff": [
+                {"op": "patch", "key": 1, "diff": [{"op": "replace", "key": "a"}]},
+                {"op": "patch", "key": 11, "diff": [{"op": "replace", "key": "a"}]},
+            ],
+        }
+    ]
+    filtered = filter_diff(diff, ["/cells/1"])
+    assert filtered == [
+        {
+            "op": "patch",
+            "key": "cells",
+            "diff": [
+                {"op": "patch", "key": 11, "diff": [{"op": "replace", "key": "a"}]}
+            ],
+        }
+    ]
+
+
 def test_filter_diff_outputs():
     diff = filter_diff(get_test_diff(), ["/cells/*/outputs"])
     assert diff == [

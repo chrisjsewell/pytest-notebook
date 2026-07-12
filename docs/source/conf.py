@@ -43,7 +43,7 @@ intersphinx_mapping = {
     "nbdime": ("https://nbdime.readthedocs.io/en/latest/", None),
     "nbformat": ("https://nbformat.readthedocs.io/en/latest/", None),
     "attr": ("https://www.attrs.org/en/stable/", None),
-    "coverage": ("https://coverage.readthedocs.io/en/6.2/", None),
+    "coverage": ("https://coverage.readthedocs.io/en/latest/", None),
 }
 
 intersphinx_aliases = {

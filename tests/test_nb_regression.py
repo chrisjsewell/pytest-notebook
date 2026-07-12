@@ -61,6 +61,8 @@ def test_regression_diff_ignore_pass():
         "/cells/9/outputs/0/metadata/application/json",
     )
     fixture.check(os.path.join(PATH, "raw_files", "different_outputs.ipynb"))
+    # the fixture should not be mutated by the check
+    assert fixture.exec_cwd is None
 
 
 def test_regression_regex_replace_pass():

@@ -63,8 +63,8 @@ can check and adhere to this standard.
 The documentation can be created locally by:
 
 ```shell
->> tox -e py37-docs-clean
->> tox -e py37-docs-update
+>> tox -e docs-clean
+>> tox -e docs-update
 ```
 
 [ci-badge]: https://github.com/chrisjsewell/pytest-notebook/workflows/continuous-integration/badge.svg?branch=master
@@ -72,7 +72,7 @@ The documentation can be created locally by:
 [cov-badge]:https://codecov.io/gh/chrisjsewell/pytest-notebook/branch/master/graph/badge.svg
 [cov-link]: https://codecov.io/gh/chrisjsewell/pytest-notebook
 [rtd-badge]: https://readthedocs.org/projects/pytest-notebook/badge
-[rtd-link]: http://pytest-notebook.readthedocs.io/
+[rtd-link]: https://pytest-notebook.readthedocs.io/
 [pypi-badge]: https://img.shields.io/pypi/v/pytest-notebook.svg
 [pypi-link]: https://pypi.org/project/pytest-notebook
 [conda-badge]: https://anaconda.org/conda-forge/pytest-notebook/badges/version.svg
