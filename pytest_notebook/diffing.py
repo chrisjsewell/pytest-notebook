@@ -2,7 +2,9 @@
 
 from collections.abc import Sequence
 import copy
+import json
 import operator
+from pathlib import Path
 import re
 
 from nbdime.diff_format import DiffEntry, SequenceDiffBuilder
@@ -155,6 +157,77 @@ def filter_diff(
                 new_diff = None
         return new_diff
     return diff
+
+
+NBDIME_CONFIG_SECTIONS = ("Global", "Diff", "NbDiff")
+
+
+def load_nbdime_ignore_config(path: str | Path) -> tuple[str, ...]:
+    """Extract diff-ignore paths from an nbdime configuration file.
+
+    The file should be in the `nbdime configuration format
+    <https://nbdime.readthedocs.io/en/latest/config.html#configuring-ignores>`__,
+    e.g.::
+
+        {
+          "Diff": {
+            "Ignore": {
+              "/cells/*/execution_count": true,
+              "/cells/*/metadata": ["collapsed", "autoscroll"],
+              "/metadata": ["language_info"]
+            }
+          }
+        }
+
+    ``Ignore`` mappings are read from the ``Global``, ``Diff`` and ``NbDiff``
+    sections (with later sections taking precedence, per path).
+    A value of ``True`` ignores the whole path, ``False`` de-selects the path,
+    and a list of strings ignores ``<path>/<key>`` for each key.
+
+    :returns: a tuple of diff-ignore paths, suitable for ``filter_diff``
+        or ``NBRegressionFixture.diff_ignore``.
+    """
+    with open(path, encoding="utf8") as handle:
+        data = json.load(handle)
+    if not isinstance(data, dict):
+        raise TypeError(f"nbdime config is not a mapping: {path}")
+
+    ignores = {}
+    for section_name in NBDIME_CONFIG_SECTIONS:
+        section = data.get(section_name, None)
+        if section is None:
+            continue
+        if not isinstance(section, dict):
+            raise TypeError(f"'{section_name}' is not a mapping, in: {path}")
+        ignore = section.get("Ignore", {})
+        if not isinstance(ignore, dict):
+            raise TypeError(f"'{section_name}/Ignore' is not a mapping, in: {path}")
+        for key, value in ignore.items():
+            if not key.startswith("/"):
+                raise ValueError(
+                    f"'{section_name}/Ignore' path '{key}' "
+                    f"does not start with '/', in: {path}"
+                )
+            if not (
+                value in (True, False)
+                or (
+                    isinstance(value, list)
+                    and all(isinstance(item, str) for item in value)
+                )
+            ):
+                raise ValueError(
+                    f"'{section_name}/Ignore/{key}' value is not "
+                    f"true, false or a list of strings, in: {path}"
+                )
+        ignores.update(ignore)
+
+    paths = set()
+    for key, value in ignores.items():
+        if value is True:
+            paths.add(key)
+        elif isinstance(value, list):
+            paths.update(f"{key}/{sub_key}" for sub_key in value)
+    return tuple(sorted(paths))
 
 
 def diff_to_string(

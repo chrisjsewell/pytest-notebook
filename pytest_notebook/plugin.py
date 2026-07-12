@@ -18,6 +18,7 @@ import shlex
 from nbclient.exceptions import CellExecutionError
 import pytest
 
+from pytest_notebook.diffing import load_nbdime_ignore_config
 from pytest_notebook.execution import HELP_EXEC_ENV
 from pytest_notebook.nb_regression import (
     HELP_COVERAGE,
@@ -38,6 +39,11 @@ from pytest_notebook.notebook import load_notebook_with_config, validate_regex_r
 HELP_TEST_FILES = "Treat each .ipynb file as a test to be run."
 HELP_FILE_FNMATCH = (
     "The fnmatch pattern(s) for collecting notebooks, default: '*.ipynb'."
+)
+HELP_DIFF_USE_NBDIME_CONFIG = (
+    "Also load diff-ignore paths from an nbdime configuration file "
+    "(nbdime_config.json), looked up in the current working directory, "
+    "then the pytest root directory."
 )
 
 
@@ -114,6 +120,12 @@ def pytest_addoption(parser):
     )
     parser.addini(
         "nb_diff_ignore", type="linelist", help=HELP_DIFF_IGNORE, default=NotSet()
+    )
+    parser.addini(
+        "nb_diff_use_nbdime_config",
+        type="bool",
+        help=HELP_DIFF_USE_NBDIME_CONFIG,
+        default=NotSet(),
     )
     parser.addini(
         "nb_diff_replace", type="linelist", help=HELP_DIFF_REPLACE, default=NotSet()
@@ -219,6 +231,22 @@ def validate_exec_env(pytestconfig):
     return env
 
 
+def gather_nbdime_ignore_config(pytestconfig):
+    """Load diff-ignore paths from an ``nbdime_config.json`` file.
+
+    The file is looked up in the current working directory,
+    then the pytest root directory.
+    """
+    for directory in (Path.cwd(), pytestconfig.rootpath):
+        config_file = directory / "nbdime_config.json"
+        if config_file.is_file():
+            return load_nbdime_ignore_config(config_file)
+    raise FileNotFoundError(
+        "nb_diff_use_nbdime_config is set, but no nbdime_config.json found in: "
+        f"{Path.cwd()} or {pytestconfig.rootpath}"
+    )
+
+
 def gather_config_options(pytestconfig):
     """Gather all options, from command-line and ini file.
 
@@ -256,6 +284,15 @@ def gather_config_options(pytestconfig):
     nb_exec_env = validate_exec_env(pytestconfig)
     if nb_exec_env is not None:
         nbreg_kwargs["exec_env"] = nb_exec_env
+
+    use_nbdime_config = pytestconfig.getini("nb_diff_use_nbdime_config")
+    if not isinstance(use_nbdime_config, NotSet) and str2bool(use_nbdime_config):
+        nbreg_kwargs["diff_ignore"] = tuple(
+            sorted(
+                set(nbreg_kwargs.get("diff_ignore", ()))
+                | set(gather_nbdime_ignore_config(pytestconfig))
+            )
+        )
 
     # options from pytest_cov
     # see: https://github.com/pytest-dev/pytest-cov/blob/master/src/pytest_cov/plugin.py

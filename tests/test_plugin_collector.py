@@ -87,6 +87,58 @@ def test_run_skip_inside_notebook(testdir):
     assert result.ret == 0
 
 
+def _write_nb_with_wrong_output(filename="test_nb.ipynb"):
+    """Write a notebook whose stored output will differ from its execution."""
+    cell = nbformat.v4.new_code_cell("print('hallo')", execution_count=1)
+    cell.outputs = [nbformat.v4.new_output("stream", name="stdout", text="wrong\n")]
+    notebook = nbformat.v4.new_notebook(cells=[cell], metadata=KERNELSPEC)
+    nbformat.write(notebook, filename)
+
+
+def test_run_with_nbdime_config(testdir):
+    """Test that ignores are loaded from nbdime_config.json, when enabled."""
+    import json
+
+    _write_nb_with_wrong_output()
+    with open("nbdime_config.json", "w") as handle:
+        json.dump(
+            {
+                "Diff": {
+                    "Ignore": {
+                        "/cells/*/outputs": True,
+                        "/cells/*/execution_count": True,
+                        "/metadata": ["language_info"],
+                    }
+                }
+            },
+            handle,
+        )
+    testdir.makeini(
+        """
+        [pytest]
+        nb_test_files = True
+        nb_diff_use_nbdime_config = True
+        """
+    )
+    result = testdir.runpytest("-v")
+    # fnmatch_lines does an assertion internally
+    result.stdout.fnmatch_lines(["*::nbregression(test_nb) PASSED*"])
+    assert result.ret == 0
+
+
+def test_run_without_nbdime_config(testdir):
+    """Test that nbdime_config.json is not loaded, when not enabled."""
+    import json
+
+    _write_nb_with_wrong_output()
+    with open("nbdime_config.json", "w") as handle:
+        json.dump({"Diff": {"Ignore": {"/cells/*/outputs": True}}}, handle)
+    result = testdir.runpytest("--nb-test-files", "-v")
+    # fnmatch_lines does an assertion internally
+    result.stdout.fnmatch_lines(["*::nbregression(test_nb) FAILED*"])
+    assert result.ret != 0
+
+
 def test_run_with_exec_env_ini(testdir):
     """Test ``nb_exec_env`` and ``nb_diff_ignore`` set in the ini file."""
     cell = nbformat.v4.new_code_cell(

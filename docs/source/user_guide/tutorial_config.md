@@ -238,7 +238,7 @@ notebook4.cells[0].metadata["tags"] = ["raises-exception"]
 
 +++
 
-To add the [pytest skip decorator](http://doc.pytest.org/en/latest/skipping.html#skipping-test-functions) to a notebook, you can add `skip=True` to the notebook metadata.
+To add the [pytest skip decorator](https://doc.pytest.org/en/latest/skipping.html#skipping-test-functions) to a notebook, you can add `skip=True` to the notebook metadata.
 
 ```{code-cell} ipython3
 notebook5 = nbformat.v4.new_notebook()
@@ -253,6 +253,76 @@ notebook5
 (nbformat.writes(notebook5), "test_notebook5.ipynb")
 ***
 ```
+
+A notebook can also skip itself at runtime, by raising `pytest.skip` within a cell,
+for example if a required service or API key is not available:
+
+```{code-cell} ipython3
+notebook_skip = nbformat.v4.new_notebook(
+    cells=[
+        nbformat.v4.new_code_cell(
+            "import pytest\npytest.skip('skipping from within the notebook')"
+        )
+    ]
+)
+
+notebook_skip
+```
+
+```{code-cell} ipython3
+%%pytest -v --color=yes -rs --nb-test-files
+
+***
+(nbformat.writes(notebook_skip), "test_notebook_skip.ipynb")
+***
+```
+
+## Setting Environment Variables for the Kernel
+
++++
+
+The `nb_exec_env` option sets environment variables for the kernel executing the notebook,
+in addition to the inherited environment.
+Each line is of the format `KEY=VALUE`.
+This can be used, for example, to add a local package to the `PYTHONPATH`, or to pass credentials:
+
+```ini
+[pytest]
+nb_exec_env =
+    PYTHONPATH=src
+    MY_API_KEY=xxx
+```
+
+The equivalent option for {py:class}`~pytest_notebook.nb_regression.NBRegressionFixture` is `exec_env`, as a dict.
+
+## Using an nbdime Configuration File
+
++++
+
+If you already configure [nbdime ignores](https://nbdime.readthedocs.io/en/latest/config.html#configuring-ignores)
+with an `nbdime_config.json` file, setting `nb_diff_use_nbdime_config` will also
+load diff-ignore paths from the `Ignore` mappings in its `Global`, `Diff` and `NbDiff` sections
+(merged with any `nb_diff_ignore` setting):
+
+```ini
+[pytest]
+nb_diff_use_nbdime_config = True
+```
+
+```json
+{
+  "Diff": {
+    "Ignore": {
+      "/cells/*/execution_count": true,
+      "/cells/*/metadata": ["collapsed", "autoscroll"],
+      "/metadata": ["language_info"]
+    }
+  }
+}
+```
+
+The file is looked up in the current working directory, then the pytest root directory
+(other locations searched by nbdime itself, such as the Jupyter configuration directories, are not used).
 
 (post_processors)=
 
@@ -289,7 +359,7 @@ for the internally provided plugins.
 +++
 
 An example of this is the `blacken_code` post-processor,
-which applies the [black](https://github.com/ambv/black) formatter
+which applies the [black](https://github.com/psf/black) formatter
 to all source code cells.
 
 This is particularly useful for re-generating notebooks.

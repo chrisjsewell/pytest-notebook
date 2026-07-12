@@ -5,7 +5,6 @@
 [![RTD][rtd-badge]][rtd-link]
 [![PyPI][pypi-badge]][pypi-link]
 [![Conda][conda-badge]][conda-link]
-[![Code style: black][black-badge]][black-link]
 
 A [pytest](https://github.com/pytest-dev/pytest) plugin for regression testing and regenerating [Jupyter Notebooks](https://jupyter.org/).
 
@@ -40,7 +39,7 @@ regenerate the notebooks, saving the new outputs.
     3. The notebook and cell level metadata.
 
 - Post-processor plugin entry-points, allow for customisable modifications of the notebook,
-  including source code formatting with [black](https://github.com/ambv/black)
+  including source code formatting with [black](https://github.com/psf/black)
 
 ![Configuration Examples](docs/source/_static/collaged_in_out.png)
 
@@ -70,7 +69,7 @@ pip install -e .
 
 ## Usage
 
-See the documentation at: http://pytest-notebook.readthedocs.io/
+See the documentation at: https://pytest-notebook.readthedocs.io/
 
 If you want to test some sample notebooks, add the `--nb-test-files` flag:
 
@@ -137,10 +136,8 @@ If you encounter any problems, please [file an issue](https://github.com/chrisjs
 [cov-badge]:https://codecov.io/gh/chrisjsewell/pytest-notebook/branch/master/graph/badge.svg
 [cov-link]: https://codecov.io/gh/chrisjsewell/pytest-notebook
 [rtd-badge]: https://readthedocs.org/projects/pytest-notebook/badge
-[rtd-link]: http://pytest-notebook.readthedocs.io/
+[rtd-link]: https://pytest-notebook.readthedocs.io/
 [pypi-badge]: https://img.shields.io/pypi/v/pytest-notebook.svg
 [pypi-link]: https://pypi.org/project/pytest-notebook
 [conda-badge]: https://anaconda.org/conda-forge/pytest-notebook/badges/version.svg
 [conda-link]: https://anaconda.org/conda-forge/pytest-notebook
-[black-badge]: https://img.shields.io/badge/code%20style-black-000000.svg
-[black-link]: https://github.com/ambv/black

@@ -114,4 +114,4 @@ Indices and tables
 .. _pytest_cov: https://pytest-cov.readthedocs.io
 .. _Jupyter: https://jupyter.org/
 .. _nbdime: https://nbdime.readthedocs.io
-.. _black: https://github.com/ambv/black
+.. _black: https://github.com/psf/black

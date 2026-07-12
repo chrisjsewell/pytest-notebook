@@ -30,6 +30,6 @@ Module contents
 
 .. automodule:: pytest_notebook
    :members:
-   :undoc-members:
-   :show-inheritance:
    :private-members:
+   :show-inheritance:
+   :undoc-members:

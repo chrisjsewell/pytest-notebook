@@ -9,6 +9,7 @@
 * ⬆️ Un-pin `attrs` (now `>=21`), `nbclient` (now `>=0.5.10`, tested against 0.11) and `coverage` (now v6.5+, tested against v7) ([#84](https://github.com/chrisjsewell/pytest-notebook/issues/84))
 * ✨ Notebooks can now skip themselves at runtime, by raising `pytest.skip(...)` within a cell ([#43](https://github.com/chrisjsewell/pytest-notebook/issues/43))
 * ✨ Add `exec_env` fixture option / `nb_exec_env` ini option (lines of `KEY=VALUE`), to set environment variables for the kernel, e.g. `PYTHONPATH` ([#15](https://github.com/chrisjsewell/pytest-notebook/issues/15), [#85](https://github.com/chrisjsewell/pytest-notebook/issues/85))
+* ✨ Add `nb_diff_use_nbdime_config` ini option, to load diff-ignore paths from an [nbdime configuration file](https://nbdime.readthedocs.io/en/latest/config.html#configuring-ignores) (`nbdime_config.json`) ([#38](https://github.com/chrisjsewell/pytest-notebook/issues/38))
 * 🔧 Move development dependencies from `testing`/`code_style` extras to PEP 735 dependency groups (`test`, `pre_commit`); the `docs` extra is retained
 * 🔧 Add `AGENTS.md`, update pre-commit hooks (ruff v0.15) and CI (Python 3.10-3.13 matrix, PyPI trusted publishing, weekly dependabot)
 
