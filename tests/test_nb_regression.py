@@ -86,6 +86,9 @@ def test_regression_regex_replace_pass():
             r"\<ipython\-input\-[\-0-9a-zA-Z]*\>",
             "<ipython-input-XXX>",
         ),
+        # traceback formatting (colours, shown context lines) varies
+        # between IPython versions, so finally normalise each line entirely
+        ("/cells/*/outputs/*/traceback", r"(?s)\A.*\Z", "<TRACEBACK-LINE>"),
     )
     fixture.check(os.path.join(PATH, "raw_files", "different_outputs.ipynb"))
 
