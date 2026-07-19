@@ -25,6 +25,7 @@ from pytest_notebook.nb_regression import (
     HELP_COVERAGE,
     HELP_DIFF_COLOR_WORDS,
     HELP_DIFF_IGNORE,
+    HELP_DIFF_NORMALIZE,
     HELP_DIFF_REPLACE,
     HELP_DIFF_USE_COLOR,
     HELP_EXEC_ALLOW_ERRORS,
@@ -121,6 +122,12 @@ def pytest_addoption(parser):
     )
     parser.addini(
         "nb_diff_ignore", type="linelist", help=HELP_DIFF_IGNORE, default=NotSet()
+    )
+    parser.addini(
+        "nb_diff_normalize",
+        type="linelist",
+        help=HELP_DIFF_NORMALIZE,
+        default=NotSet(),
     )
     parser.addini(
         "nb_diff_use_nbdime_config",
@@ -279,6 +286,7 @@ def gather_config_options(pytestconfig):
         ("nb_coverage", str2bool),
         ("nb_post_processors", tuple),
         ("nb_diff_ignore", tuple),
+        ("nb_diff_normalize", tuple),
         ("nb_diff_use_color", str2bool),
         ("nb_diff_color_words", str2bool),
         ("nb_force_regen", str2bool),

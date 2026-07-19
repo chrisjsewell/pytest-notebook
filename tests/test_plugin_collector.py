@@ -237,6 +237,37 @@ def test_run_without_nbdime_config(testdir):
     assert result.ret != 0
 
 
+def test_run_with_diff_normalize_ini(testdir):
+    """Test the ``nb_diff_normalize`` ini option."""
+    cell = nbformat.v4.new_code_cell(
+        "print('\\x1b[32mok\\x1b[0m 2022-01-01 00:00:00')", execution_count=1
+    )
+    # stored output has different ANSI codes and timestamp to the executed output
+    cell.outputs = [
+        nbformat.v4.new_output(
+            "stream", name="stdout", text="\x1b[31mok\x1b[39m 1999-12-31 23:59:59\n"
+        )
+    ]
+    notebook = nbformat.v4.new_notebook(cells=[cell], metadata=KERNELSPEC)
+    nbformat.write(notebook, "test_nb.ipynb")
+    testdir.makeini(
+        """
+        [pytest]
+        nb_test_files = True
+        nb_diff_normalize =
+            strip_ansi
+            mask_timestamps
+        nb_diff_ignore =
+            /metadata/language_info
+            /cells/*/execution_count
+        """
+    )
+    result = testdir.runpytest("-v")
+    # fnmatch_lines does an assertion internally
+    result.stdout.fnmatch_lines(["*::nbregression(test_nb) PASSED*"])
+    assert result.ret == 0
+
+
 def test_run_with_exec_env_ini(testdir):
     """Test ``nb_exec_env`` and ``nb_diff_ignore`` set in the ini file."""
     cell = nbformat.v4.new_code_cell(
