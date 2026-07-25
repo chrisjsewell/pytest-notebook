@@ -225,6 +225,17 @@ class MetadataConfig:
         validator=instance_of(str),
         metadata={"help": "Reason for skipping testing of this notebook."},
     )
+    diff_normalize: tuple = attr.ib(
+        (),
+        metadata={"help": "Normalizers to apply to both notebooks before diffing."},
+    )
+
+    @diff_normalize.validator
+    def _validate_diff_normalize(self, attribute, values):
+        if not isinstance(values, tuple):
+            raise TypeError(f"diff_normalize not a tuple: {values}")
+        if not all(isinstance(v, str) for v in values):
+            raise TypeError(f"diff_normalize items not all strings: {values}")
 
 
 def config_from_metadata(nb: NotebookNode) -> dict:
@@ -254,6 +265,7 @@ def config_from_metadata(nb: NotebookNode) -> dict:
         diff_ignore,
         nb_metadata.get("skip", False),
         nb_metadata.get("skip_reason", ""),
+        diff_normalize=tuple(nb_metadata.get("diff_normalize", [])),
     )
 
 

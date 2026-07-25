@@ -357,7 +357,16 @@ The built-in normalizers are:
 - `collapse_whitespace`: collapse runs of spaces/tabs and remove trailing whitespace in text outputs
   (useful for e.g. pandas DataFrame text representations, whose alignment can change between pandas versions)
 
-The equivalent option for {py:class}`~pytest_notebook.nb_regression.NBRegressionFixture` is `diff_normalize`, as a tuple of names.
+The equivalent option for {py:class}`~pytest_notebook.nb_regression.NBRegressionFixture` is `diff_normalize`, as a tuple of names,
+and normalizers can also be set (for a whole notebook) in the `nbreg` notebook metadata:
+
+```json
+{"nbreg": {"diff_normalize": ["strip_ansi", "mask_timestamps"]}}
+```
+
+When combined with `nb_diff_replace`, normalizers are applied first, and the regex
+replacements then run on the normalized notebooks; `nb_diff_ignore` filtering happens
+afterwards, on the computed diff.
 
 Like [post-processors](post_processors), normalizers are registered via an entry-point group (`nbreg.diff_normalize`),
 so external packages can provide their own — each is a function taking and returning a notebook

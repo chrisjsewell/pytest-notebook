@@ -44,6 +44,13 @@
                 "$ref": "#/definitions/nb_path"
             }
         },
+        "diff_normalize": {
+            "description": "normalizers to apply to both notebooks before diffing (notebook level only)",
+            "type": "array",
+            "items": {
+                "type": "string"
+            }
+        },
         "skip": {
             "description": "skip testing of this notebook",
             "type": "boolean"

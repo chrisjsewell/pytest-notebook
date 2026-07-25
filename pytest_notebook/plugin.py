@@ -347,6 +347,8 @@ def pytest_report_header(config):
         header.append(f"NB exec dir: {kwargs['exec_cwd']}")
     if kwargs.get("post_processors", None):
         header.append(f"NB post processors: {' '.join(kwargs['post_processors'])}")
+    if kwargs.get("diff_normalize", None):
+        header.append(f"NB diff normalizers: {' '.join(kwargs['diff_normalize'])}")
     if kwargs.get("force_regen", None):
         header.append(f"NB force regen: {kwargs['force_regen']}")
     return header

@@ -268,6 +268,30 @@ def test_run_with_diff_normalize_ini(testdir):
     assert result.ret == 0
 
 
+def test_run_with_diff_normalize_metadata(testdir):
+    """Test ``diff_normalize`` set in the notebook ``nbreg`` metadata."""
+    cell = nbformat.v4.new_code_cell("print('\\x1b[32mok\\x1b[0m')", execution_count=1)
+    # stored output has different ANSI codes to the executed output
+    cell.outputs = [
+        nbformat.v4.new_output("stream", name="stdout", text="\x1b[31mok\x1b[39m\n")
+    ]
+    notebook = nbformat.v4.new_notebook(
+        cells=[cell],
+        metadata={
+            **KERNELSPEC,
+            "nbreg": {
+                "diff_normalize": ["strip_ansi"],
+                "diff_ignore": ["/metadata/language_info", "/cells/*/execution_count"],
+            },
+        },
+    )
+    nbformat.write(notebook, "test_nb.ipynb")
+    result = testdir.runpytest("--nb-test-files", "-v")
+    # fnmatch_lines does an assertion internally
+    result.stdout.fnmatch_lines(["*::nbregression(test_nb) PASSED*"])
+    assert result.ret == 0
+
+
 def test_run_with_exec_env_ini(testdir):
     """Test ``nb_exec_env`` and ``nb_diff_ignore`` set in the ini file."""
     cell = nbformat.v4.new_code_cell(

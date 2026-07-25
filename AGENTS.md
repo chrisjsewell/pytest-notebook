@@ -30,6 +30,7 @@ pytest_notebook/        # Main source code
 ├── diffing.py          # nbdime diffing, filtering, and formatting of diffs
 ├── notebook.py         # Notebook loading + `nbreg` metadata config (JSON-schema validated)
 ├── post_processors.py  # Entry-point post-processors (coalesce_streams, blacken_code, beautifulsoup)
+├── normalizers.py      # Entry-point diff normalizers (strip_ansi, mask_timestamps, ...)
 ├── ipy_magic.py        # `%pytest` / `%%pytest` IPython magic
 ├── utils.py            # Utility helpers (e.g. autodoc)
 ├── resources/          # JSON schema and other package resources

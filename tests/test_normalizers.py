@@ -76,6 +76,12 @@ def test_mask_timestamps():
     assert new_notebook.cells[0].outputs[0]["text"] == "run at DATE TIME done\n"
 
 
+def test_mask_timestamps_iso():
+    notebook = make_notebook("at 2026-07-19T17:49:28Z end\n")
+    new_notebook = mask_timestamps(notebook)
+    assert new_notebook.cells[0].outputs[0]["text"] == "at DATE TIMEZ end\n"
+
+
 def test_mask_memory_addresses():
     notebook = make_notebook("<MyClass object at 0x7f2ec08a13a0>\n")
     new_notebook = mask_memory_addresses(notebook)

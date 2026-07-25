@@ -6,7 +6,8 @@ notebook, before they are diffed.
 They are intended to remove insignificant differences in outputs,
 such as ANSI colour codes, timestamps and memory addresses.
 
-All functions should take a notebook as input, and output a new notebook.
+All functions should take a notebook as input, and output a new notebook,
+without mutating the input notebook.
 """
 
 import functools
@@ -28,8 +29,11 @@ ERROR_PATHS = (
 )
 
 RGX_ANSI = r"\x1b\[[0-9;?]*[a-zA-Z]"
-RGX_DATE = r"\b\d{4}-\d{2}-\d{2}\b"
-RGX_TIME = r"\b\d{1,2}:\d{2}:\d{2}(\.\d+)?\b"
+# split ISO datetimes (2026-01-01T12:00:00) into date and time,
+# since \b style boundaries do not fire between a digit and the 'T'
+RGX_ISO_DATETIME_SEP = r"(?<!\d)(\d{4}-\d{2}-\d{2})T(?=\d{1,2}:\d{2}:\d{2})"
+RGX_DATE = r"(?<!\d)\d{4}-\d{2}-\d{2}(?!\d)"
+RGX_TIME = r"(?<!\d)\d{1,2}:\d{2}:\d{2}(\.\d+)?(?!\d)"
 RGX_MEMORY_ADDRESS = r"\b0x[0-9a-fA-F]{4,}\b"
 RGX_UUID = (
     r"\b[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}"
@@ -67,7 +71,8 @@ def mask_timestamps(notebook: NotebookNode) -> NotebookNode:
     """Replace dates (YYYY-MM-DD) and times (HH:MM:SS) in text outputs."""
     return regex_replace_nb(
         notebook,
-        [(path, RGX_DATE, "DATE") for path in TEXT_PATHS]
+        [(path, RGX_ISO_DATETIME_SEP, r"\1 ") for path in TEXT_PATHS]
+        + [(path, RGX_DATE, "DATE") for path in TEXT_PATHS]
         + [(path, RGX_TIME, "TIME") for path in TEXT_PATHS],
     )
 

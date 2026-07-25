@@ -26,6 +26,7 @@ from pytest_notebook.execution import (
     HELP_EXEC_ENV,
     execute_notebook,
 )
+from pytest_notebook.normalizers import ENTRY_POINT_NAME as NORMALIZE_ENTRY_POINT_NAME
 from pytest_notebook.normalizers import list_normalizer_names, load_normalizer
 from pytest_notebook.notebook import (
     load_notebook_with_config,
@@ -72,7 +73,7 @@ HELP_POST_PROCS = (
 )
 HELP_DIFF_NORMALIZE = (
     "normalizers to apply to both notebooks before diffing "
-    "(e.g. strip_ansi, mask_timestamps), "
+    "(e.g. strip_ansi, mask_timestamps), and before any diff_replace replacements, "
     "relating to entry points in the 'nbreg.diff_normalize' group"
 )
 HELP_COVERAGE_MERGE = "A coverage.Coverage instance, to merge coverage results with."
@@ -219,7 +220,8 @@ class NBRegressionFixture:
         for name in values:
             if name not in list_processor_names():
                 raise TypeError(
-                    f"name '{name}' not found in entry points: {list_processor_names()}"
+                    f"post_processors name '{name}' not found in "
+                    f"'{ENTRY_POINT_NAME}' entry points: {list_processor_names()}"
                 )
 
     process_resources: dict = attr.ib(
@@ -237,7 +239,8 @@ class NBRegressionFixture:
         for name in values:
             if name not in list_normalizer_names():
                 raise TypeError(
-                    f"name '{name}' not found in entry points: "
+                    f"diff_normalize name '{name}' not found in "
+                    f"'{NORMALIZE_ENTRY_POINT_NAME}' entry points: "
                     f"{list_normalizer_names()}"
                 )
 
@@ -356,7 +359,10 @@ class NBRegressionFixture:
         nb_initial_replace = nb_initial
         nb_final_replace = nb_final
 
-        for norm_name in self.diff_normalize:
+        diff_normalize = dict.fromkeys(
+            tuple(self.diff_normalize) + tuple(nb_config.diff_normalize)
+        )
+        for norm_name in diff_normalize:
             logger.debug(f"Applying normalizer: {norm_name}")
             normalizer = load_normalizer(norm_name)
             nb_initial_replace = normalizer(nb_initial_replace)
