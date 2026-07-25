@@ -57,7 +57,9 @@ jobs:
       run: coverage xml
 
     - name: Upload to Codecov
-      if: github.repository == 'chrisjsewell/pytest-notebook' && matrix.python-version == '3.11'
+      # secrets are not available to dependabot-triggered runs,
+      # and the upload fails without the token
+      if: github.repository == 'chrisjsewell/pytest-notebook' && matrix.python-version == '3.11' && github.actor != 'dependabot[bot]'
       uses: codecov/codecov-action@v5
       with:
         name: pytests-notebook

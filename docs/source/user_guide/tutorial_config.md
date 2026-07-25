@@ -330,6 +330,48 @@ There is no equivalent {py:class}`~pytest_notebook.nb_regression.NBRegressionFix
 instead call {py:func}`pytest_notebook.diffing.load_nbdime_ignore_config`
 and pass the result to `diff_ignore`.
 
+## Normalizing Outputs Before Diffing
+
++++
+
+Notebook outputs often contain insignificant differences — ANSI colour codes,
+timestamps, memory addresses, or whitespace-only changes in text representations —
+which cause spurious regression failures.
+Rather than hand-writing `nb_diff_replace` regexes for these,
+the `nb_diff_normalize` option applies named normalizers to *both* the stored and
+executed notebook, before they are diffed:
+
+```ini
+[pytest]
+nb_diff_normalize =
+    strip_ansi
+    mask_timestamps
+```
+
+The built-in normalizers are:
+
+- `strip_ansi`: remove ANSI escape sequences from text outputs and tracebacks
+- `mask_timestamps`: replace dates (`YYYY-MM-DD`) and times (`HH:MM:SS[.fff]`) with placeholders
+- `mask_memory_addresses`: replace memory addresses (e.g. `<object at 0x7f...>`) with a placeholder
+- `mask_uuids`: replace UUIDs with a placeholder
+- `collapse_whitespace`: collapse runs of spaces/tabs and remove trailing whitespace in text outputs
+  (useful for e.g. pandas DataFrame text representations, whose alignment can change between pandas versions)
+
+The equivalent option for {py:class}`~pytest_notebook.nb_regression.NBRegressionFixture` is `diff_normalize`, as a tuple of names,
+and normalizers can also be set (for a whole notebook) in the `nbreg` notebook metadata:
+
+```json
+{"nbreg": {"diff_normalize": ["strip_ansi", "mask_timestamps"]}}
+```
+
+When combined with `nb_diff_replace`, normalizers are applied first, and the regex
+replacements then run on the normalized notebooks; `nb_diff_ignore` filtering happens
+afterwards, on the computed diff.
+
+Like {ref}`post-processors <post_processors>`, normalizers are registered via an entry-point group (`nbreg.diff_normalize`),
+so external packages can provide their own — each is a function taking and returning a notebook
+(see {py:mod}`pytest_notebook.normalizers`).
+
 (post_processors)=
 
 ## Post-processors

@@ -1,5 +1,9 @@
 # Changelog
 
+## Unreleased
+
+* ✨ Add output normalizers, applied to both notebooks before diffing, via the `nb_diff_normalize` ini option / `diff_normalize` fixture option and the `nbreg.diff_normalize` entry-point group. Built-in presets: `strip_ansi`, `mask_timestamps`, `mask_memory_addresses`, `mask_uuids`, `collapse_whitespace` ([#94](https://github.com/chrisjsewell/pytest-notebook/issues/94))
+
 ## v0.11.0 (2026-07-12)
 
 ‼️ **BREAKING**: Python 3.10+ and pytest 7.4+ are now required.

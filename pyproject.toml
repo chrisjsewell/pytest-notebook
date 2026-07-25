@@ -67,6 +67,13 @@ coalesce_streams = "pytest_notebook.post_processors:coalesce_streams"
 blacken_code = "pytest_notebook.post_processors:blacken_code"
 beautifulsoup = "pytest_notebook.post_processors:beautifulsoup"
 
+[project.entry-points."nbreg.diff_normalize"]
+strip_ansi = "pytest_notebook.normalizers:strip_ansi"
+mask_timestamps = "pytest_notebook.normalizers:mask_timestamps"
+mask_memory_addresses = "pytest_notebook.normalizers:mask_memory_addresses"
+mask_uuids = "pytest_notebook.normalizers:mask_uuids"
+collapse_whitespace = "pytest_notebook.normalizers:collapse_whitespace"
+
 [tool.ruff]
 # notebooks contain deliberately unformatted code, used in regression tests
 extend-exclude = ["*.ipynb"]
