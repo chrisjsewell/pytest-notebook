@@ -368,7 +368,7 @@ When combined with `nb_diff_replace`, normalizers are applied first, and the reg
 replacements then run on the normalized notebooks; `nb_diff_ignore` filtering happens
 afterwards, on the computed diff.
 
-Like [post-processors](post_processors), normalizers are registered via an entry-point group (`nbreg.diff_normalize`),
+Like {ref}`post-processors <post_processors>`, normalizers are registered via an entry-point group (`nbreg.diff_normalize`),
 so external packages can provide their own — each is a function taking and returning a notebook
 (see {py:mod}`pytest_notebook.normalizers`).
 
