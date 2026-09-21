@@ -388,10 +388,7 @@ from setuptools import setup
 setup(
     name="myproject",
     packages=["myproject"],
-    entry_points={
-        "nbreg.post_proc": [
-            "blacken_code = post_processors:blacken_code"
-    ]},
+    entry_points={"nbreg.post_proc": ["blacken_code = post_processors:blacken_code"]},
 )
 ```
 
